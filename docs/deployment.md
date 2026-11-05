@@ -1,12 +1,12 @@
 # Deployment design
 
-No deployment is runnable at Stage 1. Dockerfiles, Compose and reverse-proxy configuration belong to Stage 11; API/worker foundations belong to Stage 2.
+Stage 2 API/dispatcher/admission-worker processes now have [local setup commands](backend-development.md). Deployment configuration, Dockerfiles, Compose, reverse proxy and enforced renderer sandbox belong to Stage 11; none is claimed as deployed or production-qualified yet.
 
 Planned compatible services: Linux containers for Next.js, FastAPI, Celery, Redis, PostgreSQL and analysis/Chromium workers. Keep rendering in a separate restricted runtime chosen against the selected provider's supported platform and license. A licensed self-hosted SDK avoids sending confidential documents to third parties; a remote provider requires explicit data-handling approval and a documented contract.
 
 Terminate TLS at the reverse proxy. Authenticate all document routes; apply owner isolation, upload quotas, request-body limits and rate limiting. Production refuses unauthenticated configuration. Local unauthenticated mode, if provided, binds loopback and is explicit. Use narrow CORS, CSRF protections where cookie authentication is used, and separate secrets for broker/database/storage. Never log document contents, tokens, URLs with credentials or client filesystem paths.
 
-Stream upload bytes with a hard cap, not just a Content-Length check. Bound ZIP entry count, aggregate expanded bytes, per-entry size, compression ratio, XML depth and parse time. Reject traversal, absolute paths, duplicate members, symlinks, macros, embedded executable objects, external relationships and encrypted packages. Disable DTD/entity/network resolution. Source names are display metadata only; UUID storage paths must be contained within the workspace.
+Stream upload bytes with a hard cap, not just a Content-Length check. Bound ZIP entry count, aggregate expanded bytes, per-entry size, compression ratio, XML depth and parse time. Reject traversal, absolute paths, duplicate members, symlinks, macros, embedded executable objects, unsafe external relationships and encrypted packages. Stage 2 permits inert source hyperlinks as data only; no resource is fetched. Final EDGAR hyperlink validation is stricter. Disable DTD/entity/network resolution. Source names are display metadata only; UUID storage paths must be contained within the workspace.
 
 Workers need enforced CPU/memory/process/disk quotas, bounded concurrency, per-stage timeouts and whole-process-tree termination. Block renderer/browser outbound traffic at the network boundary. Preview HTML runs on an isolated origin in a sandbox with scripts and network blocked, with authenticated assets and restrictive CSP. Avoid serving untrusted HTM under the API's privileged origin. Health/readiness includes worker heartbeat and renderer capability; no false readiness if required components are absent.
 

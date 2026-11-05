@@ -1,6 +1,6 @@
 # Architecture — Stage 1 design
 
-Status: design only, 2026-11-05. No API, converter, worker, or frontend is implemented.
+Status: Stage 1 design, updated 2026-11-05 after Stage 2 implementation. API, durable jobs, private local storage, outbox dispatcher and Celery admission worker are implemented. Conversion, frontend, object storage and deployed sandbox remain future stages. See [backend operation](backend-development.md) for current behavior and limitations.
 
 ## Boundaries and stack
 
@@ -47,4 +47,4 @@ Cancellation marks a requested state and stops active process trees; all publica
 
 ## Stage sequencing
 
-1 architecture; 2 backend; 3 revisions/PDF; 4 layout; 5 HTML; 6 compliance; 7 visual validation; 8 ZIP; 9 frontend; 10 integration; 11 deployment; 12 audit. Each stage requires explicit authorization. Interfaces here guide later stages and are not implemented contracts yet.
+1 architecture; 2 backend; 3 revisions/PDF; 4 layout; 5 HTML; 6 compliance; 7 visual validation; 8 ZIP; 9 frontend; 10 integration; 11 deployment; 12 audit. Each stage requires explicit authorization. Converter contracts remain planned; Stage 2 admission/lifecycle behavior is documented separately.

@@ -84,8 +84,8 @@ class StageOneChecks(unittest.TestCase):
     def test_progress_records_agree(self):
         checkpoint = read_json(".agent-checkpoint.json")
         status = (ROOT / "PROJECT_STATUS.md").read_text(encoding="utf-8")
-        self.assertEqual(checkpoint["current_stage"], 1)
-        self.assertEqual(checkpoint["next_stage"], 2)
+        self.assertGreaterEqual(checkpoint["current_stage"], 1)
+        self.assertEqual(checkpoint["next_stage"], checkpoint["current_stage"] + 1)
         self.assertIn(f"Stage Status: {checkpoint['stage_status']}", status)
         self.assertIn(f"Last Completed Stage: {checkpoint['last_completed_stage']}", status)
         self.assertFalse(checkpoint["git_operations_performed"])
@@ -93,6 +93,10 @@ class StageOneChecks(unittest.TestCase):
         self.assertIn("Before implementing any changes, every AI agent must read", (ROOT / "AGENTS.md").read_text(encoding="utf-8"))
 
     def test_stage_scope(self):
+        checkpoint = read_json(".agent-checkpoint.json")
+        if checkpoint["current_stage"] > 1:
+            self.assertIn(1, checkpoint["completed_stages"])
+            return  # Stage 1's historical absence-of-application assertion no longer applies.
         # No later-stage application implementation is delivered by this stage.
         for directory in ("apps", "services", "packages/converter", "workers"):
             path = ROOT / directory

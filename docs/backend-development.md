@@ -1,0 +1,73 @@
+# Stage 2 backend operation
+
+The API, durable job store, private upload admission, dispatch outbox and Celery admission worker are implemented. Conversion engines remain unavailable. A valid queued job moves through worker validation to `blocked / awaiting_conversion_engine` with `PIPELINE_NOT_AVAILABLE`; it never becomes SEC-ready or downloadable. This is a recorded capability boundary, not a simulated conversion. Stage 3 must resume blocked jobs through a deliberate migration/dispatch change, after authorization.
+
+## Install and configure
+
+Run from the repository root with Python 3.12 or later. Tested on Windows/Python 3.12.10. Create a virtual environment and install the pinned resolution, then the local API package:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python -m pip install -r services/api/requirements-lock.txt
+.\.venv\Scripts\python -m pip install --no-deps -e services/api
+Copy-Item .env.example .env
+.\.venv\Scripts\python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+Put that generated secret in `.env` as `CONVX_API_TOKENS='{"your-account":"YOUR_GENERATED_SECRET"}'`. Tokens identify separate owners and must be distinct, at least 32 characters and kept private. Empty token configuration intentionally prevents startup. Never use test/example tokens. A local opt-out exists only with explicit `CONVX_AUTH_MODE=local`, development environment and loopback clients; production rejects it. Tokens are supplied by `Authorization: Bearer ...`, never URL parameters. CORS is disabled by default; use a same-origin authenticated reverse proxy when the frontend is introduced.
+
+Initialize the schema explicitly (also provisions configured owner IDs); run again after adding an account:
+
+```powershell
+.\.venv\Scripts\python -m app.cli init-db
+.\.venv\Scripts\python -m uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log
+```
+
+SQLite is for single-host development. Use `CONVX_DATABASE_URL=postgresql+psycopg://...` in production; production also requires token access and prohibits automatic schema creation. `init-db` creates schema version 1, checks the recorded version, and does not migrate incompatible schemas. Subsequent schema evolution must use explicit versioned migrations. The runtime refuses a missing/incompatible schema. Back up databases and artifacts together. SQL echo is disabled.
+
+## Broker, dispatcher and independent workers
+
+Provide a real Redis instance via `CONVX_REDIS_URL`. Redis persists transport, while the database is authoritative for jobs, events and pending enqueue operations. API uploads remain durable during broker outages. A separately running dispatcher publishes the outbox and performs cleanup; run exactly the following from the same project root/environment:
+
+```text
+python -m app.cli dispatch
+python -m celery -A workers.worker:celery worker --queues convx.admission --concurrency 2 --loglevel WARNING
+```
+
+The two commands run in separate supervised processes. Shared database and private storage paths must resolve identically across the API, dispatcher and worker. Production Celery uses Linux prefork; the Windows tests use solo pools for task mechanics only. Celery's [Windows support boundary](https://docs.celeryq.dev/en/stable/faq.html#does-celery-support-windows) means a successful Windows test is not production worker qualification. Docker/WSL infrastructure and process/network sandbox deployment belong to Stage 11 and are not installed here.
+
+Tasks use JSON messages containing only job IDs, late acknowledgement, one prefetched message per worker, bounded retries and time/memory process-recycling settings. See [Celery task/worker configuration](https://docs.celeryq.dev/en/stable/userguide/configuration.html) and [Redis visibility timeout](https://docs.celeryq.dev/en/stable/getting-started/backends-and-brokers/redis.html). Database leases and version predicates reject duplicate/stale work; the dispatcher requeues expired claims within an attempt cap. Enqueue retries back off to five minutes and terminate visibly after the configured attempt limit. Multiple dispatchers can race safely; a publish/DB-ack crash may redeliver, so task claims remain idempotent.
+
+`python -m app.cli dispatch --once` performs one maintenance/dispatch pass for inspection. Keep the continuous dispatcher alive for retention, lease recovery and cleanup. It is not started inside the API. Worker heartbeats describe admission capability only. Readiness always returns 503 with `conversion_ready=false` at Stage 2; `foundation_ready` reports database/storage/broker/live admission-worker checks separately. Health reports process liveness only.
+
+## API usage
+
+Submit multipart fields named `files`; each input creates an independent job. Optionally set `Idempotency-Key` using 1–128 letters/digits/dots/underscores/hyphens. Mixed batches return 202 with admitted jobs and per-file errors. If none are valid, return 422. Malformed or excessive multipart parts return 400; authentication, aggregate limits, quota and storage outages return structured request errors. Repeated matching keys return current job views; conflicting payload metadata returns 409. Deleted jobs are not resurrected by replay.
+
+Routes: POST `/api/v1/conversions`; GET and DELETE `/api/v1/conversions/{id}`; GET `/{id}/events`, `/{id}/validation`, `/{id}/preview`, `/{id}/download`. All document routes enforce ownership. Polling is supported; SSE returns an ordered bounded replay then `reconnect`/`retry: 2000`, supporting Last-Event-ID. Reconnect forces periodic authorization without long-held DB transactions. No progress percentage is invented.
+
+Preview/download return 409 without an artifact; expired artifacts return 410 and deleted/unowned jobs return 404. No unvalidated file-serving path exists. Deletion immediately revokes reads and requests cancellation; Stage 2 admission has no external renderer process and checks the attempt before final state changes. Cleanup waits beyond an active lease before removing its source. Later renderer stages must add process-tree termination.
+
+## Admission and storage controls
+
+The ASGI body guard authenticates before multipart parsing, enforces declared and received aggregate bytes and a total body-read deadline. FastAPI/Starlette uses spooled upload files ([file handling](https://fastapi.tiangolo.com/tutorial/request-files/)); each file is copied in bounded chunks with an independent byte limit into a UUID workspace. Set OS `TMPDIR`/`TEMP` to a private, quota-controlled disk for multipart spools in deployed API processes. The system temporary directory on this development machine is user-owned; Windows ACL isolation is an operator responsibility.
+
+Admission checks ZIP signatures/CRC, entries, expanded sizes, ratios, paths, duplication, encryption, link entries, XML depth/DTD/entity safety, main Word part/MIME identity, relationships, active fields, embedded objects/macros and altChunk. Validation deadlines are cooperative between bounded reads/parses; they are not an OS kill boundary. Parser/native code still needs the Stage 11 process sandbox. Source XML is never rewritten. MIME declarations are evaluated only against actual parts: unused OLE defaults in the regression fixture do not imply embedded content. Inert HTTP/HTTPS/mailto source hyperlinks are retained as data and never fetched; external templates/images/objects are rejected. Final EDGAR hyperlink rules are stricter and remain Stage 6 work.
+
+File paths use canonical UUIDs, not client names. Per-file, per-request, per-batch, active-job and retained-source-byte quotas are configurable. Committed failed/cancelled files count against retained-byte quota until cleaned. Uncommitted concurrent upload staging is bounded per request but requires a global disk quota and reverse-proxy connection/rate limits in deployment. Do not claim this stage enforces fleet-wide disk quotas.
+
+Files are fsynced and atomically renamed before the job/event/outbox transaction. Failed admission/transactions remove staged copies; crash orphans older than the grace period are swept. Originals in tests/fixtures are untouched. Storage is private; POSIX modes are owner-only where supported, and Windows deployments must restrict ACLs. Retention revokes access at query time, removes files with retryable cleanup, then purges expired job/event/outbox metadata. Idempotency responses expire at retention. No document contents, source names, secrets or raw database exceptions are intentionally logged. Use the documented disabled access logs and restrict infrastructure logs too.
+
+## Verification and troubleshooting
+
+```powershell
+.\.venv\Scripts\python -m pytest -q
+.\.venv\Scripts\ruff check services workers tests
+.\.venv\Scripts\ruff format --check services workers tests
+.\.venv\Scripts\python -m pip check
+python tools/verify_stage1.py
+```
+
+Optional live-service tests require `CONVX_TEST_REDIS_URL` and `CONVX_TEST_DATABASE_URL`. Use disposable services; the Redis test uses an isolated random queue and PostgreSQL test creates/drops only its generated `convx_test_<uuid>` schema. These tests skip when their URLs are absent. The default suite tests SQLite persistence, API security, lifecycle races and real Celery serialization/delivery over an in-memory test transport. It does not certify Redis or PostgreSQL deployment.
+
+Startup token error: populate private `.env` and run from root. Schema error: initialize v1 explicitly; do not delete an existing database as a repair shortcut. Jobs remain queued: inspect dispatcher and Redis. `awaiting_conversion_engine`: expected Stage 2 boundary; no conversion workaround. Readiness 503: inspect individual foundation checks; conversion readiness remains false. For actual execution history and known limitations, see [test history](test-history.md) and [limitations](limitations.md).

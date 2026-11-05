@@ -23,3 +23,19 @@ Decision: all-page content, geometry and controlled raster comparisons; zero une
 ## 2026-11-05 — ADR-006: Updated fixture identities
 
 Decision: preserve filenames and use hashes plus explicit aliases. Context: initial roles were reversed; user replaced DOCX fixtures and final roles agree. Alternatives: agent renaming/editing references. Reasoning: content evidence outranks suffix assumptions. Consequences: final inventory is baseline; Stage 3 establishes semantic equivalence and PDF correspondence, including differing media inventories.
+
+## 2026-11-05 — ADR-007: Stage 2 capability boundary
+
+Decision: workers perform actual source hash and package admission, then record `blocked / awaiting_conversion_engine` with `PIPELINE_NOT_AVAILABLE`. Context: only the backend foundation is authorized and no later conversion gate exists. Alternatives: fake conversion success, fail every upload as invalid, or leave already-admitted work silently queued. Reasoning: an explicit unavailable capability preserves truthful state and prevents unsafe download. Consequences: no completed-state/publication path is present; later stages must deliberately resume eligible blocked jobs and extend readiness. This job state is separate from AI stage-checkpoint statuses.
+
+## 2026-11-05 — ADR-008: Durable dispatch and retention implementation
+
+Decision: implement SQLAlchemy schema v1 for SQLite development/PostgreSQL production, atomic job/event/outbox writes, owner-row quota/idempotency serialization, versioned worker claims and tokenized dispatcher leases. Context: broker outages, duplicate deliveries, process crashes and cancellation/expiration races. Alternatives: direct enqueue only, Redis-only jobs or process-local state. Reasoning: durable outbox and compare-and-swap state changes recover without publishing stale work. Consequences: a supervised dispatcher is mandatory; artifacts are removed only after active admission leases, then expired metadata is purged. Stage 11 adds infrastructure enforcement and later schemas require explicit migrations. Redis/PostgreSQL live-service tests remain opt-in, not claimed as executed locally.
+
+## 2026-11-05 — ADR-009: Inert source relationships and dormant declarations
+
+Decision: preserve inert source HTTP/HTTPS/mailto hyperlinks as data without fetching; reject external images/templates/objects, active relationships/fields, macros and actual OLE parts. Evaluate active MIME declarations against existing parts. Context: the original fixture has an unused OLE default declaration but no `.bin` parts or object relationships. Alternatives: reject all source hyperlinks/unused declarations, or allow external rendering resources. Reasoning: preserve disclosure and admit valid fixture bytes while denying executable/resource dependencies. Consequences: source admission is distinct from final EDGAR hyperlink/asset validation; no rule relaxes final compliance and renderers must remain offline and disable field updates. No original fixture was rewritten.
+
+## 2026-11-05 — ADR-010: Bounded authenticated event replay
+
+Decision: SSE returns persisted events after a cursor and an explicit reconnect instruction instead of holding long polling threads and database transactions indefinitely. Context: expiry/deletion and bearer authorization must be checked regularly. Alternatives: unlimited streaming or polling alone. Reasoning: bounded replay supports reliable progress and reauthorization with simple resource bounds. Consequences: clients reconnect after two seconds using Last-Event-ID; ordinary polling remains available. No fabricated percentages are exposed.

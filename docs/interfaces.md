@@ -1,6 +1,6 @@
 # Proposed module and API contracts
 
-All contracts below are design specifications for later stages. Schema version 1 uses JSON-compatible values and explicit provenance. Converter modules do not import FastAPI or Celery.
+Converter contracts below remain design specifications for later stages. Stage 2 implements the upload/job API subset and admission boundary as described in [backend operation](backend-development.md). Schema version 1 uses JSON-compatible values and explicit provenance. Converter modules do not import FastAPI or Celery.
 
 ## Shared records
 
@@ -51,3 +51,5 @@ Page: geometry, reading-order graph, text blocks/paragraphs/lines/spans/characte
 Use 401 unauthenticated, 404 for missing or unowned resources, 409 invalid lifecycle, 413 admission size, 415 wrong type, 422 invalid package, 429 quota and 503 infrastructure unavailable. Request/error bodies have stable codes and correlation IDs without document text. Preview assets require ownership too; no arbitrary path selector.
 
 States: `queued -> running -> completed | failed | cancelled`; `expired` removes download eligibility. Running stages follow the mandatory pipeline, with a separate `cancelling` lifecycle if termination is pending. Persist events atomically with state. Progress is stage/page evidence, not simulated percentages. Packaging and completed state require all mandatory gates, including source/revision integrity, strict PDF, compliance, content and fidelity. Stage 2 must not simulate downstream conversion success.
+
+Stage 2 extension: admitted sources enter `blocked / awaiting_conversion_engine` with `PIPELINE_NOT_AVAILABLE` after worker admission. `blocked` is a real unavailable-capability state, not conversion success. No path transitions to `completed` or publishes artifacts. Stage 2 uses `version`, timestamps and deleted/cleanup markers for job state; renderer/rule/profile/artifact schemas remain deferred until their corresponding stages. Events are bounded SSE replays followed by reconnect instructions. DELETE invalidates active attempts immediately and defers file removal through their lease deadline; future renderers must add process termination. The validation endpoint reports pending/failed gates without pretending an EDGAR validator exists.

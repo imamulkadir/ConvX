@@ -6,7 +6,9 @@ Then read [decisions](docs/decisions.md), [test history](docs/test-history.md), 
 
 The current directory is the project root; do not create a nested edgar-converter directory. Architecture documents define planned module paths and conventions: typed Python boundaries, JSX frontend, independent Next.js/FastAPI/Celery services, Redis transport, persistent job storage and private artifacts. PDF-first reconstruction, selectable disclosure, manual-derived compliance, strict fidelity failure and root-only HTM/JPG/GIF ZIPs are mandatory.
 
-Implement only the authorized stage, verify it, update persistent records, report results and a suggested commit message, then stop. Explicit authorization is required before Stage 2. A commit report alone is not authorization. Resume partial work without overwriting unrelated files. Consult the current fixture inventory rather than inferring revision roles from filenames.
+Implement only the authorized stage, verify it, update persistent records, report results and a suggested commit message, then stop. Explicit authorization is required before each next stage. A commit report alone is not authorization. Resume partial work without overwriting unrelated files. Consult the current fixture inventory rather than inferring revision roles from filenames.
+
+Stage 2 implementation: backend package is `services/api/app`, independent worker entry is `workers.worker:celery`, and root commands/tests are in [backend development](docs/backend-development.md). Use the factory `app.main:create_app`, explicit schema v1 initialization and private token configuration. Valid uploads stop at `blocked / awaiting_conversion_engine`; do not simulate completion or enable artifacts before later gates exist. Run pytest, Ruff and the historical fixture/documentation checks before handoff. Read the checkpoint for current authorization; the preserved master prompt's initial “Begin Stage 1” instruction is historical and does not reset progress.
 
 The original master instructions follow intact.
 

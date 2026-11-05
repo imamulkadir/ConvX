@@ -1,20 +1,27 @@
 {
   "project": "edgar-converter",
   "schema_version": 1,
-  "current_stage": 1,
-  "current_stage_name": "Requirements Analysis and Architecture",
+  "current_stage": 2,
+  "current_stage_name": "Backend Foundation",
   "stage_status": "completed",
-  "last_completed_stage": 1,
-  "next_stage": 2,
+  "last_completed_stage": 2,
+  "next_stage": 3,
   "authorization_required": true,
   "awaiting_user_approval": true,
   "last_updated": "2026-11-05",
-  "completed_stages": [1],
-  "implemented_components": ["architecture and module contracts", "manual-derived design rule registry", "read-only fixture inventory", "persistent recovery documents"],
-  "pending_tasks": ["User review and explicit authorization before Stage 2", "Stage 2 backend foundation", "Later renderer qualification and strict rule interpretation"],
-  "known_issues": ["No application runtime yet", "Renderer licensing and fidelity unqualified", "Manual CSS/attribute/character ambiguities unresolved", "Accepted baseline has more media parts; Stage 3 correspondence checks required", "Git unavailable on PATH"],
-  "last_test_results": [{"stage":1,"command":"python tools/verify_stage1.py","passed":8,"failed":0,"scope":"Stage 1 evidence and documentation only"}],
-  "suggested_commit_message": "docs: establish EDGAR converter architecture and stage-one evidence",
+  "completed_stages": [1, 2],
+  "implemented_components": ["architecture and module contracts", "manual-derived design rule registry", "read-only fixture inventory", "persistent recovery documents", "FastAPI authenticated upload and job API", "environment configuration and private UUID storage", "bounded ZIP and OOXML admission", "durable SQLAlchemy jobs, events, idempotency and outbox", "Celery admission and worker heartbeat", "dispatch retry, lease recovery, cancellation and retention cleanup", "backend security, lifecycle and process tests"],
+  "pending_tasks": ["User review and explicit authorization before Stage 3", "Stage 3 revision acceptance and PDF provider qualification", "Run opt-in real Redis/PostgreSQL tests when services are available"],
+  "known_issues": ["No conversion engine or frontend yet; admitted jobs explicitly blocked at PIPELINE_NOT_AVAILABLE", "Live Redis/PostgreSQL and Linux prefork deployment unverified locally", "Stage 11 process/network/disk/ACL hardening not deployed", "Starlette httpx test-client deprecation warning", "Renderer licensing and fidelity unqualified", "Manual CSS/attribute/character ambiguities unresolved", "Accepted baseline has more media parts; Stage 3 correspondence checks required"],
+  "last_test_results": [
+    {"stage":2,"command":".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov-report=term-missing","passed":72,"failed":0,"skipped":2,"warnings":1,"line_coverage_percent":87,"scope":"API, admission, durable state, lifecycle races, real Celery memory transport and local process tests; real services skipped"},
+    {"stage":2,"command":".venv/Scripts/ruff check services workers tests","result":"passed"},
+    {"stage":2,"command":".venv/Scripts/ruff format --check services workers tests","result":"31 files already formatted"},
+    {"stage":2,"command":"git diff --check (installed executable; read only)","result":"passed; LF/CRLF notices only"},
+    {"stage":2,"command":".venv/Scripts/python -m pip check","result":"No broken requirements found"},
+    {"stage":1,"command":"python tools/verify_stage1.py","passed":8,"failed":0,"scope":"Historical fixture/documentation evidence, adapted to later authorized stages"}
+  ],
+  "suggested_commit_message": "feat: implement secure asynchronous backend foundation",
   "git_operations_performed": false,
-  "notes": ["User updated DOCX fixture contents during Stage 1; final inventory is authoritative", "Volume II v78 copied unchanged from Downloads", "No later-stage implementation or conversion results"]
+  "notes": ["User explicitly authorized Stage 2 with continue", "Preserved pre-existing user README title edit", "Fixture hashes unchanged during Stage 2", "Git read-only inspection used installed executable; no writes", "Stop after Stage 2; Stage 3 requires explicit authorization", "No conversion results or SEC acceptance claimed"]
 }
