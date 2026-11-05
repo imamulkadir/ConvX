@@ -1,11 +1,11 @@
 {
   "project": "edgar-converter",
   "schema_version": 1,
-  "current_stage": 8,
-  "current_stage_name": "ZIP Packaging",
+  "current_stage": 9,
+  "current_stage_name": "Next.js Frontend",
   "stage_status": "completed",
-  "last_completed_stage": 8,
-  "next_stage": 9,
+  "last_completed_stage": 9,
+  "next_stage": 10,
   "authorization_required": true,
   "awaiting_user_approval": true,
   "last_updated": "2026-11-05",
@@ -17,7 +17,8 @@
     5,
     6,
     7,
-    8
+    8,
+    9
   ],
   "implemented_components": [
     "architecture and module contracts",
@@ -74,15 +75,21 @@
     "bounded canonical root-only ZIP writer and independent header/CRC/manifest/archived SEC audit",
     "current strict PDF/SEC/production visual and rendering-profile revalidation",
     "proof-chain guarded completed job transition and captured-byte owned download checks",
-    "actual archive reproducibility/hostile archive/cancellation and real failed-browser rejection tests"
+    "actual archive reproducibility/hostile archive/cancellation and real failed-browser rejection tests",
+    "Next App Router React JSX/Tailwind/DaisyUI/Lucide workspace and locked free dependencies",
+    "per-user memory-only token auth, trusted API rewrites and real configured admission limits",
+    "batch DOCX picker/drop validation, actual upload progress and nonoverlapping job polling",
+    "job search/filter/recovery/removal/resume and structured validation diagnostics",
+    "owned stopped-attempt generated PDF and declared PNG diagnostic previews without eligibility promotion",
+    "local pinned PDF.js canvas, page/zoom/capture/comparison/synchronized-scroll controls",
+    "real API/native-negative Chromium UI and WCAG A/AA axe checks"
   ],
   "pending_tasks": [
-    "User review/manual commit/push and explicit authorization before Stage 9",
-    "Stage 9 responsive JSX web upload/dashboard/preview/download interface",
-    "Resolve actual Word-reference PDF and SEC permission/character failures without bypasses",
-    "Resolve unexplained screen/geometry differences while preserving disclosure",
-    "Stage 10 genuine positive full-chain publication/download qualification; no fabricated passing evidence",
-    "Real Redis/PostgreSQL and Linux/deployment isolation qualification"
+    "User review/manual commit/push and explicit authorization before Stage 10",
+    "Stage 10 genuine full-chain integration and successful package/download qualification",
+    "Resolve actual Word PDF, SEC permission/character and screen differences without gate bypass",
+    "Qualify real Redis/PostgreSQL, wider browsers/assistive technology and Linux deployment",
+    "Stage 11 OS/process/network/storage hardening and Windows path handling investigation"
   ],
   "known_issues": [
     "Word reference conversion fails strict PDF fidelity on all 23 pages",
@@ -111,9 +118,49 @@
     "Managed PNG evidence and private browser/input/PDF intermediates have separate bounded budgets",
     "No successful full-chain production package or HTTP download demonstrated; positive high-level publication/serving remains unqualified",
     "Archive mechanics are verified but cannot confer DOCX/visual conversion eligibility",
-    "Bounded in-memory source/archive capture increases per-download memory; OS hardening remains deployment work"
+    "Bounded in-memory source/archive capture increases per-download memory; OS hardening remains deployment work",
+    "Windows system-TEMP/UUID native render produced INVALID_PDF_OUTPUT in UI qualification; shorter owned ignored workspace succeeded; arbitrary Windows paths unqualified",
+    "HTM preview is an existing Chromium capture; missing earlier-gate captures remain unavailable",
+    "Only Chromium/automated axe and inspected desktop/mobile views qualified; assistive technology and other browsers pending"
   ],
   "last_test_results": [
+    {
+      "stage": 9,
+      "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
+      "passed": 363,
+      "failed": 0,
+      "skipped": 2,
+      "warnings": 1,
+      "line_coverage_percent": 86,
+      "seconds": 267.24,
+      "scope": "Full native/browser/all-page regression; final capture-DPI metadata addition followed by focused preview rerun"
+    },
+    {
+      "stage": 9,
+      "command": ".venv/Scripts/python -m pytest tests/integration/test_previews.py -q --tb=short",
+      "passed": 9,
+      "failed": 0,
+      "warnings": 1,
+      "seconds": 6.17
+    },
+    {
+      "stage": 9,
+      "command": "npm.cmd run test:ui",
+      "passed": 5,
+      "failed": 0,
+      "scope": "Production Next and actual API/native negative; real upload/drop/recovery/cancellation, nonblank PDF canvas and four axe scans"
+    },
+    {
+      "stage": 9,
+      "command": "npm.cmd test",
+      "passed": 3,
+      "failed": 0
+    },
+    {
+      "stage": 9,
+      "command": "npm build/check:format/audit; Ruff check/format; pip check",
+      "result": "passed; zero npm audit advisories, 103 Python files formatted; no ESLint or broader-browser claim"
+    },
     {
       "stage": 8,
       "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
@@ -346,7 +393,7 @@
     "not_a_successful_conversion": true
   },
   "free_components_only": true,
-  "suggested_commit_message": "feat: add deterministic gated ZIP packaging and protected downloads",
+  "suggested_commit_message": "feat: add filing workspace UI and protected diagnostic previews",
   "git_operations_performed": false,
   "notes": [
     "User explicitly authorized Stage 3 with go for it",
@@ -375,7 +422,8 @@
     "All-23-page visual regression used an explicitly empty comparison document for negative inspection only, never a conversion result",
     "No Git writes, original fixture edits, paid components, automatic source corrections or UI/ZIP implementation",
     "Stage 8 explicitly authorized by proceed; initial Git state clean",
-    "Stage 8 explicitly authorized by proceed. Stop before Stage 9. No Git write, paid component, fixture mutation, fabricated visual success or gate relaxation. Full suite plus final focused additions passed; whole-chain positive remains unqualified."
+    "Stage 8 explicitly authorized by proceed. Stop before Stage 9. No Git write, paid component, fixture mutation, fabricated visual success or gate relaxation. Full suite plus final focused additions passed; whole-chain positive remains unqualified.",
+    "Stage 9 authorized by continue and completed. Stop before Stage 10. Sites local-only guidance used; no hosting or Git write. No previous gate relaxed and no simulated conversion success."
   ],
   "reference_layout_inspection": {
     "mode": "inspection_only",
@@ -431,5 +479,18 @@
     "full_chain_publication_demonstrated": false,
     "http_successful_download_demonstrated": false,
     "archive_only_audit_can_authorize_conversion": false
+  },
+  "frontend": {
+    "version": "0.9.0",
+    "next": "16.4.5",
+    "react": "19.3.1",
+    "tailwind": "4.3.4",
+    "daisyui": "5.7.50",
+    "lucide_react": "1.69.0",
+    "pdfjs_dist": "6.5.438",
+    "evidence": "docs/stage9-frontend-regression.json",
+    "ui_tests_passed": 5,
+    "real_native_pdf_review_verified": true,
+    "successful_filing_zip_demonstrated": false
   }
 }

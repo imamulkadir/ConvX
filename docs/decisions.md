@@ -113,3 +113,15 @@ Decision: fixed timestamps/permissions, HTM-first sorted root members and ZIP_ST
 ## 2026-11-05 - ADR-028: Proof-chain completion and captured download bytes
 
 Decision: require current consistent source/revision/content/PDF/SEC/production-visual/package evidence for completion, then revalidate actual source/files/environment/archive on GET download. Context: high-level flags or mutable FileResponse paths can publish stale or unqualified data. Alternatives: trust completed state alone or fabricated passing visual fixtures. Reasoning: fail closed and preserve the current strict discrepancies. Consequences: bounded-memory capture and owner/state/attempt/retention checks, more download validation work, genuine archive positive and actual failed-browser negative tests. Full-chain positive publication/HTTP download remains explicitly unqualified until genuine gates pass; no earlier rule is relaxed.
+
+## 2026-11-05 - ADR-029: Independent JSX UI and per-user authorization
+
+Decision: Next App Router/JSX with pinned React/Tailwind/DaisyUI/Lucide and trusted same-origin API rewrites. Context: the frontend is authorized; conversion belongs in Python workers. Alternatives: Next conversion routes, shared server token or hosted Site. Reasoning: preserve service boundaries and owner authorization. Consequences: tokens stay in page memory, only IDs/theme persist, production API origin is build-time, actual upload progress and nonoverlapping polling; no deployment in this stage.
+
+## 2026-11-05 - ADR-030: Diagnostic previews separated from final eligibility
+
+Decision: serve bounded current generated-PDF bytes and declared PNG captures, render PDF with local PDF.js and HTM as existing Chromium captures. Context: failed documents need review without active untrusted HTM or fabricated success. Alternatives: disallow all failed-job preview, serve active candidate HTML or bypass gates to make captures. Reasoning: diagnostic review must preserve strict eligibility. Consequences: source/PDF/current attempt/owner/retention checks, no active annotations/scripts, page/zoom/synchronized views and explicit unavailable captures. Preview is not authoritative fidelity or SEC acceptance.
+
+## 2026-11-05 - ADR-031: Genuine API/browser tests without successful conversion simulation
+
+Decision: test against disposable real SQLite/API and production Next servers, actual native negative conversion when available, axe and inspected desktop/mobile images. Context: real Word/SEC/screen gates remain unsuccessful. Alternatives: fabricate passing conversion responses or claim successful ZIP E2E. Reasoning: exercise real admission, recovery/removal and failed-document PDF review. Consequences: positive full-chain stays Stage 10 qualification; no Redis/live deployment claim. Windows TEMP/UUID native export failed; shorter owned ignored storage succeeded, and the path limitation remains documented.

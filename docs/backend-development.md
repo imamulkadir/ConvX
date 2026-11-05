@@ -1,5 +1,7 @@
 # Stage 2 backend operation
 
+Stage 9 update: [frontend setup](frontend.md) describes the implemented browser workspace. Authenticated /conversions/session returns admission limits. The owned preview route serves bounded generated PDF/declared visual PNG diagnostic artifacts after current source/attempt and ownership/retention checks. Preview never grants a ZIP; active HTM is not served. Earlier unimplemented-UI statements below are historical.
+
 The API, durable job store, private upload admission, dispatch outbox and Celery worker are implemented. Stage 3 extends the worker to revision acceptance and free LibreOffice PDF export/validation; see [document processing](docx-processing.md) for setup and current results. Earlier Stage 2 jobs stopped at `blocked / awaiting_conversion_engine`; owned resume now explicitly requeues those jobs when appropriate. Missing renderer/reference remains blocked; strict PDF differences fail; a passing PDF stops before the unimplemented layout engine. No job becomes SEC-ready or downloadable yet.
 
 ## Install and configure

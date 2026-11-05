@@ -4,6 +4,8 @@ Status: Stage 1 design, updated 2026-11-05 after Stage 3 implementation. API, du
 
 ## Boundaries and stack
 
+Stage 9 implements apps/web with independent Next.js/JSX/Tailwind/DaisyUI/Lucide and local PDF.js. The API remains the authority for admission, ownership, job state, diagnostic previews and qualified downloads. Next only proxies requests; no shared credential or conversion service is embedded. Preview is independent of final eligibility. See [frontend](frontend.md). Earlier stage status statements are historical.
+
 The Next.js App Router frontend uses JavaScript/JSX, React, Tailwind, DaisyUI and Lucide. It submits multipart uploads to FastAPI and observes jobs through polling or authenticated SSE. It performs no conversion. FastAPI/Pydantic owns authentication, streaming admission, job ownership, state transitions and authorized artifact access. Celery workers execute the PDF-first converter using Redis as broker, not as the authoritative job database.
 
 PostgreSQL is the production job/event database; SQLite may support single-host development behind the same repository interface. An outbox transaction records jobs and enqueue requests together. Dispatch is at least once: workers claim jobs with leases, compare-and-swap state versions and attempt identifiers. Duplicate deliveries cannot publish a second result. Worker crashes expire leases; only transient infrastructure failures retry with bounded backoff. Invalid content, unresolved revisions, compliance failures and fidelity failures are terminal.

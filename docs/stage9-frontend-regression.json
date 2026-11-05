@@ -1,0 +1,48 @@
+{
+  "stage": 9,
+  "scope": "Actual UI/API/native negative qualification, not successful filing conversion",
+  "python": {
+    "passed": 363,
+    "failed": 0,
+    "skipped": 2,
+    "coverage_percent": 86,
+    "seconds": 267.24
+  },
+  "final_preview_api": {
+    "passed": 9,
+    "failed": 0
+  },
+  "node_tests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "browser_ui": {
+    "passed": 5,
+    "failed": 0,
+    "real_api": true,
+    "native_libreoffice_negative": true,
+    "nonblank_pdf_canvas_verified": true,
+    "axe_wcag_a_aa": [
+      "empty light",
+      "empty mobile dark",
+      "queued detail",
+      "actual failed native detail"
+    ],
+    "inspected_viewports": [
+      [
+        1440,
+        1100
+      ],
+      [
+        390,
+        844
+      ]
+    ]
+  },
+  "production_build_passed": true,
+  "npm_audit_advisories": 0,
+  "successful_filing_zip_demonstrated": false,
+  "sec_acceptance_confirmed": false,
+  "private_screenshots": "var/stage9",
+  "windows_long_path_qualification": false
+}

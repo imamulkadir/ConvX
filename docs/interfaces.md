@@ -1,5 +1,7 @@
 # Proposed module and API contracts
 
+Stage 9: authenticated GET /conversions/session returns configured admission limits. Owned GET /{id}/preview returns diagnostic metadata or bounded current PDF/declared PNG bytes for kind=pdf|htm|overlay|difference and a one-based page. No active HTM or arbitrary path is served. The JSX frontend forwards per-user authorization through trusted Next rewrites, uploads via XHR and polls actual jobs. No conversion eligibility or schema change. See [frontend](frontend.md).
+
 Stage 3 implements the revision/PDF subset of the converter contracts below; layout/HTM/compliance/visual-HTM/packaging remain future specifications. Current [backend operation](backend-development.md) and [document processing](docx-processing.md) describe actual signatures and behavior. Schema v1 remains compatible. Converter processing modules do not import FastAPI or Celery; the CLI admission/orchestration boundary uses the installed backend package.
 
 ## Shared records

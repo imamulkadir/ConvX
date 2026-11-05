@@ -15,6 +15,7 @@ from app.core.errors import Problem, not_found
 from app.schemas.jobs import BatchResponse, JobView
 from app.services.admission import validate_docx
 from app.services.downloads import availability, content_disposition, download_snapshot, read_processing
+from app.services.previews import preview
 from app.services.storage import safe_filename
 
 router = APIRouter(prefix="/api/v1/conversions")
@@ -28,6 +29,17 @@ def canonical_id(value: str) -> str:
     if result != value:
         raise not_found()
     return result
+
+
+@router.get("/session")
+def session(request: Request):
+    settings = request.app.state.settings
+    return {
+        "max_upload_bytes": settings.max_upload_bytes,
+        "max_request_bytes": settings.max_request_bytes,
+        "max_batch_files": settings.max_batch_files,
+        "auth_mode": settings.auth_mode,
+    }
 
 
 @router.post("", status_code=202, response_model=BatchResponse)
@@ -151,11 +163,17 @@ def resume(job_id: str, request: Request):
 
 
 @router.get("/{job_id}/preview")
-def artifact_unavailable(job_id: str, request: Request):
+def diagnostic_preview(job_id: str, request: Request, kind: str | None = None, page: int = 1):
     record = request.app.state.repository.get(canonical_id(job_id), request.state.owner)
     if record["state"] == "expired":
         raise Problem(410, "JOB_EXPIRED", "Job retention has expired")
-    raise Problem(409, "ARTIFACT_NOT_AVAILABLE", "No validated conversion artifact is available")
+    result = preview(request.app.state.storage, record, kind, page)
+    current = request.app.state.repository.get(record["id"], request.state.owner)
+    if current["state"] == "expired":
+        raise Problem(410, "JOB_EXPIRED", "Job retention has expired")
+    if current["attempt_id"] != record["attempt_id"] or current["state"] != record["state"]:
+        raise Problem(409, "PREVIEW_NOT_AVAILABLE", "Job eligibility changed during preview checks")
+    return result
 
 
 @router.get("/{job_id}/download")
