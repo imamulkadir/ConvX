@@ -101,3 +101,15 @@ Decision: pin Playwright/Chromium, sandbox/document-script restrictions and exac
 ## 2026-11-05 - ADR-025: Conservative antialias classification and correction limits
 
 Decision: retain raw differences, classify neutral text-edge candidates separately, and explain print edge changes only with matching content/geometry/paint/font-program evidence and no images. Screen differences are not suppressed without independent screen geometry proof. Context: a real fixture had zero print differences and 1,169 unexplained screen pixels. Alternatives: broad pixel percentage tolerance, blur, translation or replacing disclosure with page rasters. Reasoning: those can conceal structural changes. Consequences: strict failure remains honest; geometry records are globally bounded and truncation explicit. No safe source correction was eligible under current permission uncertainty; no edit or automatic gate bypass is claimed.
+
+## 2026-11-05 - ADR-026: Final names before immutable validation
+
+Decision: retain the original DOCX basename for the downloaded ZIP but finalize a bounded lowercase ASCII HTM name and generated self-links before SEC/visual validation. Context: long original names violate internal limits and post-gate rewrites invalidate proof. Alternatives: rename/rewrite during ZIP creation or reuse private source.docx as the client name. Reasoning: preserve disclosure, link semantics and exact qualified bytes. Consequences: deterministic name hash, explicit worker original-name argument, private opaque result.zip and RFC5987 response encoding; stale evidence cannot qualify renamed bytes.
+
+## 2026-11-05 - ADR-027: Deterministic stored ZIP and independent actual-byte audit
+
+Decision: fixed timestamps/permissions, HTM-first sorted root members and ZIP_STORED, followed by independent header/CRC/manifest/archived-SEC validation. Context: ZIP is the deliverable and could contain hidden, corrupt or unused artifacts. Alternatives: default timestamps/deflate, model-only checks or extractall. Reasoning: reproducibility and complete audited payloads without filesystem traversal. Consequences: larger bounded archives, exclusive atomic publication, no intermediates and archive-only success never granting conversion eligibility.
+
+## 2026-11-05 - ADR-028: Proof-chain completion and captured download bytes
+
+Decision: require current consistent source/revision/content/PDF/SEC/production-visual/package evidence for completion, then revalidate actual source/files/environment/archive on GET download. Context: high-level flags or mutable FileResponse paths can publish stale or unqualified data. Alternatives: trust completed state alone or fabricated passing visual fixtures. Reasoning: fail closed and preserve the current strict discrepancies. Consequences: bounded-memory capture and owner/state/attempt/retention checks, more download validation work, genuine archive positive and actual failed-browser negative tests. Full-chain positive publication/HTTP download remains explicitly unqualified until genuine gates pass; no earlier rule is relaxed.

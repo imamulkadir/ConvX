@@ -12,6 +12,7 @@ from app.services.storage import Storage
 from converter.context import ProcessingContext
 from converter.errors import fail
 from converter.html_generator.models import GenerationPolicy
+from converter.packaging.models import PackagingPolicy
 from converter.pdf_analysis.policy import AnalysisPolicy
 from converter.pdf_export.libreoffice import LibreOfficeProvider
 from converter.pdf_export.validation import PDFValidationPolicy
@@ -80,6 +81,7 @@ def admit_document(job_id: str, settings: Settings) -> None:
             storage.attempt(job_id, attempt_id),
             provider,
             reference if reference.is_file() else None,
+            original_filename=record["original_filename"],
             policy=PDFValidationPolicy(
                 dpi=settings.pdf_comparison_dpi,
                 max_pages=settings.pdf_max_pages,
@@ -109,6 +111,12 @@ def admit_document(job_id: str, settings: Settings) -> None:
                 browser_memory_bytes=settings.visual_memory_bytes,
                 max_total_pixels=settings.visual_max_total_pixels,
                 max_evidence_bytes=settings.visual_max_evidence_bytes,
+            ),
+            packaging_policy=PackagingPolicy(
+                max_archive_bytes=settings.package_max_archive_bytes,
+                max_uncompressed_bytes=settings.package_max_uncompressed_bytes,
+                max_member_bytes=settings.package_max_member_bytes,
+                max_members=settings.package_max_members,
             ),
         )
         repository.finish_processing(job_id, attempt_id, report)

@@ -1,4 +1,4 @@
-"""Stage 6 normalizes graphics and validates actual files; visual/ZIP gates pending."""
+"""Stage 8 packages exact qualified files; unresolved earlier gates never publish output."""
 
 from __future__ import annotations
 
@@ -13,6 +13,9 @@ from converter.errors import ConversionFailure, fail
 from converter.html_generator.generator import generate_htm
 from converter.html_generator.models import GenerationPolicy
 from converter.ooxml import sha256
+from converter.packaging.engine import create_package
+from converter.packaging.models import PackagingPolicy
+from converter.packaging.naming import prepare_filing_name
 from converter.pdf_analysis.extract import analyze_pdf, write_layout
 from converter.pdf_analysis.policy import AnalysisPolicy
 from converter.pdf_export.provider import PDFProvider
@@ -47,13 +50,19 @@ def process_docx(
     sec_policy: ValidationPolicy | None = None,
     submission: SubmissionContext | None = None,
     visual_policy: VisualPolicy | None = None,
+    original_filename: str | None = None,
+    packaging_policy: PackagingPolicy | None = None,
 ) -> dict:
     context = context or ProcessingContext()
     workspace = workspace.resolve()
     workspace.mkdir(mode=0o700, parents=True, exist_ok=False)
     report = {
         "schema_version": 1,
-        "stage": 7,
+        "stage": 8,
+        "original_filename": original_filename if original_filename is not None else source.name,
+        "submission_context": submission.model_dump(mode="json") if submission else None,
+        "sec_policy": (sec_policy or ValidationPolicy()).model_dump(mode="json"),
+        "packaging_policy": (packaging_policy or PackagingPolicy()).model_dump(mode="json"),
         "source_sha256": sha256(source),
         "status": "in_progress",
         "revision_acceptance": None,
@@ -64,6 +73,7 @@ def process_docx(
         "asset_normalization": None,
         "sec_validation": None,
         "visual_validation": None,
+        "packaging": None,
         "provider": None,
         "diagnostics": [],
         "final_conversion_complete": False,
@@ -84,6 +94,7 @@ def process_docx(
                 )
         context.stage("generating_pdf")
         result = provider.render(accepted, workspace / "renderer", context)
+        report["generated_pdf_artifact"] = result.path.resolve().relative_to(workspace).as_posix()
         report["provider"] = {k: v for k, v in asdict(result).items() if k != "path"}
         context.stage("validating_pdf")
         report["pdf_validation"] = validate_pdf(
@@ -157,9 +168,14 @@ def process_docx(
             max_assets=asset_policy.max_assets,
         )
         context.stage("validating_sec")
+        filing_htm, names = prepare_filing_name(
+            filing / "candidate.htm", report["original_filename"], context, asset_policy.max_html_bytes
+        )
+        report["prepared_htm_filename"] = names.htm_filename
+        filing_assets = tuple(filing / image["filename"] for image in report["asset_normalization"]["images"])
         compliance = validate_files(
-            filing / "candidate.htm",
-            tuple(filing / image["filename"] for image in report["asset_normalization"]["images"]),
+            filing_htm,
+            filing_assets,
             submission,
             sec_policy,
             context,
@@ -175,8 +191,8 @@ def process_docx(
         context.stage("comparing_formatting")
         visual = compare_visuals(
             result.path,
-            filing / "candidate.htm",
-            tuple(filing / image["filename"] for image in report["asset_normalization"]["images"]),
+            filing_htm,
+            filing_assets,
             report["pdf_validation"],
             compliance,
             workspace / "visual",
@@ -193,7 +209,24 @@ def process_docx(
                 "Unexplained content, geometry or pixel discrepancies remain",
                 "Inspect private visual evidence; do not package unsuccessful output",
             )
-        report["status"] = "visual_validated"
+        context.stage("packaging_zip")
+        package = create_package(
+            report["original_filename"],
+            result.path,
+            filing_htm,
+            filing_assets,
+            report["pdf_validation"],
+            compliance,
+            visual,
+            workspace / "package",
+            submission,
+            sec_policy,
+            packaging_policy,
+            context,
+        )
+        report["packaging"] = package.model_dump(mode="json")
+        report["status"] = "packaged"
+        report["final_conversion_complete"] = True
     except ConversionFailure as exc:
         report["status"] = (
             "blocked"
@@ -220,5 +253,7 @@ def process_docx(
         if not report["source_unchanged"]:
             report["status"] = "failed"
             report["diagnostics"].append({"code": "SOURCE_INTEGRITY_FAILED", "stage": "processing"})
+        if report["status"] != "packaged":
+            report["final_conversion_complete"] = False
         write_report(workspace / "processing.json", report)
     return report

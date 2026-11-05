@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Request
@@ -13,6 +14,7 @@ from starlette.responses import JSONResponse, StreamingResponse
 from app.core.errors import Problem, not_found
 from app.schemas.jobs import BatchResponse, JobView
 from app.services.admission import validate_docx
+from app.services.downloads import availability, content_disposition, download_snapshot, read_processing
 from app.services.storage import safe_filename
 
 router = APIRouter(prefix="/api/v1/conversions")
@@ -94,7 +96,10 @@ async def upload(request: Request):
 
 @router.get("/{job_id}", response_model=JobView)
 def status(job_id: str, request: Request):
-    return JobView.from_record(request.app.state.repository.get(canonical_id(job_id), request.state.owner))
+    record = request.app.state.repository.get(canonical_id(job_id), request.state.owner)
+    return JobView.from_record(
+        {**record, "download_available": availability(request.app.state.storage, record)}
+    )
 
 
 @router.delete("/{job_id}", status_code=202)
@@ -109,19 +114,12 @@ def validation(job_id: str, request: Request):
     if record["state"] == "expired":
         raise Problem(410, "JOB_EXPIRED", "Job retention has expired")
     processing = None
-    if record["attempt_id"] and record["state"] in {"failed", "blocked"}:
-        path = request.app.state.storage.attempt(record["id"], record["attempt_id"]) / "processing.json"
-        if path.is_file() and not path.is_symlink() and path.stat().st_size <= 2 * 1024 * 1024:
-            try:
-                candidate = json.loads(path.read_text(encoding="utf-8"))
-                if candidate.get("source_sha256") == record["source_sha256"]:
-                    processing = candidate
-            except (OSError, ValueError):
-                processing = None
+    if record["attempt_id"] and record["state"] in {"failed", "blocked", "completed"}:
+        processing = read_processing(request.app.state.storage, record)
     if processing:
         return {
             "id": record["id"],
-            "complete": False,
+            "complete": record["state"] == "completed" and availability(request.app.state.storage, record),
             "sec_compliance_passed": bool((processing.get("sec_validation") or {}).get("strict_passed")),
             "local_sec_validation_passed": bool((processing.get("sec_validation") or {}).get("passed")),
             "fidelity_passed": bool((processing.get("visual_validation") or {}).get("strict_passed")),
@@ -153,12 +151,45 @@ def resume(job_id: str, request: Request):
 
 
 @router.get("/{job_id}/preview")
-@router.get("/{job_id}/download")
 def artifact_unavailable(job_id: str, request: Request):
     record = request.app.state.repository.get(canonical_id(job_id), request.state.owner)
     if record["state"] == "expired":
         raise Problem(410, "JOB_EXPIRED", "Job retention has expired")
     raise Problem(409, "ARTIFACT_NOT_AVAILABLE", "No validated conversion artifact is available")
+
+
+@router.get("/{job_id}/download")
+def download(job_id: str, request: Request):
+    repository, storage = request.app.state.repository, request.app.state.storage
+    record = repository.get(canonical_id(job_id), request.state.owner)
+    if record["state"] == "expired":
+        raise Problem(410, "JOB_EXPIRED", "Job retention has expired")
+    data, filename = download_snapshot(storage, record)
+    current = repository.get(record["id"], request.state.owner)
+    if current["state"] != "completed" or current["attempt_id"] != record["attempt_id"]:
+        raise Problem(409, "ARTIFACT_NOT_AVAILABLE", "Job eligibility changed during download checks")
+
+    def chunks():
+        last_probe = 0.0
+        for offset in range(0, len(data), 65536):
+            now = time.monotonic()
+            if now - last_probe >= 1:
+                try:
+                    latest = repository.get(record["id"], request.state.owner)
+                except Problem:
+                    return
+                if latest["state"] != "completed" or latest["attempt_id"] != record["attempt_id"]:
+                    return
+                last_probe = now
+            if time.time() >= record["expires_at"]:
+                return
+            yield data[offset : offset + 65536]
+
+    return StreamingResponse(
+        chunks(),
+        media_type="application/zip",
+        headers={"Content-Length": str(len(data)), "Content-Disposition": content_disposition(filename)},
+    )
 
 
 @router.get("/{job_id}/events")

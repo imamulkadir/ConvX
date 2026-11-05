@@ -5,6 +5,7 @@ import json
 import time
 from uuid import uuid4
 
+from converter.packaging.engine import completion_ready
 from sqlalchemy import and_, delete, func, insert, or_, select, update
 
 from app.core.config import Settings
@@ -340,6 +341,20 @@ class JobRepository:
             )
             if not record:
                 return False
+            if report.get("status") == "packaged":
+                ready = completion_ready(report, record)
+                return (
+                    self._transition(
+                        connection,
+                        dict(record),
+                        now,
+                        state="completed" if ready else "failed",
+                        stage="completed" if ready else "packaging_failed",
+                        diagnostic_code=None if ready else "PACKAGE_COMPLETION_INVALID",
+                        lease_until=None,
+                    )
+                    is not None
+                )
             visual_validated = report["status"] == "visual_validated"
             sec_validated = report["status"] == "sec_validated"
             html_generated = report["status"] == "htm_generated"
@@ -400,6 +415,7 @@ class JobRepository:
                 "SEC_ENGINE_NOT_AVAILABLE",
                 "VISUAL_ENGINE_NOT_AVAILABLE",
                 "VISUAL_BROWSER_UNAVAILABLE",
+                "PACKAGING_ENGINE_NOT_AVAILABLE",
             }:
                 raise Problem(409, "JOB_NOT_RESUMABLE", "This job cannot resume document processing")
             if record["attempts"] >= self.settings.max_job_attempts:

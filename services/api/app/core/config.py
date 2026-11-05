@@ -60,6 +60,10 @@ class Settings(BaseSettings):
     visual_memory_bytes: int = Field(default=1536 * 1024 * 1024, ge=128 * 1024 * 1024)
     visual_max_total_pixels: int = Field(default=64_000_000, ge=1)
     visual_max_evidence_bytes: int = Field(default=128 * 1024 * 1024, ge=1)
+    package_max_archive_bytes: int = Field(default=128 * 1024 * 1024, ge=1, le=512 * 1024 * 1024)
+    package_max_uncompressed_bytes: int = Field(default=100 * 1024 * 1024, ge=1, le=512 * 1024 * 1024)
+    package_max_member_bytes: int = Field(default=64 * 1024 * 1024, ge=1, le=256 * 1024 * 1024)
+    package_max_members: int = Field(default=1001, ge=1, le=5001)
 
     @model_validator(mode="after")
     def safe_configuration(self) -> Settings:

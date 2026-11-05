@@ -1,0 +1,58 @@
+{
+  "stage": 8,
+  "scope": "Actual archive mechanics and installed-wheel validation only; not DOCX conversion or successful visual qualification",
+  "wheel_source_data_files_verified": 53,
+  "byte_identical_repeated_archives": true,
+  "audit": {
+    "schema_version": 1,
+    "passed": true,
+    "sha256": "0ecfbf8fc655b622b25e424880687272d53531851b9b8eae3519a9dd4d00aac5",
+    "bytes": 937,
+    "htm_filename": "filing.htm",
+    "files": [
+      {
+        "filename": "filing.htm",
+        "sha256": "992811af8e651b674664c8879c7cb1da3d0d8071e59c8e3c9bbec42dc9d35622",
+        "bytes": 86,
+        "format": "HTML",
+        "width": null,
+        "height": null
+      },
+      {
+        "filename": "image001.jpg",
+        "sha256": "f5fe8eee58c5542013f67e80a6f22e7343203fb70eb2bf4ff0fa432563dc76eb",
+        "bytes": 633,
+        "format": "JPEG",
+        "width": 8,
+        "height": 6
+      }
+    ],
+    "sec_gate_sha256": "c5f7661442b3d8c839326e2d8bd1bc5190dd29473bc1f4c2da4a9d1d7032b1cc",
+    "conversion_eligible": false
+  },
+  "naming_vectors": [
+    {
+      "original_filename": "Report.docx",
+      "download_filename": "Report.zip",
+      "htm_filename": "report.htm"
+    },
+    {
+      "original_filename": "06749LWD4_prelim_prospectus_automated.docx",
+      "download_filename": "06749LWD4_prelim_prospectus_automated.zip",
+      "htm_filename": "06749lwd4_preli-ba153820a53f.htm"
+    },
+    {
+      "original_filename": "CON.docx",
+      "download_filename": "CON.zip",
+      "htm_filename": "document_con-67b01d7df574.htm"
+    },
+    {
+      "original_filename": "Report with spaces.docx",
+      "download_filename": "Report with spaces.zip",
+      "htm_filename": "report_with_spa-86f7dc4f9eee.htm"
+    }
+  ],
+  "full_chain_publication_demonstrated": false,
+  "http_successful_download_demonstrated": false,
+  "sec_acceptance_confirmed": false
+}

@@ -1,11 +1,11 @@
 {
   "project": "edgar-converter",
   "schema_version": 1,
-  "current_stage": 7,
-  "current_stage_name": "Pixel-Level Visual Validation",
+  "current_stage": 8,
+  "current_stage_name": "ZIP Packaging",
   "stage_status": "completed",
-  "last_completed_stage": 7,
-  "next_stage": 8,
+  "last_completed_stage": 8,
+  "next_stage": 9,
   "authorization_required": true,
   "awaiting_user_approval": true,
   "last_updated": "2026-11-05",
@@ -16,7 +16,8 @@
     4,
     5,
     6,
-    7
+    7,
+    8
   ],
   "implemented_components": [
     "architecture and module contracts",
@@ -68,21 +69,25 @@
     "raw pixel/neutral-edge candidate metrics and private heatmaps/overlays",
     "bounded visual resources/evidence and transient profile-file race fix",
     "typed inspection promotion rejection and stop-before-packaging lifecycle",
-    "real browser negative all-23-page reference coverage and installed-wheel parent/child execution"
+    "real browser negative all-23-page reference coverage and installed-wheel parent/child execution",
+    "deterministic original ZIP/compliant HTM naming finalized before immutable gates",
+    "bounded canonical root-only ZIP writer and independent header/CRC/manifest/archived SEC audit",
+    "current strict PDF/SEC/production visual and rendering-profile revalidation",
+    "proof-chain guarded completed job transition and captured-byte owned download checks",
+    "actual archive reproducibility/hostile archive/cancellation and real failed-browser rejection tests"
   ],
   "pending_tasks": [
-    "User review/manual commit/push and explicit authorization before Stage 8",
-    "Stage 8 clean deterministic root-only ZIP packaging, only after current passing strict evidence",
-    "Resolve Word-reference PDF and SEC CSS/MANY/character permission failures without gate bypasses",
-    "Resolve unexplained screen/geometry differences; do not suppress unproven raster differences",
-    "Stage 9 frontend remains pending; no browser UI or final download yet",
-    "Run real Redis/PostgreSQL and Linux/deployment isolation qualification when available"
+    "User review/manual commit/push and explicit authorization before Stage 9",
+    "Stage 9 responsive JSX web upload/dashboard/preview/download interface",
+    "Resolve actual Word-reference PDF and SEC permission/character failures without bypasses",
+    "Resolve unexplained screen/geometry differences while preserving disclosure",
+    "Stage 10 genuine positive full-chain publication/download qualification; no fabricated passing evidence",
+    "Real Redis/PostgreSQL and Linux/deployment isolation qualification"
   ],
   "known_issues": [
     "Word reference conversion fails strict PDF fidelity on all 23 pages",
     "Accepted story content/structure passes but full DOCX format equivalence is unproven; same-renderer PDFs differ on page 1",
     "Unsupported cell/custom-XML/conflict or ambiguous revisions fail safely",
-    "Visual engine implemented but no qualified reference output, frontend or final ZIP yet",
     "Live Redis/PostgreSQL and Linux prefork deployment unverified locally",
     "Stage 11 process/network/disk/ACL hardening not deployed",
     "Starlette httpx test-client deprecation warning",
@@ -103,9 +108,37 @@
     "Mixed/rotated source pages or unresolved/overlapping screen page mapping fail this fixed profile",
     "Screen antialias candidates are not suppressed without independent screen proof",
     "No evidence-backed source correction was eligible under current formatting constraints",
-    "Managed PNG evidence and private browser/input/PDF intermediates have separate bounded budgets"
+    "Managed PNG evidence and private browser/input/PDF intermediates have separate bounded budgets",
+    "No successful full-chain production package or HTTP download demonstrated; positive high-level publication/serving remains unqualified",
+    "Archive mechanics are verified but cannot confer DOCX/visual conversion eligibility",
+    "Bounded in-memory source/archive capture increases per-download memory; OS hardening remains deployment work"
   ],
   "last_test_results": [
+    {
+      "stage": 8,
+      "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
+      "passed": 351,
+      "failed": 0,
+      "skipped": 2,
+      "warnings": 1,
+      "line_coverage_percent": 86,
+      "seconds": 260.2,
+      "scope": "Full native/browser/all-page suite; three additional cleanup tests were then verified in the 68-test final focused run; child/manual coverage not collected"
+    },
+    {
+      "stage": 8,
+      "command": ".venv/Scripts/python -m pytest tests/unit/test_packaging.py tests/integration/test_packaging_gates.py -q --tb=short",
+      "passed": 68,
+      "failed": 0,
+      "warnings": 1,
+      "seconds": 6.62,
+      "scope": "Final focused archive/gate suite, including three exclusive-write/cancellation/resource cleanup tests added after full collection"
+    },
+    {
+      "stage": 8,
+      "command": "Ruff check/format; pip check; isolated-build wheel and isolated-wheel archive roundtrip",
+      "result": "passed; 100 Python files formatted; 53 wheel Python/data sources byte-matched; deterministic 937-byte archive independently audited; conversion_eligible=false"
+    },
     {
       "stage": 7,
       "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
@@ -313,7 +346,7 @@
     "not_a_successful_conversion": true
   },
   "free_components_only": true,
-  "suggested_commit_message": "feat: add isolated Chromium visual regression and strict fidelity gates",
+  "suggested_commit_message": "feat: add deterministic gated ZIP packaging and protected downloads",
   "git_operations_performed": false,
   "notes": [
     "User explicitly authorized Stage 3 with go for it",
@@ -340,7 +373,9 @@
     "Stage 7 completed and verified; stop before Stage 8",
     "Actual styled candidates and Word-reference PDF failures still prevent production visual/packaging success",
     "All-23-page visual regression used an explicitly empty comparison document for negative inspection only, never a conversion result",
-    "No Git writes, original fixture edits, paid components, automatic source corrections or UI/ZIP implementation"
+    "No Git writes, original fixture edits, paid components, automatic source corrections or UI/ZIP implementation",
+    "Stage 8 explicitly authorized by proceed; initial Git state clean",
+    "Stage 8 explicitly authorized by proceed. Stop before Stage 9. No Git write, paid component, fixture mutation, fabricated visual success or gate relaxation. Full suite plus final focused additions passed; whole-chain positive remains unqualified."
   ],
   "reference_layout_inspection": {
     "mode": "inspection_only",
@@ -387,5 +422,14 @@
     "smoke_screen_unexplained_pixels": 1169,
     "smoke_strict_passed": false,
     "inspection_can_authorize_packaging": false
+  },
+  "packaging": {
+    "method": "root-only-deterministic-zip-v1",
+    "evidence": "docs/stage8-packaging-regression.json",
+    "archive_mechanics_verified": true,
+    "download_checks_implemented": true,
+    "full_chain_publication_demonstrated": false,
+    "http_successful_download_demonstrated": false,
+    "archive_only_audit_can_authorize_conversion": false
   }
 }
