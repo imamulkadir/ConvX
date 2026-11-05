@@ -122,7 +122,8 @@ def validation(job_id: str, request: Request):
         return {
             "id": record["id"],
             "complete": False,
-            "sec_compliance_passed": False,
+            "sec_compliance_passed": bool((processing.get("sec_validation") or {}).get("strict_passed")),
+            "local_sec_validation_passed": bool((processing.get("sec_validation") or {}).get("passed")),
             "fidelity_passed": False,
             "document_processing": processing,
             "diagnostics": processing["diagnostics"],

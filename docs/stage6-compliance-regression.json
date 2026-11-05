@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "scope": "Real actual-file local profile behavior, not DOCX qualification or SEC acceptance",
+  "registry_version": "efm-volume-ii-v78.2-local",
+  "registry_sha256": "60495b27f565f5a9b1bc889acd2e223199de1e6ffad96871f96435d0edd0a5bf",
+  "manual_sha256": "816bbe2b5d2677ddc94e6199b446a8a856a54596704021a7b9ff592c0bc26cf3",
+  "confirmed_subset": {
+    "schema_version": 1,
+    "registry_version": "efm-volume-ii-v78.2-local",
+    "registry_sha256": "60495b27f565f5a9b1bc889acd2e223199de1e6ffad96871f96435d0edd0a5bf",
+    "manual_sha256": "816bbe2b5d2677ddc94e6199b446a8a856a54596704021a7b9ff592c0bc26cf3",
+    "passed": true,
+    "strict_passed": true,
+    "checks_complete": true,
+    "submission_limits_checked": true,
+    "sec_acceptance_confirmed": false,
+    "visual_fidelity_passed": false,
+    "files": [
+      {
+        "filename": "filing.htm",
+        "sha256": "679bed75a8c52e879d92debd7f6941eb4484717073d0dd8abc6769e3c8386735",
+        "bytes": 150,
+        "format": "HTML",
+        "width": null,
+        "height": null
+      }
+    ],
+    "diagnostics": []
+  },
+  "unresolved_style": {
+    "schema_version": 1,
+    "registry_version": "efm-volume-ii-v78.2-local",
+    "registry_sha256": "60495b27f565f5a9b1bc889acd2e223199de1e6ffad96871f96435d0edd0a5bf",
+    "manual_sha256": "816bbe2b5d2677ddc94e6199b446a8a856a54596704021a7b9ff592c0bc26cf3",
+    "passed": false,
+    "strict_passed": false,
+    "checks_complete": true,
+    "submission_limits_checked": true,
+    "sec_acceptance_confirmed": false,
+    "visual_fidelity_passed": false,
+    "files": [
+      {
+        "filename": "styled.htm",
+        "sha256": "f305110a867ab0dbb95021db51b070153e714643b56f64f9d9e11fbf533928d5",
+        "bytes": 34,
+        "format": "HTML",
+        "width": null,
+        "height": null
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "ATTRIBUTE_SCOPE_UNVERIFIED",
+        "severity": "error",
+        "description": "MANY does not enumerate this attribute's complete per-tag scope",
+        "file": "styled.htm",
+        "element": "p",
+        "line": 1,
+        "section": "5.2.2.5",
+        "basis": "unresolved",
+        "remediation": "Approve a source-backed per-tag interpretation before strict filing validation",
+        "occurrences": 1
+      },
+      {
+        "code": "CSS_PERMISSION_UNVERIFIED",
+        "severity": "error",
+        "description": "Safe CSS syntax alone does not establish permitted EDGAR property/value scope",
+        "file": "styled.htm",
+        "element": "p",
+        "line": 1,
+        "section": "5.2.2.5",
+        "basis": "unresolved",
+        "remediation": "Resolve the manual's CSS scope before strict validation",
+        "occurrences": 1
+      }
+    ]
+  },
+  "reference": {
+    "pdf_strict_failed_pages": 23,
+    "sec_validation_reached": false,
+    "qualification": "unsuccessful conversion; no gate bypass"
+  }
+}

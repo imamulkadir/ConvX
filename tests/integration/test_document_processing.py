@@ -26,7 +26,12 @@ def test_real_libreoffice_render_and_positive_pdf_gate(tmp_path, libreoffice):
     provider = LibreOfficeProvider(libreoffice)
     baseline = provider.render(accepted, tmp_path / "baseline", ProcessingContext())
     result = process_docx(source, tmp_path / "result", provider, baseline.path)
-    assert result["status"] == "htm_generated", result["diagnostics"]
+    assert result["status"] == "failed", result["diagnostics"]
+    assert result["diagnostics"][0]["code"] == "SEC_VALIDATION_FAILED"
+    assert result["sec_validation"]["checks_complete"]
+    assert not result["sec_validation"]["passed"]
+    assert any(d["code"] == "CSS_PERMISSION_UNVERIFIED" for d in result["sec_validation"]["diagnostics"])
+    assert result["asset_normalization"]["content_integrity_passed"]
     assert result["pdf_validation"]["passed"]
     assert not result["final_conversion_complete"]
     assert result["provider"]["provider"] == "libreoffice"
@@ -57,6 +62,7 @@ def test_real_23_page_reference_regression_records_failure(tmp_path, libreoffice
     assert not result["final_conversion_complete"]
     assert result["layout_analysis"] is None
     assert result["html_generation"] is None
+    assert result["sec_validation"] is None
     assert not (tmp_path / "regression/candidate.htm").exists()
     assert not (tmp_path / "regression/layout.json").exists()
 
@@ -124,4 +130,17 @@ def test_htm_candidate_stops_before_compliance_and_download(client):
     record = repository.get(job["id"], "alice")
     assert record["state"] == "blocked" and record["stage"] == "awaiting_sec_validation"
     assert record["diagnostic_code"] == "SEC_ENGINE_NOT_AVAILABLE"
+    assert client.get(f"/api/v1/conversions/{job['id']}/download").status_code == 409
+
+
+def test_local_sec_validation_stops_before_visual_or_download(client):
+    job = upload_one(client)
+    repository = client.app.state.repository
+    record = repository.claim(job["id"])
+    assert repository.finish_processing(
+        job["id"], record["attempt_id"], {"status": "sec_validated", "diagnostics": []}
+    )
+    record = repository.get(job["id"], "alice")
+    assert record["state"] == "blocked" and record["stage"] == "awaiting_visual_validation"
+    assert record["diagnostic_code"] == "VISUAL_ENGINE_NOT_AVAILABLE"
     assert client.get(f"/api/v1/conversions/{job['id']}/download").status_code == 409

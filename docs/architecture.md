@@ -52,3 +52,5 @@ Cancellation marks a requested state and stops active process trees; all publica
 Stage 4 implementation adds the PDF layout boundary described in [layout analysis](pdf-layout-analysis.md). Workers analyze only strictly validated generated PDFs and write private attempt-local `layout.json`; diagnostic inspection is separately marked ineligible. Stage 5 HTML remains unavailable.
 
 Stage 5 adds a manual-constrained normal-flow HTM generator after the strict PDF/layout gates. Private candidate generation and graphic requests do not authorize downstream success. Supported content/geometry, resource bounds and unsupported cases are documented in [HTM reconstruction](htm-reconstruction.md).
+
+Stage 6 adds packaged manual-derived local rules, immutable-file source scanning, graphic normalization and explicit downstream gate state. Independent services and free-only scope remain. A successful local document check is distinct from whole-submission limits, SEC acceptance and visual qualification; unresolved applicable rules fail. See [SEC validation engine](sec-validation-engine.md).

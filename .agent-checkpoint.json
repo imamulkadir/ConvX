@@ -1,11 +1,11 @@
 {
   "project": "edgar-converter",
   "schema_version": 1,
-  "current_stage": 5,
-  "current_stage_name": "PDF-to-HTM Reconstruction",
+  "current_stage": 6,
+  "current_stage_name": "SEC Compliance Engine",
   "stage_status": "completed",
-  "last_completed_stage": 5,
-  "next_stage": 6,
+  "last_completed_stage": 6,
+  "next_stage": 7,
   "authorization_required": true,
   "awaiting_user_approval": true,
   "last_updated": "2026-11-05",
@@ -14,7 +14,8 @@
     2,
     3,
     4,
-    5
+    5,
+    6
   ],
   "implemented_components": [
     "architecture and module contracts",
@@ -49,21 +50,30 @@
     "deterministic PDF graphic requests without rasterized disclosure",
     "unsupported-layout diagnostics and bounded exclusive candidate publication",
     "owned candidate metadata and stop-before-compliance lifecycle",
-    "genuine HTM layout/content/limits/security tests and native current-pipeline regression"
+    "genuine HTM layout/content/limits/security tests and native current-pipeline regression",
+    "executable v78.2 packaged manual-derived local rule registry",
+    "source-first HTML/attribute/CSS/character diagnostics with explicit rule basis",
+    "conservative hyperlinks/bookmarks/local asset/filename validation",
+    "decoded JPEG/GIF corruption and resource-budget checks",
+    "whole encoded submission/form limit context and strict-result separation",
+    "source-bound image/mask normalization, original JPEG retention and verified GIF conversion",
+    "generator v2 shared formatting runs replacing independent character wrappers",
+    "private normalized filing manifest, owned local SEC evidence and stop-before-visual lifecycle",
+    "standalone validation CLI and installed-wheel registry verification"
   ],
   "pending_tasks": [
-    "User review/manual commit/push and explicit authorization before Stage 6",
-    "Stage 6 versioned manual-derived actual-file SEC validation and required profile research",
-    "Materialize/normalize and validate requested JPG/GIF graphics before publication",
-    "Stage 7 Chromium-vs-PDF full visual qualification including font metrics/searchability",
-    "Resolve failed Word-reference PDF qualification using free components without gate bypasses",
-    "Run real Redis/PostgreSQL and Linux/deployment qualification when available"
+    "User review/manual commit/push and explicit authorization before Stage 7",
+    "Resolve required CSS/MANY/extended-character permission evidence; current styled candidates fail strictly",
+    "Stage 7 controlled Chromium-vs-PDF content/geometry/pixel qualification without bypassing SEC/PDF gates",
+    "Combined 10-D/ABS-EE strict qualification needs separate component size context",
+    "Resolve failed Word-reference PDF fidelity using free components without relaxing gates",
+    "Run live Redis/PostgreSQL and Linux/deployment isolation qualification when available"
   ],
   "known_issues": [
     "Word reference conversion fails strict PDF fidelity on all 23 pages",
     "Accepted story content/structure passes but full DOCX format equivalence is unproven; same-renderer PDFs differ on page 1",
     "Unsupported cell/custom-XML/conflict or ambiguous revisions fail safely",
-    "No SEC validator, qualified HTML visuals, frontend or final ZIP yet",
+    "No qualified HTML visual engine, frontend or final ZIP yet",
     "Live Redis/PostgreSQL and Linux prefork deployment unverified locally",
     "Stage 11 process/network/disk/ACL hardening not deployed",
     "Starlette httpx test-client deprecation warning",
@@ -71,13 +81,47 @@
     "Table/paragraph/reading order/font-resource association include explicit uncertain inference",
     "Relevant clipping, annotations, unknown Unicode and bidi ambiguity block reconstruction",
     "Native parser allocation/stalls need OS-level isolation in deployment",
-    "Candidate inline CSS/MANY and Unicode mappings remain unapproved until Stage 6",
+    "Applicable CSS/MANY/Unicode permissions remain unresolved and fail local strict validation",
     "Normal-flow HTM rejects unresolved rotation/overlap/complex painting/table semantics instead of silently changing appearance",
-    "Graphic requests are not normalized image files; candidates cannot be published as complete",
+    "Graphics are normalized but current candidates still lack strict rule/visual qualification",
     "Browser font/baseline/wrapping/table/page geometry has not been visually qualified",
-    "Candidate generation does not establish SEC compliance or strict fidelity"
+    "Candidate generation does not establish SEC compliance or strict fidelity",
+    "Current generated styled HTM fails ATTRIBUTE_SCOPE_UNVERIFIED/CSS_PERMISSION_UNVERIFIED; no false SEC-ready status",
+    "Only a confirmed character subset is locally approved; C1/ambiguous mappings fail without transliteration",
+    "JPEG re-encoding and alpha/compositing changes are explicit pending visual fidelity evidence",
+    "Whole submission size context is not supplied by ordinary DOCX uploads; strict filing-size qualification remains pending"
   ],
   "last_test_results": [
+    {
+      "stage": 6,
+      "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
+      "passed": 261,
+      "failed": 0,
+      "skipped": 2,
+      "warnings": 1,
+      "line_coverage_percent": 90,
+      "seconds": 155.62,
+      "scope": "Final native PDF/HTM/SEC pipeline and all-page regression plus actual-source malicious/uncertain/asset/limit tests"
+    },
+    {
+      "stage": 6,
+      "command": ".venv/Scripts/python -m pytest tests/unit/test_sec_validation.py tests/unit/test_assets.py tests/unit/test_html_generator.py -q",
+      "passed": 115,
+      "failed": 0,
+      "warnings": 1
+    },
+    {
+      "stage": 6,
+      "command": "Ruff check/format, pip check, wheel build/source-data comparison, isolated wheel import, documentation links/JSON and read-only git diff --check",
+      "result": "passed; 81 Python files formatted; LF/CRLF notices only"
+    },
+    {
+      "stage": 6,
+      "command": ".venv/Scripts/python tools/verify_stage1.py",
+      "passed": 8,
+      "failed": 0,
+      "scope": "Completed checkpoint/status consistency, immutable fixtures and manual evidence"
+    },
     {
       "stage": 5,
       "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
@@ -217,7 +261,7 @@
     "not_a_successful_conversion": true
   },
   "free_components_only": true,
-  "suggested_commit_message": "feat: add gated searchable HTM reconstruction and conversion tests",
+  "suggested_commit_message": "feat: add versioned SEC file validation and source-bound graphic normalization",
   "git_operations_performed": false,
   "notes": [
     "User explicitly authorized Stage 3 with go for it",
@@ -231,10 +275,15 @@
     "User confirms Word open-and-save-as-PDF source provenance; free native LibreOffice export remains distinct and unqualified",
     "Inspection mode never authorizes reconstruction; generated reference PDF still fails its strict gate",
     "Stage 5 explicitly authorized by pushed, continue",
-    "Stage 5 completed after final 179-pass suite; stop before Stage 6 and await explicit authorization",
     "HTM candidates stay private and compliance/visual/strict flags remain false",
     "Current candidate results and source/proof hashes documented in docs/htm-reconstruction.md and redacted regression JSON",
-    "No Git state writes or source-fixture changes"
+    "No Git state writes or source-fixture changes",
+    "Stage 6 explicitly authorized: go for stage 6",
+    "Stage 6 completed; stop before Stage 7 and await explicit authorization",
+    "Local confirmed-subset validation can pass with actual context; this is not SEC acceptance",
+    "Generated styled HTM now correctly fails unresolved permissions rather than advancing to visual checks",
+    "Original Word reference still fails strict PDF validation on all 23 pages; no HTM/SEC gate bypass",
+    "Runtime rule registry shipped and loaded successfully from built wheel; no premium dependencies"
   ],
   "reference_layout_inspection": {
     "mode": "inspection_only",
@@ -252,12 +301,21 @@
     "evidence": "docs/stage4-extraction-regression.json"
   },
   "html_reconstruction": {
-    "generator": "convx-flow-htm-v1",
-    "profile": "efm78-stage5-candidate-v1",
+    "generator": "convx-flow-htm-v2",
+    "profile": "efm78-stage6-candidate-v1",
     "compliance_passed": false,
     "visual_fidelity_passed": false,
     "strict_validation_passed": false,
     "reference_html_generated": false,
     "evidence": "docs/stage5-reconstruction-regression.json"
+  },
+  "sec_validation": {
+    "registry_version": "efm-volume-ii-v78.2-local",
+    "runtime_registry": "packages/converter/sec_validation/efm-v78.2.json",
+    "evidence": "docs/stage6-compliance-regression.json",
+    "confirmed_subset_locally_verified": true,
+    "style_permissions_resolved": false,
+    "current_generated_candidates_passed": false,
+    "sec_acceptance_confirmed": false
   }
 }

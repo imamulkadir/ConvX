@@ -398,8 +398,15 @@ class Builder:
                         )
                     continue
                 if path.kind in {"clip", "group"}:
+                    white_page_group = (
+                        path.level == 0
+                        and path.bbox == page.geometry.unrotated_bounds
+                        and not path.properties.get("knockout")
+                        and path.properties.get("opacity", 1) == 1
+                        and path.properties.get("blendmode", "Normal") == "Normal"
+                    )
                     if path.kind == "group" and (
-                        path.properties.get("isolated")
+                        (path.properties.get("isolated") and not white_page_group)
                         or path.properties.get("knockout")
                         or path.properties.get("opacity", 1) != 1
                         or path.properties.get("blendmode", "Normal") != "Normal"
@@ -410,6 +417,15 @@ class Builder:
                             "Resolve native compositing without rasterizing disclosure",
                             number,
                             path.id,
+                        )
+                    elif path.kind == "group" and path.properties.get("isolated"):
+                        self.diagnostic(
+                            "HTM_PAGE_GROUP_FLATTENING_PENDING",
+                            "Outer normal-compositing page group is reconstructed on the white page canvas",
+                            "Verify alpha/compositing against the PDF in visual validation",
+                            number,
+                            path.id,
+                            "warning",
                         )
                     continue
                 edges = path_edges(path)

@@ -53,6 +53,9 @@ class Settings(BaseSettings):
     layout_memory_bytes: int = Field(default=768 * 1024 * 1024, ge=64 * 1024 * 1024)
     htm_max_bytes: int = Field(default=25 * 1024 * 1024, ge=1024, le=100 * 1024 * 1024)
     htm_max_nodes: int = Field(default=1500000, ge=100, le=3000000)
+    sec_max_nodes: int = Field(default=200000, ge=100, le=1000000)
+    sec_max_assets: int = Field(default=1000, ge=1, le=5000)
+    sec_max_asset_bytes: int = Field(default=20 * 1024 * 1024, ge=1024, le=64 * 1024 * 1024)
 
     @model_validator(mode="after")
     def safe_configuration(self) -> Settings:

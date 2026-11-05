@@ -38,8 +38,8 @@ class AssetRequest(Record):
 
 class GenerationResult(Record):
     schema_version: Literal[1] = 1
-    generator: Literal["convx-flow-htm-v1"] = "convx-flow-htm-v1"
-    profile: Literal["efm78-stage5-candidate-v1"] = "efm78-stage5-candidate-v1"
+    generator: Literal["convx-flow-htm-v2"] = "convx-flow-htm-v2"
+    profile: Literal["efm78-stage6-candidate-v1"] = "efm78-stage6-candidate-v1"
     generated: bool
     candidate_filename: str | None
     candidate_sha256: Digest | None

@@ -1,0 +1,674 @@
+{
+  "schema_version": 1,
+  "registry_version": "efm-volume-ii-v78.2-local",
+  "manual": {
+    "volume": "II",
+    "version": 78,
+    "date": "2026-09-14",
+    "path": "tests/fixtures/edgarfm-vol2-v78.pdf",
+    "sha256": "816bbe2b5d2677ddc94e6199b446a8a856a54596704021a7b9ff592c0bc26cf3"
+  },
+  "executable_validator": true,
+  "confirmed_subset_approved": true,
+  "strict_style_profile_approved": false,
+  "tags": [
+    "html",
+    "body",
+    "head",
+    "isindex",
+    "meta",
+    "title",
+    "a",
+    "address",
+    "b",
+    "big",
+    "blockquote",
+    "br",
+    "caption",
+    "center",
+    "cite",
+    "code",
+    "dd",
+    "dfn",
+    "dir",
+    "div",
+    "dl",
+    "dt",
+    "em",
+    "font",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "hr",
+    "i",
+    "img",
+    "kbd",
+    "li",
+    "listing",
+    "menu",
+    "ol",
+    "p",
+    "plaintext",
+    "pre",
+    "samp",
+    "small",
+    "strike",
+    "strong",
+    "sub",
+    "sup",
+    "table",
+    "td",
+    "th",
+    "tr",
+    "tt",
+    "u",
+    "ul",
+    "var",
+    "xmp",
+    "page",
+    "r"
+  ],
+  "attributes": {
+    "align": [
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "hr",
+      "p",
+      "caption",
+      "div",
+      "table",
+      "td",
+      "th",
+      "tr"
+    ],
+    "alink": [
+      "body"
+    ],
+    "alt": [
+      "img"
+    ],
+    "bgcolor": [
+      "body",
+      "table"
+    ],
+    "border": [
+      "table"
+    ],
+    "cellpadding": [
+      "table"
+    ],
+    "cellspacing": [
+      "table"
+    ],
+    "class": [
+      "MANY"
+    ],
+    "clear": [
+      "br"
+    ],
+    "color": [
+      "font"
+    ],
+    "colspan": [
+      "td",
+      "th"
+    ],
+    "compact": [
+      "dir",
+      "dl",
+      "menu",
+      "ol",
+      "ul"
+    ],
+    "content": [
+      "meta"
+    ],
+    "dir": [
+      "MANY"
+    ],
+    "height": [
+      "td",
+      "th"
+    ],
+    "href": [
+      "a"
+    ],
+    "id": [
+      "MANY"
+    ],
+    "lang": [
+      "MANY"
+    ],
+    "link": [
+      "body"
+    ],
+    "name": [
+      "meta",
+      "a"
+    ],
+    "noshade": [
+      "hr"
+    ],
+    "nowrap": [
+      "td",
+      "th"
+    ],
+    "prompt": [
+      "isindex"
+    ],
+    "rel": [
+      "link",
+      "a"
+    ],
+    "rev": [
+      "link",
+      "a"
+    ],
+    "rowspan": [
+      "td",
+      "th"
+    ],
+    "size": [
+      "hr",
+      "font"
+    ],
+    "src": [
+      "img"
+    ],
+    "start": [
+      "ol"
+    ],
+    "style": [
+      "MANY"
+    ],
+    "text": [
+      "body"
+    ],
+    "title": [
+      "link"
+    ],
+    "type": [
+      "li",
+      "ol",
+      "ul"
+    ],
+    "valign": [
+      "td",
+      "th",
+      "tr"
+    ],
+    "vlink": [
+      "body"
+    ],
+    "width": [
+      "hr",
+      "table",
+      "td",
+      "th"
+    ],
+    "xml:lang": [
+      "MANY"
+    ]
+  },
+  "restricted_attributes": {
+    "body": [
+      "background"
+    ],
+    "meta": [
+      "http-equiv"
+    ],
+    "a": [
+      "target"
+    ],
+    "img": [
+      "dynsrc",
+      "loop",
+      "loopdelay",
+      "start",
+      "controls"
+    ]
+  },
+  "proposed_style_properties": [
+    "margin",
+    "margin-left",
+    "padding",
+    "width",
+    "height",
+    "display",
+    "vertical-align",
+    "white-space",
+    "line-height",
+    "font-family",
+    "font-size",
+    "color",
+    "text-decoration",
+    "page-break-after",
+    "box-sizing",
+    "border",
+    "border-top",
+    "border-bottom",
+    "border-left",
+    "border-right",
+    "background-color",
+    "border-collapse",
+    "table-layout"
+  ],
+  "rules": [
+    {
+      "id": "EFM78-FILENAME",
+      "section": "5.1.1; 5.2.2.1",
+      "status": "confirmed_manual",
+      "requirement": "Maximum 32 characters including extension; initial alphanumeric; letters/numbers, dot, hyphen, underscore; no spaces.",
+      "maximum_characters": 32
+    },
+    {
+      "id": "EFM78-DOCUMENT-TAGS",
+      "section": "5.2.2.2",
+      "status": "confirmed_manual",
+      "requirement": "Enumerated document tags, subject to explicit restrictions; comments permitted.",
+      "tags": [
+        "html",
+        "body",
+        "head",
+        "isindex",
+        "meta",
+        "title"
+      ]
+    },
+    {
+      "id": "EFM78-BODY-TAGS",
+      "section": "5.2.2.3",
+      "status": "confirmed_manual",
+      "requirement": "Enumerated body tags; attributes separately constrained.",
+      "tags": [
+        "a",
+        "address",
+        "b",
+        "big",
+        "blockquote",
+        "br",
+        "caption",
+        "center",
+        "cite",
+        "code",
+        "dd",
+        "dfn",
+        "dir",
+        "div",
+        "dl",
+        "dt",
+        "em",
+        "font",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "hr",
+        "i",
+        "img",
+        "kbd",
+        "li",
+        "listing",
+        "menu",
+        "ol",
+        "p",
+        "plaintext",
+        "pre",
+        "samp",
+        "small",
+        "strike",
+        "strong",
+        "sub",
+        "sup",
+        "table",
+        "td",
+        "th",
+        "tr",
+        "tt",
+        "u",
+        "ul",
+        "var",
+        "xmp"
+      ]
+    },
+    {
+      "id": "EFM78-NO-ACTIVE",
+      "section": "5.2.2.1; 5.2.2.4; 5.2.2.10",
+      "status": "confirmed_manual",
+      "requirement": "No active content, JavaScript or event handlers; unlisted body tags prohibited."
+    },
+    {
+      "id": "EFM78-NO-NESTED-TABLE",
+      "section": "5.2.2.1; 5.2.2.3",
+      "status": "confirmed_manual",
+      "requirement": "TABLE cannot descend from another TABLE."
+    },
+    {
+      "id": "EFM78-ATTRIBUTES",
+      "section": "5.2.2.5",
+      "status": "confirmed_manual",
+      "requirement": "Explicit attribute table; MANY needs per-tag interpretation; LINK parent does not authorize LINK tag.",
+      "attributes": {
+        "align": [
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "hr",
+          "p",
+          "caption",
+          "div",
+          "table",
+          "td",
+          "th",
+          "tr"
+        ],
+        "alink": [
+          "body"
+        ],
+        "alt": [
+          "img"
+        ],
+        "bgcolor": [
+          "body",
+          "table"
+        ],
+        "border": [
+          "table"
+        ],
+        "cellpadding": [
+          "table"
+        ],
+        "cellspacing": [
+          "table"
+        ],
+        "class": [
+          "MANY"
+        ],
+        "clear": [
+          "br"
+        ],
+        "color": [
+          "font"
+        ],
+        "colspan": [
+          "td",
+          "th"
+        ],
+        "compact": [
+          "dir",
+          "dl",
+          "menu",
+          "ol",
+          "ul"
+        ],
+        "content": [
+          "meta"
+        ],
+        "dir": [
+          "MANY"
+        ],
+        "height": [
+          "td",
+          "th"
+        ],
+        "href": [
+          "a"
+        ],
+        "id": [
+          "MANY"
+        ],
+        "lang": [
+          "MANY"
+        ],
+        "link": [
+          "body"
+        ],
+        "name": [
+          "meta",
+          "a"
+        ],
+        "noshade": [
+          "hr"
+        ],
+        "nowrap": [
+          "td",
+          "th"
+        ],
+        "prompt": [
+          "isindex"
+        ],
+        "rel": [
+          "link",
+          "a"
+        ],
+        "rev": [
+          "link",
+          "a"
+        ],
+        "rowspan": [
+          "td",
+          "th"
+        ],
+        "size": [
+          "hr",
+          "font"
+        ],
+        "src": [
+          "img"
+        ],
+        "start": [
+          "ol"
+        ],
+        "style": [
+          "MANY"
+        ],
+        "text": [
+          "body"
+        ],
+        "title": [
+          "link"
+        ],
+        "type": [
+          "li",
+          "ol",
+          "ul"
+        ],
+        "valign": [
+          "td",
+          "th",
+          "tr"
+        ],
+        "vlink": [
+          "body"
+        ],
+        "width": [
+          "hr",
+          "table",
+          "td",
+          "th"
+        ],
+        "xml:lang": [
+          "MANY"
+        ]
+      }
+    },
+    {
+      "id": "EFM78-RESTRICTED-ATTRIBUTES",
+      "section": "5.2.2.2; 5.2.2.3; 5.2.2.4",
+      "status": "confirmed_manual",
+      "requirement": "Explicit prohibitions override general attributes.",
+      "by_tag": {
+        "body": [
+          "background"
+        ],
+        "meta": [
+          "http-equiv"
+        ],
+        "a": [
+          "target"
+        ],
+        "img": [
+          "dynsrc",
+          "loop",
+          "loopdelay",
+          "start",
+          "controls"
+        ]
+      }
+    },
+    {
+      "id": "EFM78-LINKS",
+      "section": "5.2.2.1; 5.2.2.3",
+      "status": "confirmed_manual",
+      "requirement": "Resolve local submission links and bookmarks; specified SEC Archives links for ordinary HTM; prohibit mailto/ftp/target. Private-document exception exists outside product ZIP contract. Inline XBRL viewer example needs separate context.",
+      "remote_prefix": "https://www.sec.gov/Archives/edgar/data/"
+    },
+    {
+      "id": "EFM78-IMAGES",
+      "section": "5.2.2.1; 5.2.2.3; 5.2.2.10",
+      "status": "confirmed_manual",
+      "requirement": "Locally resolved JPG/GIF graphics with exact filenames.",
+      "formats": [
+        "JPEG",
+        "GIF"
+      ],
+      "extensions": [
+        ".jpg",
+        ".gif"
+      ]
+    },
+    {
+      "id": "EFM78-CHARACTERS",
+      "section": "5.2.2.6",
+      "status": "confirmed_manual",
+      "requirement": "Use references for extended characters rather than raw extended bytes; preserve disclosure."
+    },
+    {
+      "id": "EFM78-SUBMISSION-SIZE",
+      "section": "5.2.2.10; 7.3.2",
+      "status": "confirmed_manual",
+      "requirement": "Limits depend on form and encoded full submission; not ZIP-only.",
+      "general_MB": 200,
+      "special_MB": 600,
+      "combined_MB": 800,
+      "abs15g_html_MB": 25,
+      "special_forms": [
+        "ABS-EE",
+        "ABS-EE/A",
+        "NPORT-NP",
+        "NPORT-NP/A",
+        "NPORT-P",
+        "NPORT-P/A"
+      ]
+    },
+    {
+      "id": "EFM78-SUBMITTED-PDF",
+      "section": "5.2.3.2",
+      "status": "confirmed_manual",
+      "requirement": "Submitted unofficial PDFs prohibit active content, external references and passwords/security controls; internal PDF is not submitted."
+    },
+    {
+      "id": "EFM78-LOCAL-VALIDATION",
+      "section": "5.2.2.1; 5.2.2.10",
+      "status": "confirmed_manual",
+      "requirement": "Browser review, Doc Validation or authorized TEST submission; local validation is not SEC acceptance."
+    },
+    {
+      "id": "PROJECT-ZIP",
+      "section": "project sections 8 and 10",
+      "status": "project_policy",
+      "requirement": "Exactly one HTM and referenced JPG/GIF at root; no unused assets or intermediates."
+    },
+    {
+      "id": "PROJECT-SEARCHABLE",
+      "section": "project sections 1 and 6",
+      "status": "project_policy",
+      "requirement": "Searchable disclosure; no full-page raster replacement."
+    },
+    {
+      "id": "EFM78-OPEN-CSS",
+      "section": "5.2.2.5",
+      "status": "unresolved",
+      "requirement": "STYLE allowed; complete property/value permissions unresolved."
+    },
+    {
+      "id": "EFM78-OPEN-MANY",
+      "section": "5.2.2.5",
+      "status": "unresolved",
+      "requirement": "Resolve per-tag scope of MANY."
+    },
+    {
+      "id": "EFM78-OPEN-IMG-FONT",
+      "section": "5.2.2.3; 5.2.2.5",
+      "status": "unresolved",
+      "requirement": "IMG width/height and FONT face absent from explicit table; evidence needed."
+    },
+    {
+      "id": "EFM78-OPEN-LINK-TAG",
+      "section": "5.2.2.2; 5.2.2.3; 5.2.2.5",
+      "status": "unresolved",
+      "requirement": "LINK omitted from tag tables; conservatively omit."
+    },
+    {
+      "id": "EFM78-OPEN-TR-WIDTH",
+      "section": "5.2.2.3; 5.2.2.5",
+      "status": "unresolved",
+      "requirement": "TR width note conflicts with attribute table omission."
+    },
+    {
+      "id": "EFM78-OPEN-DOCTYPE",
+      "section": "5.2.2.1; 5.2.2.4",
+      "status": "unresolved",
+      "requirement": "Overview mentions DOCTYPE; prohibited list includes it; omit."
+    },
+    {
+      "id": "EFM78-OPEN-CHARACTER-MAPPING",
+      "section": "5.2.2.6",
+      "status": "unresolved",
+      "requirement": "Legacy numeric entries and Latin-1 wording inconsistent; verify mapping before emission."
+    },
+    {
+      "id": "EFM78-SGML-EXCEPTIONS",
+      "section": "5.2.2.8; 5.2.2.9",
+      "status": "confirmed_manual",
+      "requirement": "PAGE and R are explicit exceptions; S/C/FN/F1 etc remain forbidden. Accepted-final conversion profile does not emit redlines."
+    },
+    {
+      "id": "SEC-GUIDANCE-FRAGMENTATION",
+      "section": "SEC Observe Data and Process Filing Limits: How Do I Ensure my File Size Meets EDGAR Requirements, item 1",
+      "status": "sec_guidance",
+      "source": "https://www.sec.gov/submit-filings/filer-support-resources/how-do-i-guides/observe-data-process-filing-limits",
+      "requirement": "Avoid independent word formatting; generator coalesces equivalent adjacent source formatting runs."
+    },
+    {
+      "id": "PROJECT-LITERAL-CSS",
+      "section": "5.2.2.5; project security policy",
+      "status": "project_policy",
+      "requirement": "Parse narrow literal formatting grammar; reject active/hidden/remote content. Passing safety grammar does not approve SEC property/value scope."
+    },
+    {
+      "id": "PROJECT-CHARACTER-SUBSET",
+      "section": "5.2.2.6",
+      "status": "project_policy",
+      "requirement": "ASCII bytes; Latin-1 references and verified explicit manual/W3C named mappings. Reject legacy C1 numeric remapping and unresolved Unicode rather than transliterate."
+    },
+    {
+      "id": "PROJECT-SUBMISSION-CONTEXT",
+      "section": "5.2.2.10; 7.3.2",
+      "status": "project_policy",
+      "requirement": "Whole encoded submission/form context required for strict limit qualification; local file success is not full submission or SEC acceptance."
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from itertools import groupby
 
 from lxml import etree
 
@@ -40,15 +41,33 @@ def render_line(line, parent, emitted, hrefs, anchors, selected=None, offset=(0,
         etree.SubElement(p, "a", name=anchor)
     baseline = max(s.origin[1] for s in spans)
     previous_end = left
-    for index, (span, char) in enumerate(characters):
+
+    def key(pair):
+        span, char = pair
+        return (
+            font_family(span.font_name),
+            span.font_size_pt,
+            span.color_rgb,
+            span.origin[1],
+            span.bold_hint,
+            span.italic_hint,
+            span.underline_hint,
+            span.script_hint,
+            hrefs.get(char.id),
+        )
+
+    runs = [list(group) for _, group in groupby(characters, key=key)]
+    for index, run in enumerate(runs):
+        span, char = run[0]
         target = p
         if char.id in hrefs:
             target = etree.SubElement(
                 target, "a", href=hrefs[char.id], style="color:inherit;text-decoration:none"
             )
         style = f"font-family:'{font_family(span.font_name)}';font-size:{pt(span.font_size_pt)};line-height:1;color:#{span.color_rgb:06x};vertical-align:{pt(baseline - span.origin[1])}"
-        # Origin-to-origin advances preserve source kerning and word spacing without invented text.
-        following = characters[index + 1][1].origin[0] if index + 1 < len(characters) else char.bbox[2]
+        # Shared formatting runs avoid the SEC-prohibited per-word formatting pattern.
+        # Browser glyph shaping inside each run must be measured in Stage 7.
+        following = runs[index + 1][0][1].origin[0] if index + 1 < len(runs) else run[-1][1].bbox[2]
         advance = following - char.origin[0]
         style += f";display:inline-block;width:{pt(max(0, advance))};margin-left:{pt(char.origin[0] - previous_end)}"
         target = etree.SubElement(target, "font", style=style)
@@ -62,8 +81,8 @@ def render_line(line, parent, emitted, hrefs, anchors, selected=None, offset=(0,
             # Source size and baseline already applied. Disable browser default rescaling/shift.
             tag = "sup" if span.script_hint == "superscript" else "sub"
             target = etree.SubElement(target, tag, style="font-size:inherit;vertical-align:baseline")
-        target.text = char.text
-        emitted.append((char.id, char.text))
+        target.text = "".join(c.text for _, c in run)
+        emitted.extend((c.id, c.text) for _, c in run)
         previous_end = char.origin[0] + max(0, advance)
 
 

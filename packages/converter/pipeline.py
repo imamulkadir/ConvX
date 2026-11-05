@@ -1,4 +1,4 @@
-"""Stage 5 produces private HTM candidates; no compliance/fidelity/ZIP success."""
+"""Stage 6 normalizes graphics and validates actual files; visual/ZIP gates pending."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import os
 from dataclasses import asdict
 from pathlib import Path
 
+from converter.assets.normalize import normalize_assets
 from converter.context import ProcessingContext
 from converter.errors import ConversionFailure, fail
 from converter.html_generator.generator import generate_htm
@@ -17,6 +18,8 @@ from converter.pdf_analysis.policy import AnalysisPolicy
 from converter.pdf_export.provider import PDFProvider
 from converter.pdf_export.validation import PDFValidationPolicy, validate_pdf
 from converter.revisions.accept import accept_revisions, compare_accepted_content
+from converter.sec_validation.models import SubmissionContext, ValidationPolicy
+from converter.sec_validation.validator import validate_files
 
 
 def write_report(path: Path, report: dict) -> None:
@@ -39,13 +42,15 @@ def process_docx(
     context: ProcessingContext | None = None,
     analysis_policy: AnalysisPolicy | None = None,
     generation_policy: GenerationPolicy | None = None,
+    sec_policy: ValidationPolicy | None = None,
+    submission: SubmissionContext | None = None,
 ) -> dict:
     context = context or ProcessingContext()
     workspace = workspace.resolve()
     workspace.mkdir(mode=0o700, parents=True, exist_ok=False)
     report = {
         "schema_version": 1,
-        "stage": 5,
+        "stage": 6,
         "source_sha256": sha256(source),
         "status": "in_progress",
         "revision_acceptance": None,
@@ -53,6 +58,8 @@ def process_docx(
         "pdf_validation": None,
         "layout_analysis": None,
         "html_generation": None,
+        "asset_normalization": None,
+        "sec_validation": None,
         "provider": None,
         "diagnostics": [],
         "final_conversion_complete": False,
@@ -129,7 +136,39 @@ def process_docx(
                 "Source layout has unresolved HTM reconstruction incompatibilities",
                 "Review generation diagnostics; do not label this output filing-ready",
             )
-        report["status"] = "htm_generated"
+        context.stage("preparing_assets")
+        filing = workspace / "filing"
+        asset_policy = sec_policy or ValidationPolicy()
+        report["asset_normalization"] = normalize_assets(
+            result.path,
+            workspace / "candidate.htm",
+            generation,
+            filing,
+            context,
+            max_pixels=asset_policy.max_image_pixels,
+            max_bytes=asset_policy.max_asset_bytes,
+            max_html_bytes=asset_policy.max_html_bytes,
+            max_total_bytes=asset_policy.max_total_bytes,
+            max_total_pixels=asset_policy.max_total_image_pixels,
+            max_assets=asset_policy.max_assets,
+        )
+        context.stage("validating_sec")
+        compliance = validate_files(
+            filing / "candidate.htm",
+            tuple(filing / image["filename"] for image in report["asset_normalization"]["images"]),
+            submission,
+            sec_policy,
+            context,
+        )
+        report["sec_validation"] = compliance.model_dump(mode="json")
+        if not compliance.passed:
+            raise fail(
+                "SEC_VALIDATION_FAILED",
+                "validating_sec",
+                "Actual HTM/assets failed local rule or unresolved-permission checks",
+                "Resolve report diagnostics before any visual/packaging eligibility claim",
+            )
+        report["status"] = "sec_validated"
     except ConversionFailure as exc:
         report["status"] = (
             "blocked"
