@@ -8,7 +8,9 @@ from converter.pipeline import process_docx
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Free local DOCX processing and strict PDF reference gate")
+    parser = argparse.ArgumentParser(
+        description="Free local DOCX processing, strict PDF gate and layout analysis"
+    )
     parser.add_argument("source", type=Path)
     parser.add_argument(
         "workspace", type=Path, help="A new private output directory; never the fixtures directory"
@@ -31,8 +33,8 @@ def main() -> None:
         args.reference_pdf,
         args.expected_accepted_docx,
     )
-    print(f"Stage 3 result: {result['status']}; report: {args.workspace / 'processing.json'}")
-    raise SystemExit(0 if result["status"] == "pdf_validated" else 2)
+    print(f"Document processing result: {result['status']}; report: {args.workspace / 'processing.json'}")
+    raise SystemExit(0 if result["status"] == "layout_analyzed" else 2)
 
 
 if __name__ == "__main__":

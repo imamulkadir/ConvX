@@ -1,4 +1,4 @@
-"""Stage 3 stops at the intermediate PDF gate; no HTML or ZIP implementation."""
+"""Stage 4 stops after gated PDF layout analysis; no HTML or ZIP implementation."""
 
 from __future__ import annotations
 
@@ -10,6 +10,8 @@ from pathlib import Path
 from converter.context import ProcessingContext
 from converter.errors import ConversionFailure, fail
 from converter.ooxml import sha256
+from converter.pdf_analysis.extract import analyze_pdf, write_layout
+from converter.pdf_analysis.policy import AnalysisPolicy
 from converter.pdf_export.provider import PDFProvider
 from converter.pdf_export.validation import PDFValidationPolicy, validate_pdf
 from converter.revisions.accept import accept_revisions, compare_accepted_content
@@ -33,18 +35,20 @@ def process_docx(
     expected_accepted_docx: Path | None = None,
     policy: PDFValidationPolicy | None = None,
     context: ProcessingContext | None = None,
+    analysis_policy: AnalysisPolicy | None = None,
 ) -> dict:
     context = context or ProcessingContext()
     workspace = workspace.resolve()
     workspace.mkdir(mode=0o700, parents=True, exist_ok=False)
     report = {
         "schema_version": 1,
-        "stage": 3,
+        "stage": 4,
         "source_sha256": sha256(source),
         "status": "in_progress",
         "revision_acceptance": None,
         "accepted_reference_comparison": None,
         "pdf_validation": None,
+        "layout_analysis": None,
         "provider": None,
         "diagnostics": [],
         "final_conversion_complete": False,
@@ -82,7 +86,29 @@ def process_docx(
                 "PDF did not pass configured strict validation",
                 "Review all-page content, geometry, typography and visual evidence",
             )
-        report["status"] = "pdf_validated"
+        context.stage("analyzing_pdf")
+        layout = analyze_pdf(
+            result.path,
+            report["pdf_validation"],
+            policy=analysis_policy,
+            context=context,
+            rendering_provenance={
+                "method": "accepted_docx_open_export",
+                "original_docx_sha256": report["source_sha256"],
+                "accepted_docx_sha256": sha256(accepted),
+                **report["provider"],
+            },
+        )
+        context.check()
+        report["layout_analysis"] = write_layout(workspace / "layout.json", layout)
+        if not layout.reconstruction_eligible:
+            raise fail(
+                "PDF_LAYOUT_UNRESOLVED",
+                "analyzing_pdf",
+                "Layout extraction has unresolved reconstruction blockers",
+                "Review private layout diagnostics; do not generate HTML from this model",
+            )
+        report["status"] = "layout_analyzed"
     except ConversionFailure as exc:
         report["status"] = (
             "blocked"

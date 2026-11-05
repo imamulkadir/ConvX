@@ -1,0 +1,2375 @@
+{
+  "$defs": {
+    "AnnotationRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "xref": {
+          "title": "Xref",
+          "type": "integer"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Properties"
+        }
+      },
+      "required": [
+        "id",
+        "xref",
+        "kind",
+        "bbox",
+        "properties"
+      ],
+      "title": "AnnotationRecord",
+      "type": "object"
+    },
+    "Character": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "origin": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Origin",
+          "type": "array"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "quad": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            }
+          ],
+          "title": "Quad",
+          "type": "array"
+        },
+        "synthetic": {
+          "title": "Synthetic",
+          "type": "boolean"
+        },
+        "glyph_ids": {
+          "default": [],
+          "items": {
+            "type": "integer"
+          },
+          "title": "Glyph Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "origin",
+        "bbox",
+        "quad",
+        "synthetic"
+      ],
+      "title": "Character",
+      "type": "object"
+    },
+    "FontDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "xref": {
+          "title": "Xref",
+          "type": "integer"
+        },
+        "base_font": {
+          "title": "Base Font",
+          "type": "string"
+        },
+        "resource_names": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Resource Names",
+          "type": "array"
+        },
+        "font_type": {
+          "title": "Font Type",
+          "type": "string"
+        },
+        "file_extension": {
+          "title": "File Extension",
+          "type": "string"
+        },
+        "encoding": {
+          "title": "Encoding",
+          "type": "string"
+        },
+        "referring_xrefs": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Referring Xrefs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "xref",
+        "base_font",
+        "resource_names",
+        "font_type",
+        "file_extension",
+        "encoding",
+        "referring_xrefs"
+      ],
+      "title": "FontDefinition",
+      "type": "object"
+    },
+    "ImageAsset": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "xref": {
+          "title": "Xref",
+          "type": "integer"
+        },
+        "soft_mask_xref": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Soft Mask Xref"
+        },
+        "width_px": {
+          "title": "Width Px",
+          "type": "integer"
+        },
+        "height_px": {
+          "title": "Height Px",
+          "type": "integer"
+        },
+        "bits_per_component": {
+          "title": "Bits Per Component",
+          "type": "integer"
+        },
+        "color_space": {
+          "title": "Color Space",
+          "type": "string"
+        },
+        "decoded_pixel_digest": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Decoded Pixel Digest"
+        },
+        "digest_algorithm": {
+          "enum": [
+            "mupdf-md5-nonsecurity-identity",
+            "not_available"
+          ],
+          "title": "Digest Algorithm",
+          "type": "string"
+        },
+        "inline": {
+          "title": "Inline",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "xref",
+        "soft_mask_xref",
+        "width_px",
+        "height_px",
+        "bits_per_component",
+        "color_space",
+        "decoded_pixel_digest",
+        "digest_algorithm",
+        "inline"
+      ],
+      "title": "ImageAsset",
+      "type": "object"
+    },
+    "ImagePlacement": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "asset_id": {
+          "title": "Asset Id",
+          "type": "string"
+        },
+        "native_number": {
+          "title": "Native Number",
+          "type": "integer"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "transform": {
+          "maxItems": 6,
+          "minItems": 6,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Transform",
+          "type": "array"
+        },
+        "quad": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            }
+          ],
+          "title": "Quad",
+          "type": "array"
+        },
+        "paint_sequences": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Paint Sequences",
+          "type": "array"
+        },
+        "clipping": {
+          "enum": [
+            "page_bounds_only",
+            "association_unresolved"
+          ],
+          "title": "Clipping",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "asset_id",
+        "native_number",
+        "bbox",
+        "transform",
+        "quad",
+        "paint_sequences",
+        "clipping"
+      ],
+      "title": "ImagePlacement",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "LayoutDiagnostic": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "warning",
+            "error"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "object_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Object Id"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "remediation": {
+          "title": "Remediation",
+          "type": "string"
+        },
+        "occurrences": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Occurrences",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "code",
+        "severity",
+        "description",
+        "remediation"
+      ],
+      "title": "LayoutDiagnostic",
+      "type": "object"
+    },
+    "LinkRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "integer"
+        },
+        "uri": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Uri"
+        },
+        "destination_page": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Destination Page"
+        },
+        "destination_point": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Destination Point"
+        },
+        "named_destination": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Named Destination"
+        },
+        "file_target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "File Target"
+        },
+        "xref": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xref"
+        }
+      },
+      "required": [
+        "id",
+        "bbox",
+        "kind",
+        "uri",
+        "destination_page",
+        "destination_point",
+        "named_destination"
+      ],
+      "title": "LinkRecord",
+      "type": "object"
+    },
+    "PageGeometry": {
+      "additionalProperties": false,
+      "properties": {
+        "media_box": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Media Box",
+          "type": "array"
+        },
+        "crop_box": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Crop Box",
+          "type": "array"
+        },
+        "crop_offset": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Crop Offset",
+          "type": "array"
+        },
+        "unrotated_bounds": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Unrotated Bounds",
+          "type": "array"
+        },
+        "display_bounds": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Display Bounds",
+          "type": "array"
+        },
+        "rotation_degrees": {
+          "enum": [
+            0,
+            90,
+            180,
+            270
+          ],
+          "title": "Rotation Degrees",
+          "type": "integer"
+        },
+        "pdf_to_page_matrix": {
+          "maxItems": 6,
+          "minItems": 6,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Pdf To Page Matrix",
+          "type": "array"
+        },
+        "page_to_display_matrix": {
+          "maxItems": 6,
+          "minItems": 6,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Page To Display Matrix",
+          "type": "array"
+        },
+        "display_to_page_matrix": {
+          "maxItems": 6,
+          "minItems": 6,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Display To Page Matrix",
+          "type": "array"
+        }
+      },
+      "required": [
+        "media_box",
+        "crop_box",
+        "crop_offset",
+        "unrotated_bounds",
+        "display_bounds",
+        "rotation_degrees",
+        "pdf_to_page_matrix",
+        "page_to_display_matrix",
+        "display_to_page_matrix"
+      ],
+      "title": "PageGeometry",
+      "type": "object"
+    },
+    "PageLayout": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "page_number": {
+          "title": "Page Number",
+          "type": "integer"
+        },
+        "geometry": {
+          "$ref": "#/$defs/PageGeometry"
+        },
+        "text_blocks": {
+          "items": {
+            "$ref": "#/$defs/TextBlock"
+          },
+          "title": "Text Blocks",
+          "type": "array"
+        },
+        "images": {
+          "items": {
+            "$ref": "#/$defs/ImagePlacement"
+          },
+          "title": "Images",
+          "type": "array"
+        },
+        "vectors": {
+          "items": {
+            "$ref": "#/$defs/VectorPath"
+          },
+          "title": "Vectors",
+          "type": "array"
+        },
+        "paint_order": {
+          "items": {
+            "$ref": "#/$defs/PaintOperation"
+          },
+          "title": "Paint Order",
+          "type": "array"
+        },
+        "text_paints": {
+          "items": {
+            "$ref": "#/$defs/TextPaint"
+          },
+          "title": "Text Paints",
+          "type": "array"
+        },
+        "tables": {
+          "items": {
+            "$ref": "#/$defs/TableCandidate"
+          },
+          "title": "Tables",
+          "type": "array"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/$defs/LinkRecord"
+          },
+          "title": "Links",
+          "type": "array"
+        },
+        "annotations": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/AnnotationRecord"
+          },
+          "title": "Annotations",
+          "type": "array"
+        },
+        "regions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/RegionCandidate"
+          },
+          "title": "Regions",
+          "type": "array"
+        },
+        "reading_order": {
+          "$ref": "#/$defs/ReadingOrder"
+        },
+        "observed_text_bounds": {
+          "anyOf": [
+            {
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observed Text Bounds"
+        },
+        "character_count": {
+          "title": "Character Count",
+          "type": "integer"
+        },
+        "character_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Character Sha256",
+          "type": "string"
+        },
+        "diagnostics": {
+          "items": {
+            "$ref": "#/$defs/LayoutDiagnostic"
+          },
+          "title": "Diagnostics",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "page_number",
+        "geometry",
+        "text_blocks",
+        "images",
+        "vectors",
+        "paint_order",
+        "text_paints",
+        "tables",
+        "links",
+        "reading_order",
+        "observed_text_bounds",
+        "character_count",
+        "character_sha256",
+        "diagnostics"
+      ],
+      "title": "PageLayout",
+      "type": "object"
+    },
+    "PaintOperation": {
+      "additionalProperties": false,
+      "properties": {
+        "sequence": {
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "layer": {
+          "title": "Layer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence",
+        "kind",
+        "bbox",
+        "layer"
+      ],
+      "title": "PaintOperation",
+      "type": "object"
+    },
+    "ParagraphCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "line_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Line Ids",
+          "type": "array"
+        },
+        "method": {
+          "const": "native_pdf_block",
+          "default": "native_pdf_block",
+          "title": "Method",
+          "type": "string"
+        },
+        "confidence": {
+          "default": 0.5,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "alignment_hint": {
+          "default": "unknown",
+          "enum": [
+            "left",
+            "right",
+            "center",
+            "unknown"
+          ],
+          "title": "Alignment Hint",
+          "type": "string"
+        },
+        "spacing_before_pt": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Spacing Before Pt"
+        },
+        "spacing_after_pt": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Spacing After Pt"
+        }
+      },
+      "required": [
+        "id",
+        "bbox",
+        "line_ids"
+      ],
+      "title": "ParagraphCandidate",
+      "type": "object"
+    },
+    "ReadingOrder": {
+      "additionalProperties": false,
+      "properties": {
+        "native_block_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Native Block Ids",
+          "type": "array"
+        },
+        "candidate_block_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Candidate Block Ids",
+          "type": "array"
+        },
+        "edges": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Edges",
+          "type": "array"
+        },
+        "native_line_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Native Line Ids",
+          "type": "array"
+        },
+        "candidate_line_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Candidate Line Ids",
+          "type": "array"
+        },
+        "line_edges": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Line Edges",
+          "type": "array"
+        },
+        "method": {
+          "const": "recursive_whitespace_xy_cut",
+          "default": "recursive_whitespace_xy_cut",
+          "title": "Method",
+          "type": "string"
+        },
+        "confidence": {
+          "title": "Confidence",
+          "type": "number"
+        },
+        "ambiguous": {
+          "title": "Ambiguous",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "native_block_ids",
+        "candidate_block_ids",
+        "edges",
+        "native_line_ids",
+        "candidate_line_ids",
+        "line_edges",
+        "confidence",
+        "ambiguous"
+      ],
+      "title": "ReadingOrder",
+      "type": "object"
+    },
+    "RegionCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "header",
+            "footer",
+            "page_number"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "block_id": {
+          "title": "Block Id",
+          "type": "string"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "method": {
+          "enum": [
+            "repeated_margin_text",
+            "margin_page_number_pattern"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "confidence": {
+          "title": "Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind",
+        "block_id",
+        "bbox",
+        "method",
+        "confidence"
+      ],
+      "title": "RegionCandidate",
+      "type": "object"
+    },
+    "TableCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "rows": {
+          "minimum": 1,
+          "title": "Rows",
+          "type": "integer"
+        },
+        "columns": {
+          "minimum": 1,
+          "title": "Columns",
+          "type": "integer"
+        },
+        "cells": {
+          "items": {
+            "$ref": "#/$defs/TableCell"
+          },
+          "title": "Cells",
+          "type": "array"
+        },
+        "grid": {
+          "items": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array"
+          },
+          "title": "Grid",
+          "type": "array"
+        },
+        "raw_cell_boxes": {
+          "items": {
+            "items": {
+              "anyOf": [
+                {
+                  "maxItems": 4,
+                  "minItems": 4,
+                  "prefixItems": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array"
+          },
+          "title": "Raw Cell Boxes",
+          "type": "array"
+        },
+        "method": {
+          "enum": [
+            "native_lines_strict",
+            "native_text_alignment"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "confidence": {
+          "title": "Confidence",
+          "type": "number"
+        },
+        "header_names": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Header Names",
+          "type": "array"
+        },
+        "header_external": {
+          "title": "Header External",
+          "type": "boolean"
+        },
+        "header_bbox": {
+          "anyOf": [
+            {
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Header Bbox"
+        },
+        "grid_resolved": {
+          "title": "Grid Resolved",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "bbox",
+        "rows",
+        "columns",
+        "cells",
+        "grid",
+        "raw_cell_boxes",
+        "method",
+        "confidence",
+        "header_names",
+        "header_external",
+        "header_bbox",
+        "grid_resolved"
+      ],
+      "title": "TableCandidate",
+      "type": "object"
+    },
+    "TableCell": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "row": {
+          "title": "Row",
+          "type": "integer"
+        },
+        "column": {
+          "title": "Column",
+          "type": "integer"
+        },
+        "row_span": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Row Span"
+        },
+        "column_span": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Column Span"
+        },
+        "character_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Character Ids",
+          "type": "array"
+        },
+        "border_path_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Border Path Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "bbox",
+        "row",
+        "column",
+        "row_span",
+        "column_span",
+        "character_ids",
+        "border_path_ids"
+      ],
+      "title": "TableCell",
+      "type": "object"
+    },
+    "TextBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "native_number": {
+          "title": "Native Number",
+          "type": "integer"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "lines": {
+          "items": {
+            "$ref": "#/$defs/TextLine"
+          },
+          "title": "Lines",
+          "type": "array"
+        },
+        "paragraphs": {
+          "items": {
+            "$ref": "#/$defs/ParagraphCandidate"
+          },
+          "title": "Paragraphs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "native_number",
+        "bbox",
+        "lines",
+        "paragraphs"
+      ],
+      "title": "TextBlock",
+      "type": "object"
+    },
+    "TextLine": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "source_index": {
+          "title": "Source Index",
+          "type": "integer"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "direction": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Direction",
+          "type": "array"
+        },
+        "writing_mode": {
+          "title": "Writing Mode",
+          "type": "integer"
+        },
+        "spans": {
+          "items": {
+            "$ref": "#/$defs/TextSpan"
+          },
+          "title": "Spans",
+          "type": "array"
+        },
+        "observed_bbox_height_pt": {
+          "title": "Observed Bbox Height Pt",
+          "type": "number"
+        },
+        "baseline_origins": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Baseline Origins",
+          "type": "array"
+        },
+        "advance_to_next_line_pt": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Advance To Next Line Pt"
+        }
+      },
+      "required": [
+        "id",
+        "source_index",
+        "bbox",
+        "direction",
+        "writing_mode",
+        "spans",
+        "observed_bbox_height_pt",
+        "baseline_origins"
+      ],
+      "title": "TextLine",
+      "type": "object"
+    },
+    "TextPaint": {
+      "additionalProperties": false,
+      "properties": {
+        "sequence": {
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "render_mode": {
+          "title": "Render Mode",
+          "type": "integer"
+        },
+        "font_name": {
+          "title": "Font Name",
+          "type": "string"
+        },
+        "font_size_pt": {
+          "title": "Font Size Pt",
+          "type": "number"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "direction": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Direction",
+          "type": "array"
+        },
+        "opacity": {
+          "title": "Opacity",
+          "type": "number"
+        },
+        "color_space_components": {
+          "title": "Color Space Components",
+          "type": "integer"
+        },
+        "color": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Color",
+          "type": "array"
+        },
+        "stroke_width_pt": {
+          "title": "Stroke Width Pt",
+          "type": "number"
+        },
+        "layer": {
+          "title": "Layer",
+          "type": "string"
+        },
+        "character_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Character Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "sequence",
+        "render_mode",
+        "font_name",
+        "font_size_pt",
+        "bbox",
+        "direction",
+        "opacity",
+        "color_space_components",
+        "color",
+        "stroke_width_pt",
+        "layer",
+        "character_ids"
+      ],
+      "title": "TextPaint",
+      "type": "object"
+    },
+    "TextSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "source_index": {
+          "title": "Source Index",
+          "type": "integer"
+        },
+        "bbox": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "origin": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Origin",
+          "type": "array"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "font_name": {
+          "title": "Font Name",
+          "type": "string"
+        },
+        "font_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Font Ids",
+          "type": "array"
+        },
+        "font_size_pt": {
+          "title": "Font Size Pt",
+          "type": "number"
+        },
+        "font_flags": {
+          "title": "Font Flags",
+          "type": "integer"
+        },
+        "character_flags": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Character Flags"
+        },
+        "bold_hint": {
+          "title": "Bold Hint",
+          "type": "boolean"
+        },
+        "italic_hint": {
+          "title": "Italic Hint",
+          "type": "boolean"
+        },
+        "underline_hint": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Underline Hint"
+        },
+        "underline_evidence": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Underline Evidence",
+          "type": "array"
+        },
+        "script_hint": {
+          "default": "normal",
+          "enum": [
+            "normal",
+            "superscript",
+            "subscript"
+          ],
+          "title": "Script Hint",
+          "type": "string"
+        },
+        "script_evidence": {
+          "default": "none",
+          "enum": [
+            "native_flag",
+            "relative_baseline",
+            "none"
+          ],
+          "title": "Script Evidence",
+          "type": "string"
+        },
+        "color_rgb": {
+          "title": "Color Rgb",
+          "type": "integer"
+        },
+        "opacity": {
+          "title": "Opacity",
+          "type": "integer"
+        },
+        "ascender": {
+          "title": "Ascender",
+          "type": "number"
+        },
+        "descender": {
+          "title": "Descender",
+          "type": "number"
+        },
+        "bidi_level": {
+          "default": 0,
+          "title": "Bidi Level",
+          "type": "integer"
+        },
+        "render_modes": {
+          "default": [],
+          "items": {
+            "type": "integer"
+          },
+          "title": "Render Modes",
+          "type": "array"
+        },
+        "paint_sequences": {
+          "default": [],
+          "items": {
+            "type": "integer"
+          },
+          "title": "Paint Sequences",
+          "type": "array"
+        },
+        "crop_visibility": {
+          "enum": [
+            "inside",
+            "partial",
+            "outside"
+          ],
+          "title": "Crop Visibility",
+          "type": "string"
+        },
+        "characters": {
+          "items": {
+            "$ref": "#/$defs/Character"
+          },
+          "title": "Characters",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "source_index",
+        "bbox",
+        "origin",
+        "text",
+        "font_name",
+        "font_ids",
+        "font_size_pt",
+        "font_flags",
+        "character_flags",
+        "bold_hint",
+        "italic_hint",
+        "underline_hint",
+        "color_rgb",
+        "opacity",
+        "ascender",
+        "descender",
+        "crop_visibility",
+        "characters"
+      ],
+      "title": "TextSpan",
+      "type": "object"
+    },
+    "VectorPath": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "s",
+            "f",
+            "fs",
+            "clip",
+            "group"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "bbox": {
+          "anyOf": [
+            {
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Bbox"
+        },
+        "scissor": {
+          "anyOf": [
+            {
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Scissor"
+        },
+        "level": {
+          "title": "Level",
+          "type": "integer"
+        },
+        "paint_sequence": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Paint Sequence"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/VectorPrimitive"
+          },
+          "title": "Items",
+          "type": "array"
+        },
+        "stroke_color": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stroke Color"
+        },
+        "fill_color": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Fill Color"
+        },
+        "stroke_width_pt": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stroke Width Pt"
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Properties"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "bbox",
+        "scissor",
+        "level",
+        "paint_sequence",
+        "items",
+        "stroke_color",
+        "fill_color",
+        "stroke_width_pt",
+        "properties"
+      ],
+      "title": "VectorPath",
+      "type": "object"
+    },
+    "VectorPrimitive": {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "enum": [
+            "l",
+            "c",
+            "re",
+            "qu"
+          ],
+          "title": "Command",
+          "type": "string"
+        },
+        "points": {
+          "default": [],
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Points",
+          "type": "array"
+        },
+        "rect": {
+          "anyOf": [
+            {
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rect"
+        },
+        "orientation": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Orientation"
+        }
+      },
+      "required": [
+        "command"
+      ],
+      "title": "VectorPrimitive",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "extractor": {
+      "const": "convx-pdf-layout-v1",
+      "default": "convx-pdf-layout-v1",
+      "title": "Extractor",
+      "type": "string"
+    },
+    "pymupdf_version": {
+      "title": "Pymupdf Version",
+      "type": "string"
+    },
+    "units": {
+      "const": "pdf_points",
+      "default": "pdf_points",
+      "title": "Units",
+      "type": "string"
+    },
+    "coordinates": {
+      "const": "unrotated_crop_top_left",
+      "default": "unrotated_crop_top_left",
+      "title": "Coordinates",
+      "type": "string"
+    },
+    "source_pdf_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Pdf Sha256",
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "validated_generated_pdf",
+        "inspection_only"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "validation_report_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Validation Report Sha256"
+    },
+    "source_metadata": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Source Metadata",
+      "type": "object"
+    },
+    "rendering_provenance": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Rendering Provenance",
+      "type": "object"
+    },
+    "policy": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Policy",
+      "type": "object"
+    },
+    "pages": {
+      "items": {
+        "$ref": "#/$defs/PageLayout"
+      },
+      "title": "Pages",
+      "type": "array"
+    },
+    "fonts": {
+      "items": {
+        "$ref": "#/$defs/FontDefinition"
+      },
+      "title": "Fonts",
+      "type": "array"
+    },
+    "assets": {
+      "items": {
+        "$ref": "#/$defs/ImageAsset"
+      },
+      "title": "Assets",
+      "type": "array"
+    },
+    "extraction_complete": {
+      "title": "Extraction Complete",
+      "type": "boolean"
+    },
+    "reconstruction_eligible": {
+      "title": "Reconstruction Eligible",
+      "type": "boolean"
+    },
+    "diagnostics": {
+      "items": {
+        "$ref": "#/$defs/LayoutDiagnostic"
+      },
+      "title": "Diagnostics",
+      "type": "array"
+    }
+  },
+  "required": [
+    "pymupdf_version",
+    "source_pdf_sha256",
+    "mode",
+    "validation_report_sha256",
+    "source_metadata",
+    "rendering_provenance",
+    "policy",
+    "pages",
+    "fonts",
+    "assets",
+    "extraction_complete",
+    "reconstruction_eligible",
+    "diagnostics"
+  ],
+  "title": "DocumentLayout",
+  "type": "object"
+}

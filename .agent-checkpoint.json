@@ -1,34 +1,211 @@
 {
   "project": "edgar-converter",
   "schema_version": 1,
-  "current_stage": 3,
-  "current_stage_name": "DOCX Processing",
+  "current_stage": 4,
+  "current_stage_name": "PDF Layout Analysis",
   "stage_status": "completed",
-  "last_completed_stage": 3,
-  "next_stage": 4,
+  "last_completed_stage": 4,
+  "next_stage": 5,
   "authorization_required": true,
   "awaiting_user_approval": true,
   "last_updated": "2026-11-05",
-  "completed_stages": [1, 2, 3],
-  "implemented_components": ["architecture and module contracts", "manual-derived design rule registry", "read-only fixture inventory", "persistent recovery documents", "FastAPI authenticated upload and job API", "environment configuration and private UUID storage", "bounded ZIP and OOXML admission", "durable SQLAlchemy jobs, events, idempotency and outbox", "Celery admission and worker heartbeat", "dispatch retry, lease recovery, cancellation and retention cleanup", "backend security, lifecycle and process tests", "deterministic OOXML revision inventory and acceptance", "source-preserving accepted DOCX and independent revision/media audit", "free local LibreOffice PDF provider and bounded process runner", "all-page strict PDF content/order/geometry/font/raster validation", "current-attempt processing reports and owned explicit resume", "real native-renderer positive and negative qualification tests"],
-  "pending_tasks": ["User review and explicit authorization before Stage 4", "Stage 4 PDF layout analysis on validated inputs only", "Resolve failed Word-reference PDF qualification without paid providers or gate bypasses", "Run opt-in real Redis/PostgreSQL tests when services are available"],
-  "known_issues": ["Word reference conversion fails strict PDF fidelity on all 23 pages", "Accepted story content/structure passes but full DOCX format equivalence is unproven; same-renderer PDFs differ on page 1", "Unsupported cell/custom-XML/conflict or ambiguous revisions fail safely", "No HTM engine, frontend or final ZIP yet", "Live Redis/PostgreSQL and Linux prefork deployment unverified locally", "Stage 11 process/network/disk/ACL hardening not deployed", "Starlette httpx test-client deprecation warning", "Manual CSS/attribute/character ambiguities unresolved"],
-  "last_test_results": [
-    {"stage":3,"command":".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing","passed":111,"failed":0,"skipped":2,"warnings":1,"line_coverage_percent":87,"scope":"Includes genuine LibreOffice exports and correct negative reference qualification; skips real Redis/PostgreSQL only"},
-    {"stage":3,"command":".venv/Scripts/ruff check services workers packages/converter tests tools/fetch_libreoffice.py","result":"passed"},
-    {"stage":3,"command":".venv/Scripts/ruff format --check services workers packages/converter tests tools/fetch_libreoffice.py","result":"50 files already formatted"},
-    {"stage":3,"command":".venv/Scripts/python -m pip check","result":"No broken requirements found"},
-    {"stage":3,"command":"read-only git diff --check","result":"passed; LF/CRLF notices only"},
-    {"stage":2,"command":".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov-report=term-missing","passed":72,"failed":0,"skipped":2,"warnings":1,"line_coverage_percent":87,"scope":"API, admission, durable state, lifecycle races, real Celery memory transport and local process tests; real services skipped"},
-    {"stage":2,"command":".venv/Scripts/ruff check services workers tests","result":"passed"},
-    {"stage":2,"command":".venv/Scripts/ruff format --check services workers tests","result":"31 files already formatted"},
-    {"stage":2,"command":"git diff --check (installed executable; read only)","result":"passed; LF/CRLF notices only"},
-    {"stage":2,"command":".venv/Scripts/python -m pip check","result":"No broken requirements found"},
-    {"stage":1,"command":"python tools/verify_stage1.py","passed":8,"failed":0,"scope":"Historical fixture/documentation evidence, adapted to later authorized stages"}
+  "completed_stages": [
+    1,
+    2,
+    3,
+    4
   ],
-  "reference_qualification": {"status":"failed","accepted_story_parts_matching":18,"revision_markers_before":31,"revision_markers_after":0,"source_media_parts_preserved":5,"pdf_pages_generated":23,"pdf_pages_reference":23,"pdf_pages_strict_passed":0,"pdf_pages_strict_failed":23,"evidence":"docs/stage3-regression.json","not_a_successful_conversion":true},
+  "implemented_components": [
+    "architecture and module contracts",
+    "manual-derived design rule registry",
+    "read-only fixture inventory",
+    "persistent recovery documents",
+    "FastAPI authenticated upload and job API",
+    "environment configuration and private UUID storage",
+    "bounded ZIP and OOXML admission",
+    "durable SQLAlchemy jobs, events, idempotency and outbox",
+    "Celery admission and worker heartbeat",
+    "dispatch retry, lease recovery, cancellation and retention cleanup",
+    "backend security, lifecycle and process tests",
+    "deterministic OOXML revision inventory and acceptance",
+    "source-preserving accepted DOCX and independent revision/media audit",
+    "free local LibreOffice PDF provider and bounded process runner",
+    "all-page strict PDF content/order/geometry/font/raster validation",
+    "current-attempt processing reports and owned explicit resume",
+    "real native-renderer positive and negative qualification tests",
+    "versioned Pydantic PDF layout schema and exact character ledger",
+    "hash-bound strict PDF gate before layout analysis",
+    "native typography/font resources/image placement/vector/paint extraction",
+    "ruled and conservative borderless table/merged-cell candidates",
+    "native and inferred block/line reading order plus margin regions",
+    "bounded private atomic layout serialization and cancellation",
+    "explicit reconstruction-ineligible PDF inspection CLI",
+    "all-23-page native extraction regression and no-download stage completion"
+  ],
+  "pending_tasks": [
+    "User review/manual commit/push and explicit authorization before Stage 5",
+    "Stage 5 permitted PDF-to-HTM reconstruction on eligible validated layouts only",
+    "Resolve failed Word-reference PDF qualification using free components without gate bypasses",
+    "Run opt-in real Redis/PostgreSQL and Linux/deployment qualification when available"
+  ],
+  "known_issues": [
+    "Word reference conversion fails strict PDF fidelity on all 23 pages",
+    "Accepted story content/structure passes but full DOCX format equivalence is unproven; same-renderer PDFs differ on page 1",
+    "Unsupported cell/custom-XML/conflict or ambiguous revisions fail safely",
+    "No HTM engine, frontend or final ZIP yet",
+    "Live Redis/PostgreSQL and Linux prefork deployment unverified locally",
+    "Stage 11 process/network/disk/ACL hardening not deployed",
+    "Starlette httpx test-client deprecation warning",
+    "Manual CSS/attribute/character ambiguities unresolved",
+    "Table/paragraph/reading order/font-resource association include explicit uncertain inference",
+    "Relevant clipping, annotations, unknown Unicode and bidi ambiguity block reconstruction",
+    "Native parser allocation/stalls need OS-level isolation in deployment"
+  ],
+  "last_test_results": [
+    {
+      "stage": 4,
+      "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
+      "passed": 144,
+      "failed": 0,
+      "skipped": 2,
+      "warnings": 1,
+      "line_coverage_percent": 89,
+      "seconds": 127.71,
+      "scope": "Final default unit/integration/regression suite including native LibreOffice exports and all 23 reference extraction pages"
+    },
+    {
+      "stage": 4,
+      "command": "Ruff check/format, pip check, verify_stage1.py, local documentation links/schema, read-only git diff --check",
+      "result": "passed; 64 files formatted; 8 historical checks passed; LF/CRLF notices only"
+    },
+    {
+      "stage": 4,
+      "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
+      "passed": 143,
+      "failed": 0,
+      "skipped": 2,
+      "warnings": 1,
+      "line_coverage_percent": 89,
+      "scope": "Unit and integration before adding regression directory to default collection; final combined result follows"
+    },
+    {
+      "stage": 4,
+      "command": ".venv/Scripts/python -m pytest tests/unit/test_pdf_analysis.py tests/regression/test_pdf_layout_reference.py -q",
+      "passed": 32,
+      "failed": 0,
+      "warnings": 1,
+      "scope": "Includes all 23 reference pages and scripts"
+    },
+    {
+      "stage": 3,
+      "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
+      "passed": 111,
+      "failed": 0,
+      "skipped": 2,
+      "warnings": 1,
+      "line_coverage_percent": 87,
+      "scope": "Includes genuine LibreOffice exports and correct negative reference qualification; skips real Redis/PostgreSQL only"
+    },
+    {
+      "stage": 3,
+      "command": ".venv/Scripts/ruff check services workers packages/converter tests tools/fetch_libreoffice.py",
+      "result": "passed"
+    },
+    {
+      "stage": 3,
+      "command": ".venv/Scripts/ruff format --check services workers packages/converter tests tools/fetch_libreoffice.py",
+      "result": "50 files already formatted"
+    },
+    {
+      "stage": 3,
+      "command": ".venv/Scripts/python -m pip check",
+      "result": "No broken requirements found"
+    },
+    {
+      "stage": 3,
+      "command": "read-only git diff --check",
+      "result": "passed; LF/CRLF notices only"
+    },
+    {
+      "stage": 2,
+      "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov-report=term-missing",
+      "passed": 72,
+      "failed": 0,
+      "skipped": 2,
+      "warnings": 1,
+      "line_coverage_percent": 87,
+      "scope": "API, admission, durable state, lifecycle races, real Celery memory transport and local process tests; real services skipped"
+    },
+    {
+      "stage": 2,
+      "command": ".venv/Scripts/ruff check services workers tests",
+      "result": "passed"
+    },
+    {
+      "stage": 2,
+      "command": ".venv/Scripts/ruff format --check services workers tests",
+      "result": "31 files already formatted"
+    },
+    {
+      "stage": 2,
+      "command": "git diff --check (installed executable; read only)",
+      "result": "passed; LF/CRLF notices only"
+    },
+    {
+      "stage": 2,
+      "command": ".venv/Scripts/python -m pip check",
+      "result": "No broken requirements found"
+    },
+    {
+      "stage": 1,
+      "command": "python tools/verify_stage1.py",
+      "passed": 8,
+      "failed": 0,
+      "scope": "Historical fixture/documentation evidence, adapted to later authorized stages"
+    }
+  ],
+  "reference_qualification": {
+    "status": "failed",
+    "accepted_story_parts_matching": 18,
+    "revision_markers_before": 31,
+    "revision_markers_after": 0,
+    "source_media_parts_preserved": 5,
+    "pdf_pages_generated": 23,
+    "pdf_pages_reference": 23,
+    "pdf_pages_strict_passed": 0,
+    "pdf_pages_strict_failed": 23,
+    "evidence": "docs/stage3-regression.json",
+    "not_a_successful_conversion": true
+  },
   "free_components_only": true,
-  "suggested_commit_message": "feat: add free DOCX revision processing and strict PDF validation",
+  "suggested_commit_message": "feat: add gated PDF layout analysis and extraction regression tests",
   "git_operations_performed": false,
-  "notes": ["User explicitly authorized Stage 3 with go for it", "User requires free components only; no paid SDK, trial renderer or premium-license configuration", "Original fixtures unchanged; current accepted output is independently audited", "Actual free LibreOffice exports executed; Word-reference fidelity failed on every page", "Automated negative qualification passing does not mean the reference conversion passed", "Git read-only inspection only; no writes", "Stop after Stage 3; Stage 4 requires explicit authorization", "No successful Word-reference conversion, HTM/ZIP or SEC acceptance claimed"]
+  "notes": [
+    "User explicitly authorized Stage 3 with go for it",
+    "User requires free components only; no paid SDK, trial renderer or premium-license configuration",
+    "Original fixtures unchanged; current accepted output is independently audited",
+    "Actual free LibreOffice exports executed; Word-reference fidelity failed on every page",
+    "Automated negative qualification passing does not mean the reference conversion passed",
+    "Git read-only inspection only; no writes",
+    "No successful Word-reference conversion, HTM/ZIP or SEC acceptance claimed",
+    "Stage 4 authorized by pushed, continue",
+    "User confirms Word open-and-save-as-PDF source provenance; free native LibreOffice export remains distinct and unqualified",
+    "Stage 4 implementation completed; stop before Stage 5 and await explicit authorization",
+    "Inspection mode never authorizes reconstruction; generated reference PDF still fails its strict gate"
+  ],
+  "reference_layout_inspection": {
+    "mode": "inspection_only",
+    "reconstruction_eligible": false,
+    "pages": 23,
+    "characters": 85798,
+    "lines": 1263,
+    "font_resources": 13,
+    "image_assets": 4,
+    "image_placements": 5,
+    "vector_paths": 4847,
+    "table_candidates": 8,
+    "layout_bytes": 40725093,
+    "source_pdf_sha256": "4e978ec13451024838908889839548d6bee4c559c7c33e5ed3aa19f0a85b2431",
+    "evidence": "docs/stage4-extraction-regression.json"
+  }
 }

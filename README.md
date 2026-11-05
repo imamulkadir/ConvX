@@ -2,7 +2,7 @@
 
 Planned browser application for secure DOCX revision acceptance, PDF-first layout reconstruction, manual-derived EDGAR validation, all-page visual comparison and clean filing-asset ZIP download. Compliance and exact disclosure take priority; unresolved strict fidelity failures prevent download.
 
-**Current delivery: Stage 3 DOCX processing.** Authenticated uploads, durable jobs, revision acceptance, free local LibreOffice PDF export and strict reference validation are implemented. The supplied DOCX's accepted content matches its baseline; its generated 23-page PDF fails strict layout comparison and remains unsuccessful. HTM generation, frontend and filing downloads are not available yet. See [project status](PROJECT_STATUS.md), [checkpoint](.agent-checkpoint.json) and [agent instructions](AGENTS.md). No SEC acceptance or pixel-perfect conversion is claimed.
+**Current delivery: Stage 4 PDF layout analysis.** Authenticated uploads, durable jobs, revision acceptance, free local LibreOffice PDF export and strict reference validation and a versioned PDF layout model are implemented. The supplied DOCX's accepted content matches its baseline; its generated 23-page PDF fails strict layout comparison and remains unsuccessful. Read-only inspection retains 85,798 reference characters without authorizing reconstruction. See [layout analysis](docs/pdf-layout-analysis.md). HTM generation, frontend and filing downloads are not available yet. See [project status](PROJECT_STATUS.md), [checkpoint](.agent-checkpoint.json) and [agent instructions](AGENTS.md). No SEC acceptance or pixel-perfect conversion is claimed.
 
 ## Architecture and requirements
 

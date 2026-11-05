@@ -57,3 +57,11 @@ Decision: use the persisted current attempt UUID to own private accepted DOCX, P
 ## 2026-11-05 — ADR-014: Controlled native resource profile
 
 Decision: set the explicit configurable renderer RSS limit to 1 GiB after the full fixture exceeded the initial 512 MiB limit and stopped safely. Context: a genuine native export was needed to qualify the free renderer. Alternatives: remove resource limits or label the interrupted output valid. Reasoning: maintain a bounded, documented profile while allowing real completion of the test. Consequences: output completed under 1 GiB and still failed strict fidelity; no source font/geometry changes or relaxed fidelity thresholds were used. OS-level network/CPU/disk/native-parser isolation remains Stage 11 work.
+
+## 2026-11-05 ? ADR-015: Immutable typed PDF layout with explicit inference
+
+Decision: use Pydantic schema v1 with exact native character ledgers, font resources, image placements, vectors/paint operations and separate reading/table/region candidates. Context: PDF geometry is observable while paragraph semantics, reading order and font-resource identity may be ambiguous. Alternatives: generic PDF-to-HTML output, forced source order or silently selecting fonts. Reasoning: preserve facts and uncertainty without losing disclosure. Consequences: deterministic IDs, finite geometry/reference validation and bounded private JSON; later HTM must resolve unsupported geometry and semantics. Native parser calls still require deployment isolation.
+
+## 2026-11-05 ? ADR-016: Hash-bound layout gate and separate reference inspection
+
+Decision: production analysis requires a complete passing strict Stage 3 report bound to the actual PDF hash; read-only inspection cannot authorize reconstruction. Context: the Word-saved fixture is useful for extraction regression although the free generated PDF fails strict comparison. Alternatives: bypass the failed gate or substitute the reference as generated output. Reasoning: inspection evidence must not be confused with conversion success. Consequences: no layout in the failed reference pipeline; successful layout stops before HTM. Record original/accepted DOCX hashes and native export provider provenance. Word Save As and LibreOffice export are both native operations but engine equivalence remains unproven; the free-only constraint remains unchanged.

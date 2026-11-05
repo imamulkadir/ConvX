@@ -2,13 +2,13 @@
 
 ## Overall Status
 
-Current Stage: 3 — DOCX Processing
+Current Stage: 4 — PDF Layout Analysis
 
 Stage Status: completed
 
-Last Completed Stage: 3
+Last Completed Stage: 4
 
-Next Stage: 4 — PDF Layout Analysis (requires explicit authorization)
+Next Stage: 5 — PDF-to-HTM Reconstruction (requires explicit authorization)
 
 Last Updated: 2026-11-05 (Asia/Dhaka)
 
@@ -22,7 +22,9 @@ Stage 1 — Requirements Analysis and Architecture completed.
 
 Stage 2 — Backend Foundation completed after explicit user authorization (“continue”). Stage 3 was authorized with “go for it”; the user additionally requires all components to be free of charge with no premium licensing.
 
-Stage 3 — DOCX Processing implementation completed and verified. The supplied document's strict PDF reference qualification failed and remains unsuccessful. Awaiting explicit authorization for Stage 4.
+Stage 3 — DOCX Processing implementation completed and verified. The supplied document's strict PDF reference qualification failed and remains unsuccessful. Stage 4 was explicitly authorized with ?pushed, continue?.
+
+Stage 4 ? PDF Layout Analysis completed after implementation, native fixture inspection and relevant tests. Stop before Stage 5.
 
 ## Current Stage and Implemented Features
 
@@ -32,11 +34,17 @@ SQLAlchemy schema v1 persists jobs, events, owner quota locks, idempotent submis
 
 Revision acceptance is deterministic and scans all Word XML parts, accepts core insertion/deletion/property/row/paragraph/move cases, preserves embedded image bytes and rejects unsupported structural revisions. Current properties are retained; historical snapshots are removed. Supported textboxes/headers/footers/notes are covered. Strict PDF validation compares all pages' content/order, word positions, typography and exact RGB renders. Accepted content/structure matches the expected fixture's 18 story parts, but the generated 23-page PDF fails strict Word-reference fidelity on every page. A genuine same-renderer one-page baseline passes; the reference remains unsuccessful.
 
+Stage 4 adds a versioned Pydantic layout model with exact per-page character ledgers, source/proof/export provenance, native typography, font resources, image placements/soft masks, vector/clipping/paint metadata, table/merge candidates, reading-order graphs, repeated-margin/page-number candidates, links and diagnostics. Gated extraction runs in the worker after strict PDF validation and writes private attempt-local JSON. Passing analysis stops at awaiting_htm_generation; unsupported extraction semantics fail safely. Separate inspection can never authorize reconstruction.
+
+The Word-saved reference was inspected read-only: 23 pages, 85,798 characters, 13 font resources, four image assets in five placements. All-page character digests and native vector/image counts are regression-tested. This does not qualify the failed generated PDF. See docs/pdf-layout-analysis.md and docs/stage4-extraction-regression.json.
+
 Stage 1 architecture, evidence/registry and immutable fixture hashes remain intact. The historical verification tool now permits later authorized stages while retaining fixture and documentation checks.
 
 ## Files Created or Modified
 
 Stage 3 added `packages/converter` (OOXML inventory/acceptance, process context/errors, PDF provider/LibreOffice/process runner/validation, orchestration and CLI), revision/PDF/native-renderer/lifecycle tests, pinned PyMuPDF/Pillow/psutil dependencies, verified renderer-fetch helper, document-processing instructions and redacted qualification evidence. Updated API validation/resume, private attempt storage, worker stages/leases/timeouts/configuration, `.env.example`, architecture/decisions/deployment/interfaces/limitations/README/AGENTS/status/checkpoint/history and ignore rules. LibreOffice binaries/extraction/intermediate outputs remain ignored in `.tools/` and `var/`. No fixture bytes changed.
+
+Stage 4 added `packages/converter/layout`, `packages/converter/pdf_analysis`, layout fixture/unit/regression tests, JSON schema and redacted extraction metrics. Updated pipeline/worker/configuration/job completion, CLI/version, .env.example and recovery/architecture/interface/limitations documentation. Original fixtures unchanged; no later-stage generator or package output.
 
 ## Tests Executed
 
@@ -48,7 +56,9 @@ Windows/PowerShell, Python 3.12.10, project-local `.venv`; pinned backend/test d
 - Ruff lint passed; all 50 Python files passed formatting checks; dependency check reported no broken requirements; read-only `git diff --check` passed. Git emitted LF/CRLF notices only.
 - Historical `python tools/verify_stage1.py`: 8 passed, 0 failed; all five fixture hashes and 23 reference pages remain verified.
 
-Revision, native renderer, source/media integrity, unsupported-revision rejection, PDF content/geometry/font/pixel gates, all 23 reference pages, page-23 perturbation, cancellation/child termination, memory/evidence quotas, current-attempt reports and owned resume were exercised. A real same-renderer one-page baseline passes; the Word reference fails all 23 pages, correctly detected by negative qualification tests. HTML/SEC/HTM-vs-PDF/full conversion E2E and SEC submissions remain unimplemented/unexecuted. See append-only history and `docs/stage3-regression.json` for evidence.
+Revision, native renderer, source/media integrity, unsupported-revision rejection, PDF content/geometry/font/pixel gates, all 23 reference pages, page-23 perturbation, cancellation/child termination, memory/evidence quotas, current-attempt reports and owned resume were exercised. A real same-renderer one-page baseline passes; the Word reference fails all 23 pages, correctly detected by negative qualification tests. Stage 4 verification: baseline 111 passed/2 skipped; first full extraction suite 141 passed/2 skipped, 89% coverage; added script, all-page extraction and no-download lifecycle checks also passed. Final combined default suite: **144 passed, 0 failed, 2 skipped**, 89% coverage, one existing warning, 127.71 seconds. Includes mandatory all-page extraction regression. Eight historical checks, local documentation links/model schema and read-only diff checks passed. Ruff lint passes, 64 files formatted, pip check clean.
+
+HTML/SEC/HTM-vs-PDF/full conversion E2E and SEC submissions remain unimplemented/unexecuted. See append-only history and `docs/stage3-regression.json` for evidence.
 
 ## Known Bugs and Technical Limitations
 
@@ -58,15 +68,15 @@ No paid SDK, trial, premium-license configuration or remote paid renderer is inc
 
 ## Architectural Decisions
 
-Retained independent services and PDF-first gates. The user's free-only scope supersedes the earlier commercial-provider candidate. Chose deterministic source-preserving OOXML acceptance with safe unsupported cases, free local LibreOffice export, explicit all-page PDF qualification, private attempt-bound reports, explicit owned resume and a configurable bounded native resource profile. See ADR-011 through ADR-014 in `docs/decisions.md`.
+Retained independent services and PDF-first gates. The user's free-only scope supersedes the earlier commercial-provider candidate. Chose deterministic source-preserving OOXML acceptance with safe unsupported cases, free local LibreOffice export, explicit all-page PDF qualification, private attempt-bound reports, explicit owned resume and a configurable bounded native resource profile. Layout design and explicit inspection/gating/provenance decisions are ADR-015 and ADR-016. See ADR-011 through ADR-016 in `docs/decisions.md`.
 
 ## Pending Tasks and Next Actions
 
-Stop for user review and explicit Stage 4 authorization. Stage 4 must implement PDF parsing/extraction and a versioned layout model using separately validated test inputs. This Word reference may not advance beyond its failed strict PDF gate. Resolve its free-renderer/format discrepancies before claiming reference success; do not alter source typography to force a pass or add paid alternatives. Preserve the unsupported-revision failure contract, attempt ownership, source hashes and original fixtures. Live-service/Linux/deployment qualification remains outstanding.
+Stop for user review, manual commit/push and explicit Stage 5 authorization. Stage 5 is PDF-to-HTM Reconstruction, consuming only eligible validated layouts. Preserve selectable disclosure and manual constraints; resolve inference/unsupported semantics explicitly. The Word reference may not advance beyond its failed strict PDF gate. Free-only rendering remains mandatory; do not alter source typography, substitute the reference or relax gates to claim success. Live-service/Linux/deployment qualification remains outstanding.
 
 ## Suggested Commit Message
 
-`feat: add free DOCX revision processing and strict PDF validation`
+`feat: add gated PDF layout analysis and extraction regression tests`
 
 ## Resume Instructions
 

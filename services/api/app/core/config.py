@@ -47,6 +47,10 @@ class Settings(BaseSettings):
     pdf_comparison_dpi: int = Field(default=96, ge=36, le=300)
     pdf_max_pages: int = Field(default=500, ge=1, le=2000)
     pdf_require_reference: bool = True
+    layout_max_total_characters: int = Field(default=500000, ge=1, le=2000000)
+    layout_max_characters_per_page: int = Field(default=100000, ge=1, le=500000)
+    layout_max_bytes: int = Field(default=64 * 1024 * 1024, ge=1024, le=256 * 1024 * 1024)
+    layout_memory_bytes: int = Field(default=768 * 1024 * 1024, ge=64 * 1024 * 1024)
 
     @model_validator(mode="after")
     def safe_configuration(self) -> Settings:

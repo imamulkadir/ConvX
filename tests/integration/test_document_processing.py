@@ -26,10 +26,12 @@ def test_real_libreoffice_render_and_positive_pdf_gate(tmp_path, libreoffice):
     provider = LibreOfficeProvider(libreoffice)
     baseline = provider.render(accepted, tmp_path / "baseline", ProcessingContext())
     result = process_docx(source, tmp_path / "result", provider, baseline.path)
-    assert result["status"] == "pdf_validated", result["diagnostics"]
+    assert result["status"] == "layout_analyzed", result["diagnostics"]
     assert result["pdf_validation"]["passed"]
     assert not result["final_conversion_complete"]
     assert result["provider"]["provider"] == "libreoffice"
+    assert result["layout_analysis"]["reconstruction_eligible"]
+    assert (tmp_path / "result/layout.json").is_file()
 
 
 def test_real_23_page_reference_regression_records_failure(tmp_path, libreoffice):
@@ -50,6 +52,8 @@ def test_real_23_page_reference_regression_records_failure(tmp_path, libreoffice
     assert result["status"] == "failed"
     assert result["diagnostics"][0]["code"] == "PDF_STRICT_VALIDATION_FAILED"
     assert not result["final_conversion_complete"]
+    assert result["layout_analysis"] is None
+    assert not (tmp_path / "regression/layout.json").exists()
 
 
 def test_worker_persists_private_accepted_output_and_report(client, settings, monkeypatch):
@@ -90,3 +94,16 @@ def test_resume_has_ownership_and_current_attempt_guards(client, settings):
     )
     admit_document(job["id"], settings)
     assert client.app.state.repository.get(job["id"], "alice")["attempts"] == 2
+
+
+def test_layout_stage_completion_never_enables_filing_download(client):
+    job = upload_one(client)
+    repository = client.app.state.repository
+    record = repository.claim(job["id"])
+    assert repository.finish_processing(
+        job["id"], record["attempt_id"], {"status": "layout_analyzed", "diagnostics": []}
+    )
+    record = repository.get(job["id"], "alice")
+    assert record["state"] == "blocked" and record["stage"] == "awaiting_htm_generation"
+    assert record["diagnostic_code"] == "HTML_ENGINE_NOT_AVAILABLE"
+    assert client.get(f"/api/v1/conversions/{job['id']}/download").status_code == 409

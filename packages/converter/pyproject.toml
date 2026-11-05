@@ -4,14 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "convx-converter"
-version = "0.3.0"
-description = "Free local DOCX revision processing and PDF rendering gates"
+version = "0.4.0"
+description = "Free local document processing and versioned PDF layout extraction"
 requires-python = ">=3.12"
-dependencies = ["lxml==6.1.3", "PyMuPDF==1.26.7", "Pillow==13.0.0", "psutil==7.2.2"]
+dependencies = ["lxml==6.1.3", "PyMuPDF==1.26.7", "Pillow==13.0.0", "psutil==7.2.2", "pydantic==2.14.3"]
 
 [project.scripts]
 convx-process-docx = "converter.cli:main"
+convx-inspect-pdf = "converter.pdf_analysis.cli:main"
 
 [tool.setuptools]
-packages = ["converter", "converter.revisions", "converter.pdf_export"]
+packages = ["converter", "converter.revisions", "converter.pdf_export", "converter.pdf_analysis", "converter.layout"]
 package-dir = {"converter" = "."}
