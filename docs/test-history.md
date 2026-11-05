@@ -57,3 +57,43 @@ Other commands: `.venv/Scripts/ruff check services workers tests` passed; `.venv
 ## 2026-11-05 — Stage 2: completed-record handoff
 
 After marking Stage 2 completed/awaiting next-stage authorization: `python tools/verify_stage1.py` passed 8/8; Ruff lint passed; `ruff format --check services workers tests` reported all 31 Python files formatted; read-only `git diff --check` passed with only Git's LF/CRLF conversion notices. Read-only status confirms the intended code/documentation/configuration changes and no fixture modifications. The user's README title edit remains preserved. No Git writes performed. Stage 3 was not started.
+
+## 2026-11-05 — Stage 3: recovery and free renderer setup
+
+Authorization: user “go for it”, followed by explicit requirement for free components only and no premium licensing. Read persistent context and inspected read-only Git state; the prior stage was committed by the user. Baseline `.venv/Scripts/python -m pytest -q`: 72 passed, 2 skipped, 1 existing Starlette/httpx warning. No Git writes performed.
+
+No LibreOffice or commercial SDK was initially installed. An initial unpinned PyMuPDF download selected the newer AI/layout dependency bundle; stopped that agent-owned installer and selected the minimal pinned PyMuPDF 1.26.7 plus Pillow 13.0.0/psutil 7.2.2. They installed successfully; `pip check` reported no broken requirements and no numpy/onnx/networkx bundle was installed. No paid provider was installed.
+
+`python tools/fetch_libreoffice.py`: vendor MSI downloaded and SHA-256/size verified against official metadata. Administrative workspace extraction via `msiexec /a ... /qn TARGETDIR=.../.tools/libreoffice` returned 0, with hidden UI. Free LibreOffice 26.8.2.2 and system-font fingerprint recorded in qualification evidence. No document transmitted to a renderer service.
+
+The first editable converter install ran before the pdf_export directory existed and failed package discovery; after actual provider modules were created, `pip install --no-deps -e packages/converter` built/installed successfully. An initial CLI run used an extra `LibreOffice` directory in the executable path and correctly reported unavailable. Corrected the path to the verified extraction's `program/soffice.com`.
+
+## 2026-11-05 — Stage 3: actual revision and PDF qualification
+
+Commands: actual `accept_revisions` and `compare_accepted_content` on supplied fixtures; `python -m converter.cli <source> <private-workspace> --libreoffice <verified-executable> --reference-pdf <fixture-pdf> --expected-accepted-docx <accepted-fixture>`.
+
+Revision result: all 31 markers accepted; zero detected revisions remain. Ordered paragraph/table structure agrees in all 18 story parts; source SHA unchanged; all five original media parts byte-identical. Nine accepted-fixture media names represent the same four unique source image hashes. This does not establish complete DOCX format equivalence.
+
+Native PDF runs: initial 512 MiB RSS profile failed safely with `RENDERER_MEMORY_LIMIT`. Explicit documented 1 GiB profile completed real PDF export: 23 pages versus 23 Word-reference pages. **Strict reference result failed on all 23 pages**, with font metric, geometry/order/content and raster discrepancies; CLI exited nonzero and did not continue to HTML. At 96 DPI exact RGB comparison, page difference fractions span about 1.23%–30.74%. Page 1 actual/reference images were visually inspected; floating header/logo/table/spacing differences were visible. No font/margin/anchor edits or relaxed pixel thresholds were used to force a pass.
+
+Additional real rendering: supplied accepted DOCX through the same LibreOffice provider. Compared against independently accepted source's LibreOffice PDF: 22 identical pages, page 1 differing (66 word boxes shifted +9 pt horizontally). OOXML inspection found floating-table/style serialization differences in supplied baseline/source. This is recorded as format ambiguity, not silently repaired or treated as equivalent. Full private evidence stays in ignored `var/`; redacted all-page metrics are in `docs/stage3-regression.json` and findings in `docs/stage3-regression.md`.
+
+## 2026-11-05 — Stage 3: incremental automated verification
+
+Environment: Windows/PowerShell, Python 3.12.10, pinned local packages and actual LibreOffice. Test commands: `python -m pytest -q` and coverage variant `--cov=app --cov=workers --cov=converter --cov-report=term-missing`.
+
+Results as components were added: 100 passed / 2 skipped (then fixed a test-string invalid-escape warning); 106 passed / 2 skipped / 1 existing warning after real renderer/process/lifecycle tests; 109 passed / 2 skipped / 1 warning with 87% reported line coverage after explicit property/PDF bounds and blank-page handling. Subsequent focused unit suite: 70 passed. Real same-renderer one-page export passes strict reference comparison; the full 23-page fixture is a negative qualification test that correctly detects its unsuccessful reference conversion. Self-comparison passes all 23 reference pages; page-23-only modification is detected. Cancellation test verifies owned renderer child termination. Failed/blocked work never enables download.
+
+Skipped tests remain real Redis/PostgreSQL integrations with no configured services. No HTM/layout-model/SEC/ZIP/frontend/full pipeline or Linux production qualification executed. Final evidence-byte quota and renderer-memory tests plus handoff checks follow separately. Existing Starlette/httpx deprecation warning remains; it is not suppressed.
+
+## 2026-11-05 — Stage 3: final automated verification
+
+Command: `.venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing`.
+
+Result: **111 passed, 0 failed, 2 skipped**, 87% reported line coverage, 1 existing Starlette/httpx warning, 87.23 seconds. Native LibreOffice tests executed; genuine same-renderer positive PDF gate passed, while the supplied 23-page Word reference remained an unsuccessful conversion correctly detected by the negative qualification test. Evidence-byte truncation still computes every page's failure metrics; process memory/cancellation/owned-child tests passed. No false completion/download was enabled. Two skips are optional real Redis/PostgreSQL integrations; neither was simulated as a real-service pass. Manual CLI and subprocess coverage are not collected by parent coverage.
+
+Other commands: Ruff lint passed; formatting check reported all 50 Python files formatted; `pip check` reported no broken requirements; read-only `git diff --check` passed with LF/CRLF notices only. `python tools/verify_stage1.py` passed 8/8 before final progress-record updates, confirming fixture hashes and context consistency. Final completed-record checks follow separately. No source fixtures modified, no Git writes and no Stage 4 implementation.
+
+## 2026-11-05 — Stage 3: completed-record handoff
+
+After marking Stage 3 implementation completed and awaiting Stage 4 authorization, `python tools/verify_stage1.py` passed 8/8. An additional read-only Python check verified all root/docs Markdown local links, parsed the completed checkpoint and confirmed redacted qualification evidence contains 23 failed reference pages and zero strict passes. Read-only `git diff --check` passed with LF/CRLF notices only. Source fixtures remain unchanged; ignored `.tools/` and `var/` contain local renderer/intermediate evidence, not final filing outputs. Stop at Stage 3; no Git writes and no automatic next stage.

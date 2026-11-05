@@ -1,6 +1,6 @@
 # Stage 2 backend operation
 
-The API, durable job store, private upload admission, dispatch outbox and Celery admission worker are implemented. Conversion engines remain unavailable. A valid queued job moves through worker validation to `blocked / awaiting_conversion_engine` with `PIPELINE_NOT_AVAILABLE`; it never becomes SEC-ready or downloadable. This is a recorded capability boundary, not a simulated conversion. Stage 3 must resume blocked jobs through a deliberate migration/dispatch change, after authorization.
+The API, durable job store, private upload admission, dispatch outbox and Celery worker are implemented. Stage 3 extends the worker to revision acceptance and free LibreOffice PDF export/validation; see [document processing](docx-processing.md) for setup and current results. Earlier Stage 2 jobs stopped at `blocked / awaiting_conversion_engine`; owned resume now explicitly requeues those jobs when appropriate. Missing renderer/reference remains blocked; strict PDF differences fail; a passing PDF stops before the unimplemented layout engine. No job becomes SEC-ready or downloadable yet.
 
 ## Install and configure
 
@@ -10,6 +10,7 @@ Run from the repository root with Python 3.12 or later. Tested on Windows/Python
 python -m venv .venv
 .\.venv\Scripts\python -m pip install -r services/api/requirements-lock.txt
 .\.venv\Scripts\python -m pip install --no-deps -e services/api
+.\.venv\Scripts\python -m pip install --no-deps -e packages/converter
 Copy-Item .env.example .env
 .\.venv\Scripts\python -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
@@ -62,12 +63,12 @@ Files are fsynced and atomically renamed before the job/event/outbox transaction
 
 ```powershell
 .\.venv\Scripts\python -m pytest -q
-.\.venv\Scripts\ruff check services workers tests
-.\.venv\Scripts\ruff format --check services workers tests
+.\.venv\Scripts\ruff check services workers packages/converter tests tools/fetch_libreoffice.py
+.\.venv\Scripts\ruff format --check services workers packages/converter tests tools/fetch_libreoffice.py
 .\.venv\Scripts\python -m pip check
 python tools/verify_stage1.py
 ```
 
 Optional live-service tests require `CONVX_TEST_REDIS_URL` and `CONVX_TEST_DATABASE_URL`. Use disposable services; the Redis test uses an isolated random queue and PostgreSQL test creates/drops only its generated `convx_test_<uuid>` schema. These tests skip when their URLs are absent. The default suite tests SQLite persistence, API security, lifecycle races and real Celery serialization/delivery over an in-memory test transport. It does not certify Redis or PostgreSQL deployment.
 
-Startup token error: populate private `.env` and run from root. Schema error: initialize v1 explicitly; do not delete an existing database as a repair shortcut. Jobs remain queued: inspect dispatcher and Redis. `awaiting_conversion_engine`: expected Stage 2 boundary; no conversion workaround. Readiness 503: inspect individual foundation checks; conversion readiness remains false. For actual execution history and known limitations, see [test history](test-history.md) and [limitations](limitations.md).
+Startup token error: populate private `.env` and run from root. Schema error: initialize v1 explicitly; do not delete an existing database as a repair shortcut. Jobs remain queued: inspect dispatcher and Redis. Earlier `awaiting_conversion_engine` jobs can use the owned `/resume` action. For `PDF_RENDERER_UNAVAILABLE`, configure an absolute free LibreOffice executable; for missing references or failed PDF fidelity, inspect [Stage 3 instructions](docx-processing.md) and do not bypass the gate. Readiness remains 503 until the complete pipeline exists. See [test history](test-history.md) and [limitations](limitations.md).

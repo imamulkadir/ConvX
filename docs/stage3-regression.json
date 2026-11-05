@@ -1,0 +1,404 @@
+{
+  "date": "2026-11-05",
+  "qualification": "failed",
+  "automated_test_interpretation": "negative qualification; correctly detects unsuccessful reference conversion",
+  "source_sha256": "9a9c22ddb0c496bde3dda78f70f0e267e30efd4b8cb410807d2846fbcdda666a",
+  "accepted_sha256": "f217bef7d63262a3d5b1ef1f7563e841e352cac60ecc0639f83d4c9927a6d78a",
+  "reference_sha256": "4e978ec13451024838908889839548d6bee4c559c7c33e5ed3aa19f0a85b2431",
+  "generated_pdf_sha256": "4ad48e5c4bc3981d9ff2d14333672836561ba25f0fd6a788ffb739fe83399a79",
+  "revision_count_before": 31,
+  "revision_count_after": 0,
+  "accepted_story_matches": 18,
+  "source_media_parts_preserved": 5,
+  "provider": {
+    "provider": "libreoffice",
+    "version": "LibreOffice 26.8.2.2 9dea406ab7695df6325b11b0e19fdca8db4b7276",
+    "executable_sha256": "4f133aba4d8db66122ec34bc17eeaa8b274cfa5ded03feb384953f6ae357d4cf",
+    "font_environment_sha256": "033374e27f16642b6b43c6dd1af9287a4df4a0aacd299bed4d0740ebfb022083"
+  },
+  "method": "pdf-content-geometry-font-exact-raster-v2",
+  "policy": {
+    "dpi": 96,
+    "max_pages": 500,
+    "max_page_dimension_pt": 2000,
+    "max_render_pixels": 16000000,
+    "geometry_tolerance_pt": 0.01,
+    "require_reference": true,
+    "max_pdf_bytes": 67108864,
+    "max_objects": 100000
+  },
+  "page_count": 23,
+  "reference_page_count": 23,
+  "passed_pages": 0,
+  "failed_pages": 23,
+  "pages": [
+    {
+      "page": 1,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 227769,
+      "pixel_difference_fraction": 0.26432639817290554,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 2,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": true,
+      "word_content_match": true,
+      "word_geometry_discrepancies": 844,
+      "fonts_match": false,
+      "different_pixels": 185735,
+      "pixel_difference_fraction": 0.21554585375816993,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_TEXT_POSITION_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 3,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 59247,
+      "pixel_difference_fraction": 0.06875626671122995,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 4,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": true,
+      "word_content_match": true,
+      "word_geometry_discrepancies": 635,
+      "fonts_match": false,
+      "different_pixels": 129358,
+      "pixel_difference_fraction": 0.1501202280154486,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_TEXT_POSITION_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 5,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": true,
+      "word_content_match": true,
+      "word_geometry_discrepancies": 799,
+      "fonts_match": false,
+      "different_pixels": 164720,
+      "pixel_difference_fraction": 0.19115790255496137,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_TEXT_POSITION_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 6,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 193804,
+      "pixel_difference_fraction": 0.22490994503862152,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 7,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 44729,
+      "pixel_difference_fraction": 0.051908097519310754,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 8,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 38482,
+      "pixel_difference_fraction": 0.04465844102792632,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 9,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 173936,
+      "pixel_difference_fraction": 0.2018530897207368,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 10,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 140123,
+      "pixel_difference_fraction": 0.16261303290255497,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 11,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": true,
+      "word_content_match": true,
+      "word_geometry_discrepancies": 269,
+      "fonts_match": false,
+      "different_pixels": 46562,
+      "pixel_difference_fraction": 0.054035297831253715,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_TEXT_POSITION_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 12,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 264898,
+      "pixel_difference_fraction": 0.30741467988710636,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 13,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": true,
+      "word_content_match": true,
+      "word_geometry_discrepancies": 360,
+      "fonts_match": false,
+      "different_pixels": 67645,
+      "pixel_difference_fraction": 0.07850216317587641,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_TEXT_POSITION_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 14,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 250095,
+      "pixel_difference_fraction": 0.29023576760249553,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 15,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 253233,
+      "pixel_difference_fraction": 0.29387742312834225,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 16,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 249318,
+      "pixel_difference_fraction": 0.289334057486631,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 17,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 264514,
+      "pixel_difference_fraction": 0.3069690470885324,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 18,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 82752,
+      "pixel_difference_fraction": 0.09603386809269163,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 19,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 92619,
+      "pixel_difference_fraction": 0.10748454211229946,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 20,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 27310,
+      "pixel_difference_fraction": 0.03169331179441474,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 21,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": false,
+      "word_content_match": false,
+      "word_geometry_discrepancies": null,
+      "fonts_match": false,
+      "different_pixels": 205381,
+      "pixel_difference_fraction": 0.2383450776143791,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_CONTENT_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 22,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": true,
+      "word_content_match": true,
+      "word_geometry_discrepancies": 875,
+      "fonts_match": false,
+      "different_pixels": 203992,
+      "pixel_difference_fraction": 0.2367331402257873,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_TEXT_POSITION_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    },
+    {
+      "page": 23,
+      "passed": false,
+      "geometry_match": true,
+      "text_match": true,
+      "word_content_match": true,
+      "word_geometry_discrepancies": 60,
+      "fonts_match": false,
+      "different_pixels": 10558,
+      "pixel_difference_fraction": 0.012252580956625075,
+      "codes": [
+        "PDF_FONT_MISMATCH",
+        "PDF_TEXT_POSITION_MISMATCH",
+        "PDF_VISUAL_MISMATCH"
+      ]
+    }
+  ]
+}

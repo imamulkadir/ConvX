@@ -1,6 +1,6 @@
 # Architecture — Stage 1 design
 
-Status: Stage 1 design, updated 2026-11-05 after Stage 2 implementation. API, durable jobs, private local storage, outbox dispatcher and Celery admission worker are implemented. Conversion, frontend, object storage and deployed sandbox remain future stages. See [backend operation](backend-development.md) for current behavior and limitations.
+Status: Stage 1 design, updated 2026-11-05 after Stage 3 implementation. API, durable jobs, private storage/outbox, revision acceptance, free LibreOffice PDF export and strict PDF gates are implemented. HTM/layout reconstruction, frontend, object storage and deployed sandbox remain future stages. See [backend operation](backend-development.md) and [document processing](docx-processing.md) for actual behavior and limitations.
 
 ## Boundaries and stack
 
@@ -33,11 +33,11 @@ Use Python typed functions, Pydantic boundary validation, explicit error codes a
 
 ## Rendering decision
 
-Design target: self-hosted, licensed Aspose.Words adapter for revision acceptance and PDF export, subject to Stage 3 qualification. Vendor documentation describes revision acceptance and PDF rendering without Office ([revision support](https://docs.aspose.com/words/python-net/track-changes-in-a-document/), [PDF export](https://docs.aspose.com/words/python-net/convert-a-document-to-pdf/)). This is a candidate, not a fidelity claim. Validate licensing, runtime/platform support, fonts, unsupported revisions, evaluation restrictions and the full reference regression before enabling strict production jobs. Never use watermarked/evaluation output as accepted output.
+Stage 3 user requirement: all components must be free of charge, with no premium licensing. The former Aspose candidate is superseded and is not implemented, installed or supported by configuration. Revision acceptance uses an explicit deterministic OOXML subset with independent audits; PDF export uses free LibreOffice. See [document processing](docx-processing.md). Unsupported revisions and strict layout mismatches fail safely.
 
-LibreOffice is an explicitly selected fallback only after separate qualification; it has a documented [headless command-line mode](https://help.libreoffice.org/latest/en-US/text/shared/guide/start_parameters.html). Give each process its own profile, disable macros and network access, terminate the process tree on deadline, and report font substitutions. Never silently change providers on a failed fidelity gate.
+LibreOffice is the selected free renderer, with a documented [headless command-line mode](https://help.libreoffice.org/latest/en-US/text/shared/guide/start_parameters.html). Each attempt has its own profile, macro-disabled settings, bounded resources and cancellation checks. OS-level network isolation remains Stage 11 work. Native Word-baseline qualification failed on all 23 pages; no alternate renderer is silently selected and no strict gate is relaxed.
 
-Microsoft states unattended, noninteractive [server-side Office automation is unsupported](https://support.microsoft.com/en-gb/visio/considerations-for-server-side-automation-of-office). Therefore Word COM is excluded from the production worker design. Desktop Office licensing is not assumed to cover a server workload. Any supported Microsoft service alternative needs separate support, licensing, confidentiality and revision-capability review. No proprietary SDK, Office or LibreOffice conversion was executed in Stage 1.
+Microsoft states unattended, noninteractive [server-side Office automation is unsupported](https://support.microsoft.com/en-gb/visio/considerations-for-server-side-automation-of-office). Word COM remains excluded. Paid Microsoft/commercial service alternatives are outside the user's free-only scope. Stage 3 executed actual local LibreOffice exports; the historical Stage 1 provider evaluation is retained only in the decision log.
 
 ## Trust and lifecycle
 

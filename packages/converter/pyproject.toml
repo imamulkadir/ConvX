@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "convx-converter"
+version = "0.3.0"
+description = "Free local DOCX revision processing and PDF rendering gates"
+requires-python = ">=3.12"
+dependencies = ["lxml==6.1.3", "PyMuPDF==1.26.7", "Pillow==13.0.0", "psutil==7.2.2"]
+
+[project.scripts]
+convx-process-docx = "converter.cli:main"
+
+[tool.setuptools]
+packages = ["converter", "converter.revisions", "converter.pdf_export"]
+package-dir = {"converter" = "."}

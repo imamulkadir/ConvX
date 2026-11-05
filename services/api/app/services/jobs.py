@@ -277,6 +277,121 @@ class JobRepository:
                 is not None
             )
 
+    def renew_processing_lease(self, job_id: str, attempt_id: str) -> bool:
+        now = int(time.time())
+        with self.db.transaction() as connection:
+            return bool(
+                connection.execute(
+                    update(jobs)
+                    .where(
+                        jobs.c.id == job_id,
+                        jobs.c.attempt_id == attempt_id,
+                        jobs.c.state == "running",
+                        jobs.c.deleted_at.is_(None),
+                        jobs.c.expires_at > now,
+                        jobs.c.lease_until > now,
+                    )
+                    .values(lease_until=now + self.settings.lease_seconds)
+                ).rowcount
+            )
+
+    def processing_stage(self, job_id: str, attempt_id: str, stage: str) -> bool:
+        now = int(time.time())
+        with self.db.transaction() as connection:
+            record = (
+                connection.execute(
+                    select(jobs).where(
+                        jobs.c.id == job_id,
+                        jobs.c.attempt_id == attempt_id,
+                        jobs.c.state == "running",
+                        jobs.c.deleted_at.is_(None),
+                        jobs.c.expires_at > now,
+                        jobs.c.lease_until > now,
+                    )
+                )
+                .mappings()
+                .first()
+            )
+            if not record:
+                return False
+            return (
+                self._transition(
+                    connection, dict(record), now, stage=stage, lease_until=now + self.settings.lease_seconds
+                )
+                is not None
+            )
+
+    def finish_processing(self, job_id: str, attempt_id: str, report: dict) -> bool:
+        now = int(time.time())
+        with self.db.transaction() as connection:
+            record = (
+                connection.execute(
+                    select(jobs).where(
+                        jobs.c.id == job_id,
+                        jobs.c.attempt_id == attempt_id,
+                        jobs.c.state == "running",
+                        jobs.c.deleted_at.is_(None),
+                        jobs.c.expires_at > now,
+                        jobs.c.lease_until > now,
+                    )
+                )
+                .mappings()
+                .first()
+            )
+            if not record:
+                return False
+            passed = report["status"] == "pdf_validated"
+            code = (
+                report["diagnostics"][0]["code"] if report["diagnostics"] else "LAYOUT_ENGINE_NOT_AVAILABLE"
+            )
+            return (
+                self._transition(
+                    connection,
+                    dict(record),
+                    now,
+                    state="blocked" if passed or report["status"] == "blocked" else "failed",
+                    stage="awaiting_pdf_analysis"
+                    if passed
+                    else report["diagnostics"][0].get("stage", "processing_failed"),
+                    diagnostic_code=code,
+                    lease_until=None,
+                )
+                is not None
+            )
+
+    def resume_processing(self, job_id: str, owner: str) -> bool:
+        now = int(time.time())
+        with self.db.transaction() as connection:
+            record = self._owned(connection, job_id, owner, now)
+            if record["state"] != "blocked" or record["diagnostic_code"] not in {
+                "PIPELINE_NOT_AVAILABLE",
+                "PDF_RENDERER_UNAVAILABLE",
+                "PDF_REFERENCE_REQUIRED",
+            }:
+                raise Problem(409, "JOB_NOT_RESUMABLE", "This job cannot resume document processing")
+            if record["attempts"] >= self.settings.max_job_attempts:
+                raise Problem(409, "ATTEMPT_LIMIT", "Processing attempt limit reached")
+            if (
+                self._transition(
+                    connection,
+                    record,
+                    now,
+                    state="queued",
+                    stage="uploaded",
+                    diagnostic_code=None,
+                    attempt_id=None,
+                    lease_until=None,
+                )
+                is None
+            ):
+                raise Problem(409, "STATE_CHANGED", "Job changed; retry the request")
+            connection.execute(
+                update(outbox)
+                .where(outbox.c.job_id == job_id)
+                .values(sent_at=None, token=None, locked_until=0, next_attempt=now)
+            )
+            return True
+
     def heartbeat(self, worker_id: str) -> None:
         with self.db.transaction() as connection:
             # Runtime IDs are unique; UPDATE then INSERT avoids replacing other workers.

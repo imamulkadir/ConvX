@@ -106,6 +106,27 @@ def cancel(job_id: str, request: Request):
 @router.get("/{job_id}/validation")
 def validation(job_id: str, request: Request):
     record = request.app.state.repository.get(canonical_id(job_id), request.state.owner)
+    if record["state"] == "expired":
+        raise Problem(410, "JOB_EXPIRED", "Job retention has expired")
+    processing = None
+    if record["attempt_id"] and record["state"] in {"failed", "blocked"}:
+        path = request.app.state.storage.attempt(record["id"], record["attempt_id"]) / "processing.json"
+        if path.is_file() and not path.is_symlink() and path.stat().st_size <= 2 * 1024 * 1024:
+            try:
+                candidate = json.loads(path.read_text(encoding="utf-8"))
+                if candidate.get("source_sha256") == record["source_sha256"]:
+                    processing = candidate
+            except (OSError, ValueError):
+                processing = None
+    if processing:
+        return {
+            "id": record["id"],
+            "complete": False,
+            "sec_compliance_passed": False,
+            "fidelity_passed": False,
+            "document_processing": processing,
+            "diagnostics": processing["diagnostics"],
+        }
     return {
         "id": record["id"],
         "complete": False,
@@ -115,13 +136,19 @@ def validation(job_id: str, request: Request):
             {
                 "code": record["diagnostic_code"],
                 "stage": record["stage"],
-                "description": "Conversion engines and final validation are not available at Stage 2",
+                "description": "This job has not completed the required conversion and validation gates",
                 "remediation": "Review job state; later stages must implement and qualify the full pipeline",
             }
         ]
         if record["diagnostic_code"]
         else [],
     }
+
+
+@router.post("/{job_id}/resume", status_code=202)
+def resume(job_id: str, request: Request):
+    request.app.state.repository.resume_processing(canonical_id(job_id), request.state.owner)
+    return {"id": job_id, "state": "queued"}
 
 
 @router.get("/{job_id}/preview")

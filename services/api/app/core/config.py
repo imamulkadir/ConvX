@@ -39,6 +39,14 @@ class Settings(BaseSettings):
     orphan_grace_seconds: int = Field(default=3600, ge=600)
     heartbeat_seconds: int = Field(default=10, ge=1, le=30)
     worker_stale_seconds: int = Field(default=45, ge=5, le=300)
+    libreoffice_executable: Path | None = None
+    processing_timeout_seconds: int = Field(default=300, ge=60, le=1800)
+    renderer_timeout_seconds: int = Field(default=180, ge=15, le=900)
+    renderer_memory_bytes: int = Field(default=1024 * 1024 * 1024, ge=128 * 1024 * 1024)
+    max_generated_pdf_bytes: int = Field(default=64 * 1024 * 1024, ge=1024, le=256 * 1024 * 1024)
+    pdf_comparison_dpi: int = Field(default=96, ge=36, le=300)
+    pdf_max_pages: int = Field(default=500, ge=1, le=2000)
+    pdf_require_reference: bool = True
 
     @model_validator(mode="after")
     def safe_configuration(self) -> Settings:
@@ -61,6 +69,13 @@ class Settings(BaseSettings):
             raise ValueError("Worker stale interval must exceed two heartbeat intervals")
         if self.lease_seconds <= self.validation_timeout_seconds + 20:
             raise ValueError("Worker lease must exceed validation deadline plus shutdown margin")
+        if self.renderer_timeout_seconds + 30 >= self.processing_timeout_seconds:
+            raise ValueError("Processing deadline must cover rendering and verification")
+        if self.environment == "production" and not self.pdf_require_reference:
+            raise ValueError("Production requires the strict PDF reference gate")
+        if self.libreoffice_executable is not None:
+            if not self.libreoffice_executable.is_absolute():
+                raise ValueError("LibreOffice executable must be an absolute path")
         self.storage_root = self.storage_root.resolve()
         if self.storage_root == Path(self.storage_root.anchor) or self.storage_root == Path.cwd().resolve():
             raise ValueError("Storage must be a dedicated private directory")

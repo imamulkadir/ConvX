@@ -2,7 +2,7 @@
 
 Stage 2 API/dispatcher/admission-worker processes now have [local setup commands](backend-development.md). Deployment configuration, Dockerfiles, Compose, reverse proxy and enforced renderer sandbox belong to Stage 11; none is claimed as deployed or production-qualified yet.
 
-Planned compatible services: Linux containers for Next.js, FastAPI, Celery, Redis, PostgreSQL and analysis/Chromium workers. Keep rendering in a separate restricted runtime chosen against the selected provider's supported platform and license. A licensed self-hosted SDK avoids sending confidential documents to third parties; a remote provider requires explicit data-handling approval and a documented contract.
+Planned compatible services: Linux containers for Next.js, FastAPI, Celery, Redis, PostgreSQL and analysis/Chromium workers. Rendering uses free local LibreOffice in a separate restricted runtime. The user's free-only requirement excludes paid SDKs, premium licensing and remote paid conversion services. No document upload to a third-party renderer is implemented. Stage 3 local setup and strict-reference limitations are in [document processing](docx-processing.md).
 
 Terminate TLS at the reverse proxy. Authenticate all document routes; apply owner isolation, upload quotas, request-body limits and rate limiting. Production refuses unauthenticated configuration. Local unauthenticated mode, if provided, binds loopback and is explicit. Use narrow CORS, CSRF protections where cookie authentication is used, and separate secrets for broker/database/storage. Never log document contents, tokens, URLs with credentials or client filesystem paths.
 

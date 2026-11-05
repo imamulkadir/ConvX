@@ -6,6 +6,8 @@ Decision: separate JSX Next.js, FastAPI, Celery and converter modules; generated
 
 ## 2026-11-05 — ADR-002: Provider qualification
 
+Superseded by ADR-011: the user requires free components only. No Aspose/premium provider was implemented or installed.
+
 Decision: licensed self-hosted Aspose.Words candidate adapter, explicitly selected LibreOffice fallback, no production Word COM. Context: Microsoft does not support unattended noninteractive Office automation. Alternatives: COM, hosted conversion or LibreOffice alone. Reasoning: vendor-described revision/PDF capabilities support evaluation without external disclosure transfer; no engine assumed equal to Word. Consequences: Stage 3 licensing/platform/fonts and all-page qualification; fail when no provider qualifies. See architecture for primary sources. No SDK installed or qualified.
 
 ## 2026-11-05 — ADR-003: Evidence-based rules
@@ -39,3 +41,19 @@ Decision: preserve inert source HTTP/HTTPS/mailto hyperlinks as data without fet
 ## 2026-11-05 — ADR-010: Bounded authenticated event replay
 
 Decision: SSE returns persisted events after a cursor and an explicit reconnect instruction instead of holding long polling threads and database transactions indefinitely. Context: expiry/deletion and bearer authorization must be checked regularly. Alternatives: unlimited streaming or polling alone. Reasoning: bounded replay supports reliable progress and reauthorization with simple resource bounds. Consequences: clients reconnect after two seconds using Last-Event-ID; ordinary polling remains available. No fabricated percentages are exposed.
+
+## 2026-11-05 — ADR-011: Free-only revision and rendering implementation
+
+Decision: the user's explicit Stage 3 instruction excludes all premium licensing and paid providers. Implement deterministic OOXML revision acceptance and local free LibreOffice export; remove Aspose from the current architecture. Context: no commercial license is available, and trial/evaluation output cannot represent a production conversion. Alternatives: paid SDK/trial, unsupported unattended Office COM, or native LibreOffice resaving all input OOXML. Reasoning: source property/asset preservation, reproducibility and no paid dependencies. Consequences: unsupported cell/custom-XML/conflict and ambiguous structural revisions fail safely. LibreOffice is implemented, but failed the Word reference qualification; no claim of equivalent Word layout. Module/provider interfaces remain extensible only within the free-only scope.
+
+## 2026-11-05 — ADR-012: Strict PDF gate and reference evidence
+
+Decision: validate all intermediate PDF pages with explicit content/order, geometry, font signatures and exact RGB differences before permitting later work. Context: the reference has 23 pages, and identical page count conceals material layout differences. Alternatives: first-page checks, permissive pixel thresholds or using the supplied PDF as generated output. Reasoning: each would conceal failures. Consequences: the actual LibreOffice export has 23 pages but fails every page against Word; a real one-page same-renderer baseline passes. Default strict mode requires a reference; production cannot disable it. No HTM generation is included in Stage 3. Retain raw private evidence and a redacted repository qualification summary.
+
+## 2026-11-05 — ADR-013: Revision/PDF worker lifecycle without schema mutation
+
+Decision: use the persisted current attempt UUID to own private accepted DOCX, PDF/evidence and atomic report; extend existing lease/version-guarded job transitions and provide explicit owned resume. Context: cancellation/expiry must invalidate rendering, and Stage 2 blocked jobs must not silently run new code. Alternatives: global filesystem outputs, unbound diagnostics or automatic replay of all blocked jobs. Reasoning: attempt isolation preserves provenance and prevents stale publication. Consequences: schema v1 remains compatible; current reports are exposed only through owned validation, not raw file downloads. A complete reference-upload UI remains later integration work; individual CLI references and authorized private reference provisioning work now.
+
+## 2026-11-05 — ADR-014: Controlled native resource profile
+
+Decision: set the explicit configurable renderer RSS limit to 1 GiB after the full fixture exceeded the initial 512 MiB limit and stopped safely. Context: a genuine native export was needed to qualify the free renderer. Alternatives: remove resource limits or label the interrupted output valid. Reasoning: maintain a bounded, documented profile while allowing real completion of the test. Consequences: output completed under 1 GiB and still failed strict fidelity; no source font/geometry changes or relaxed fidelity thresholds were used. OS-level network/CPU/disk/native-parser isolation remains Stage 11 work.

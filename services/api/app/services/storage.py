@@ -46,6 +46,16 @@ class Storage:
             raise ValueError("Source cannot be a symbolic link")
         return path
 
+    def attempt(self, job_id: str, attempt_id: str) -> Path:
+        canonical = str(UUID(attempt_id))
+        if canonical != attempt_id:
+            raise ValueError("Invalid attempt ID")
+        base = self.directory(job_id) / "attempts"
+        candidate = base / canonical
+        if base.is_symlink() or candidate.is_symlink() or candidate.resolve().parent != base.resolve():
+            raise ValueError("Attempt containment violation")
+        return candidate
+
     async def save(self, job_id: str, upload: UploadFile) -> tuple[int, str]:
         directory = self.directory(job_id)
         directory.mkdir(mode=0o700)

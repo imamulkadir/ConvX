@@ -2,11 +2,11 @@
 
 Planned browser application for secure DOCX revision acceptance, PDF-first layout reconstruction, manual-derived EDGAR validation, all-page visual comparison and clean filing-asset ZIP download. Compliance and exact disclosure take priority; unresolved strict fidelity failures prevent download.
 
-**Current delivery: Stage 2 backend foundation.** Authenticated uploads, durable jobs, polling/events, private storage, dispatch and admission workers are implemented. Conversion engines, the frontend and filing downloads are not available yet. See [project status](PROJECT_STATUS.md), [checkpoint](.agent-checkpoint.json) and [agent instructions](AGENTS.md). No conversion results or SEC acceptance are claimed.
+**Current delivery: Stage 3 DOCX processing.** Authenticated uploads, durable jobs, revision acceptance, free local LibreOffice PDF export and strict reference validation are implemented. The supplied DOCX's accepted content matches its baseline; its generated 23-page PDF fails strict layout comparison and remains unsuccessful. HTM generation, frontend and filing downloads are not available yet. See [project status](PROJECT_STATUS.md), [checkpoint](.agent-checkpoint.json) and [agent instructions](AGENTS.md). No SEC acceptance or pixel-perfect conversion is claimed.
 
 ## Architecture and requirements
 
-Next.js App Router with React JSX, Tailwind, DaisyUI and Lucide; Python FastAPI/Pydantic API; Redis/Celery workers; PostgreSQL job storage; private artifacts; PyMuPDF, Pillow, lxml and Playwright/Chromium conversion tooling. Rendering is a separate provider boundary requiring licensing and fidelity qualification. See [architecture](docs/architecture.md), [contracts](docs/interfaces.md), [pipeline](docs/conversion-pipeline.md), [SEC constraints](docs/sec-compliance.md) and [limitations](docs/limitations.md).
+Next.js App Router with React JSX, Tailwind, DaisyUI and Lucide; Python FastAPI/Pydantic API; Redis/Celery workers; PostgreSQL job storage; private artifacts; PyMuPDF, Pillow, lxml and Playwright/Chromium conversion tooling. All implemented/planned components must be free to use: no premium SDK, trial renderer or paid service is included. See [architecture](docs/architecture.md), [contracts](docs/interfaces.md), [pipeline](docs/conversion-pipeline.md), [SEC constraints](docs/sec-compliance.md) and [limitations](docs/limitations.md).
 
 ## Stage 1 inspection and verification
 
@@ -23,8 +23,8 @@ The inventory reads every PDF page and DOCX Word XML part and records hashes. It
 
 ## Development and operation
 
-Follow [backend setup and commands](docs/backend-development.md) for pinned installation, `.env`, schema initialization, FastAPI startup, independent Redis/Celery processes and tests. The API can receive documents; workers validate source integrity and report `PIPELINE_NOT_AVAILABLE` at the current capability boundary. Preview/download remain gated. Readiness accurately reports conversion unavailable.
+Follow [backend setup](docs/backend-development.md) and [document-processing setup](docs/docx-processing.md) for pinned installation, `.env`, schema initialization, FastAPI startup, independent Redis/Celery processes and real reference checks. Install both local API and converter packages. Workers accept supported revisions and render PDF when a trusted LibreOffice path is configured. Missing renderer/reference blocks processing; strict differences fail. Preview/download remain gated, and readiness still reports full conversion unavailable.
 
-Stage 3 introduces revision acceptance/PDF export; Stage 9 builds the UI; Stage 10 integrates the full pipeline; Stage 11 supplies deployment files and process/network hardening. See [deployment design](docs/deployment.md). The Windows/SQLite suite does not certify Linux workers or live Redis/PostgreSQL deployments; optional real-service tests are included. Do not expose unfinished services as production-ready.
+Stage 4 introduces the intermediate PDF layout model; Stage 9 builds the UI; Stage 10 integrates the full pipeline; Stage 11 supplies deployment files and process/network hardening. See [deployment design](docs/deployment.md). The Windows/SQLite/native-renderer suite does not certify Linux workers or live Redis/PostgreSQL deployments; optional real-service tests are included. Do not expose unfinished services as production-ready.
 
 If inspection cannot import pypdf, use the analysis environment above. Missing fixtures must be located and verified, never replaced by fabricated test results. Read [decisions](docs/decisions.md) before changing a provider or compliance interpretation. Keep one stage per authorization; Git initialization, staging, committing, pushing and other Git writes are prohibited. Review and Git changes belong to the user.

@@ -10,7 +10,7 @@ def configure_worker(monkeypatch, settings):
     monkeypatch.setenv("CONVX_STORAGE_ROOT", str(settings.storage_root))
 
 
-def test_real_admission_task_is_idempotent_and_never_converts(client, settings, monkeypatch):
+def test_revision_task_is_idempotent_when_renderer_unavailable(client, settings, monkeypatch):
     configure_worker(monkeypatch, settings)
     from workers.tasks.admission import admit_document
 
@@ -19,7 +19,7 @@ def test_real_admission_task_is_idempotent_and_never_converts(client, settings, 
     admit_document(job["id"], settings)
     record = client.app.state.repository.get(job["id"], "alice")
     assert record["state"] == "blocked" and record["attempts"] == 1
-    assert record["diagnostic_code"] == "PIPELINE_NOT_AVAILABLE"
+    assert record["diagnostic_code"] == "PDF_RENDERER_UNAVAILABLE"
     assert client.get(f"/api/v1/conversions/{job['id']}/download").status_code == 409
 
 
