@@ -14,6 +14,7 @@ class Settings(BaseSettings):
 
     environment: Literal["development", "production"] = "development"
     auth_mode: Literal["token", "local"] = "token"
+    execution_mode: Literal["celery", "local_dev"] = "celery"
     api_tokens: dict[str, SecretStr] = Field(default_factory=dict, repr=False)
     database_url: SecretStr = SecretStr("sqlite:///./var/convx.db")
     redis_url: SecretStr = SecretStr("redis://127.0.0.1:6379/0")
@@ -67,6 +68,12 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def safe_configuration(self) -> Settings:
+        if self.execution_mode == "local_dev" and (
+            self.environment != "development"
+            or self.auth_mode != "local"
+            or not self.database_url.get_secret_value().startswith("sqlite:///")
+        ):
+            raise ValueError("Local development queue requires development, loopback access and SQLite")
         if self.auth_mode == "token":
             values = [v.get_secret_value() for v in self.api_tokens.values()]
             if not values or any(len(v) < 32 for v in values) or len(set(values)) != len(values):

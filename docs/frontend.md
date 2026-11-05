@@ -4,6 +4,8 @@ The UI is in `apps/web`: Next.js App Router, React JSX, Tailwind 4, DaisyUI 5 an
 
 ## Run the UI
 
+For everyday local use, run `.\.venv\Scripts\python dev.py` from the root and choose Use local access at the printed URL. This starts the UI, API and real local worker without Redis. See [one-command development](local-development.md). The separate-service commands below remain available.
+
 Start the existing configured backend from the repository root (see [backend setup](backend-development.md) for installation, private tokens and schema configuration):
 
 ```powershell

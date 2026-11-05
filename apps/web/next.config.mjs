@@ -13,6 +13,8 @@ if (
 }
 
 export default {
+  agentRules: false,
+  distDir: process.env.CONVX_LOCAL_LAUNCHER === "1" ? ".next-local" : ".next",
   poweredByHeader: false,
   async rewrites() {
     return [

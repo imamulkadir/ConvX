@@ -1,644 +1,681 @@
-# Agent recovery entrypoint — Stage 1
+# MASTER EXECUTION PROMPT
 
 **Before implementing any changes, every AI agent must read `AGENTS.md`, `PROJECT_STATUS.md`, and `.agent-checkpoint.json` and inspect the current repository state.**
 
-Then read [decisions](docs/decisions.md), [test history](docs/test-history.md), [architecture](docs/architecture.md), [interfaces](docs/interfaces.md), [pipeline](docs/conversion-pipeline.md), [SEC rules](docs/sec-compliance.md), [reference findings](docs/reference-findings.md) and [limitations](docs/limitations.md). Verify actual files and relevant tests before trusting recorded completion. Read-only Git inspection is allowed when available; all Git writes are prohibited.
+Current workflow: the simplification refactor in this file replaces the earlier SEC-only development plan. See [Stage 1 audit](docs/refactor-audit.md), [decisions](docs/decisions.md) and [test history](docs/test-history.md). Root progress records track the revised stages; [historical status](docs/history/pre-refactor-status.txt) and [historical checkpoint](docs/history/pre-refactor-checkpoint.json) preserve the prior implementation. On resume, follow the current checkpoint and approval gate; the initial "Begin Stage 1" directives below do not authorize repeating a completed audit or starting Stage 2. Standard mode generates `.html`; EDGAR mode generates `.htm`.
 
-The current directory is the project root; do not create a nested edgar-converter directory. Architecture documents define planned module paths and conventions: typed Python boundaries, JSX frontend, independent Next.js/FastAPI/Celery services, Redis transport, persistent job storage and private artifacts. PDF-first reconstruction, selectable disclosure, manual-derived compliance, strict fidelity failure and root-only HTM/JPG/GIF ZIPs are mandatory.
+# Refactor the Existing Application into a Simple, High-Fidelity DOCX/PDF-to-HTM Web Converter
 
-Implement only the authorized stage, verify it, update persistent records, report results and a suggested commit message, then stop. Explicit authorization is required before each next stage. A commit report alone is not authorization. Resume partial work without overwriting unrelated files. Consult the current fixture inventory rather than inferring revision roles from filenames.
+## 0. ROLE AND OBJECTIVE
 
-Current implementation: backend is `services/api/app`, converter is `packages/converter`, worker entry is `workers.worker:celery`. Read [backend development](docs/backend-development.md) and [document processing](docs/docx-processing.md). Use factory `app.main:create_app`, schema v1 and private token configuration. Workers accept supported revisions, render through LibreOffice and enforce the PDF gate; completion/download requires complete current strict PDF/SEC/visual/package evidence; the reference remains unqualified. Run pytest, Ruff and historical fixture checks before handoff. The preserved master prompt's initial “Begin Stage 1” is historical and does not reset progress.
+Act as a Principal Software Engineer, Senior Full-Stack Developer, Document Rendering Engineer, and SEC EDGAR Compliance Specialist.
 
-**User requirement added in Stage 3: everything must be free of charge; include no premium licensing, paid SDK, evaluation-only renderer or paid service.** LibreOffice is selected. Historical Aspose candidate notes are superseded, not authorization to add it. The Word reference currently fails strict PDF fidelity on all 23 pages; do not bypass the gate, alter source typography to force a pass, substitute reference output, or describe it as successful. See [qualification evidence](docs/stage3-regression.md). Unsupported revision types fail safely with diagnostics. No Git write operations or automatic next stage are authorized.
+Your task is to **refactor the existing project into a simple, lightweight, fully functional web application that converts DOCX and PDF files into high-fidelity HTM documents**.
 
-Stage 4 adds `converter.layout` and `converter.pdf_analysis`; read [layout analysis](docs/pdf-layout-analysis.md). Normal analysis requires a complete passing, hash-bound strict PDF gate. Diagnostic inspection is always reconstruction-ineligible. The user confirmed the reference is Word open-and-save-as-PDF output; LibreOffice native export remains the free provider, without implied Word equivalence. Stage 5 implements private HTM candidates in `converter.html_generator`; read [HTM reconstruction](docs/htm-reconstruction.md). It rechecks PDF/layout proof, preserves text, emits explicit incompatibilities/asset requests and stops before compliance/fidelity/packaging. No candidate is SEC-ready. Stage 6 adds source-byte SEC validation and graphic normalization; read [SEC validation engine](docs/sec-validation-engine.md). The v78.2 local profile distinguishes confirmed rules, product policy and unresolved CSS/MANY/character permissions. Unresolved use fails strict validation; no SEC acceptance, visual fidelity or final download is implied. Generator v2 uses shared formatting runs. Stage 7 adds `converter.visual_validation`; read [visual validation](docs/visual-validation.md). Production comparison rechecks strict PDF/SEC evidence and current files. Explicit inspection always remains nonqualifying. Chromium print, screen, content/font/geometry and pixel evidence stay private; no unproven screen-difference suppression or source correction is applied. Stage 8 implements deterministic clean ZIP packaging and protected captured-byte download checks; read [ZIP packaging](docs/zip-packaging.md). It finalizes the internal HTM filename before SEC/visual gates, revalidates archived files and rejects failed/stale/inspection evidence. No successful full-chain package is demonstrated. Stage 9 requires explicit authorization.
+The existing implementation became unnecessarily complicated, introducing separate backend services, API connections, queues, workers, infrastructure dependencies, and functionality beyond the actual requirements.
 
-Stage 9 adds the local Next.js JSX workspace with real API upload/polling/download controls and owned generated-PDF/Chromium diagnostic previews. Read [frontend setup](docs/frontend.md). Tokens stay in page memory; only job IDs and theme preference persist. Diagnostic previews never grant conversion eligibility; active HTM is not served. Genuine positive full-chain qualification is still pending. Stage 10 requires explicit authorization. The earlier Stage 9 authorization note is historical.
+Simplify it.
 
-The original master instructions follow intact.
+Do not create a new project. Work within the existing repository, preserving useful functionality and removing unnecessary complexity.
 
----
+The application must do one thing exceptionally well:
 
-# MASTER EXECUTION PROMPT
+**Upload a DOCX or PDF, optionally enable SEC EDGAR compliance, convert it into an HTM file that preserves its original formatting as accurately as possible, and download a ZIP containing the HTM and its required assets.**
 
-# Build a Production-Ready SEC EDGAR DOCX-to-HTM Web Application
+This must be an actual working conversion application, not a prototype, mockup, or demonstration.
 
-## 0. ROLE AND OPERATING MODE
-
-Act as a Principal Software Architect, Senior Full-Stack Engineer, Python Backend Engineer, Document Rendering Specialist, Quality Assurance Engineer, and SEC EDGAR Filing Compliance Specialist.
-
-Your responsibility is to design, implement, test, optimize, and document a complete web application that converts Microsoft Word DOCX documents into SEC EDGAR-compliant HTM documents while preserving their original formatting with the highest technically achievable visual accuracy.
-
-This is a real software engineering project, not a demonstration.
-
-**Build production-quality functionality. Do not create mock conversion engines, simulated results, or placeholder implementations.**
-
-You must work sequentially, implement one development stage at a time, test your work, update persistent progress records, report completion, and stop.
-
-The user is responsible for Git commits and pushes.
-
-Never initialize a Git repository, stage files, commit, push, or automatically proceed to another development stage.
+Do not substitute placeholder implementations for real conversion functionality.
 
 ---
 
-# 1. PROJECT OBJECTIVE
+# 1. CORE USER EXPERIENCE
 
-Build a browser-based application that allows users to upload one or multiple DOCX documents and automatically:
+The entire application should have one simple workflow:
 
-1. Validate the uploaded DOCX.
-2. Accept all tracked changes.
-3. Preserve the final accepted content and formatting.
-4. Generate a PDF from the accepted DOCX.
-5. Use the generated PDF as the authoritative visual layout reference.
-6. Analyze the PDF's text, tables, fonts, images, coordinates, and page geometry.
-7. Convert the PDF into an SEC EDGAR-compliant `.htm` document.
-8. Extract and convert graphics into permitted SEC image formats.
-9. Reconstruct the original PDF appearance with maximum possible fidelity.
-10. Validate all HTML elements, attributes, image files, hyperlinks, and other applicable SEC requirements.
-11. Render the generated HTM and compare it against the PDF.
-12. Identify and attempt to resolve formatting discrepancies.
-13. Generate a clean ZIP containing only the final `.htm` and referenced images.
-14. Allow users to download the ZIP from the web application.
+1. Open the web application.
+2. Upload a `.docx` or `.pdf` file.
+3. Optionally check **SEC EDGAR Compliance**.
+4. Click **Convert to HTM**.
+5. The application processes the document.
+6. The application generates a high-fidelity `.html` file in Standard Mode or `.htm` in EDGAR Mode.
+7. Required assets are extracted and prepared.
+8. The application generates a ZIP file.
+9. The user downloads the ZIP.
 
-## Core Requirement
+There must be no requirement for the user to:
 
-**The generated HTM must visually reproduce the intermediate PDF without intentional formatting changes.**
+- Configure API connections.
+- Start a separate backend server manually.
+- Configure Redis or Celery.
+- Set up a database.
+- Configure external conversion services.
+- Manage processing workers.
+- Configure document-specific conversion settings.
+- Perform technical steps before every conversion.
 
-Preserve:
+The application should work through a single web interface and a straightforward local startup process.
 
-- Fonts and font sizes
-- Bold, italic, and underline formatting
+A small amount of internal server-side processing is acceptable and necessary.
+
+However, the user must not need to understand or manage that processing.
+
+---
+
+# 2. SUPPORTED INPUT FORMATS
+
+The application must accept:
+
+- Microsoft Word `.docx`
+- Portable Document Format `.pdf`
+
+Both input formats must support both conversion modes.
+
+## DOCX Processing
+
+When a DOCX is uploaded:
+
+1. Validate the DOCX.
+2. Detect tracked changes.
+3. Accept all tracked changes automatically.
+4. Preserve the resulting final document content.
+5. Convert the accepted DOCX to PDF internally.
+6. Use the generated PDF as the authoritative visual reference.
+7. Analyze the PDF layout.
+8. Generate HTM according to the selected conversion mode.
+9. Extract required assets.
+10. Validate and package the output.
+
+Never change the uploaded original DOCX.
+
+## PDF Processing
+
+When a PDF is uploaded:
+
+1. Validate the PDF.
+2. Inspect its page dimensions and structure.
+3. Extract its text, fonts, images, tables, and layout information.
+4. Generate HTM directly from the PDF.
+5. Extract required assets.
+6. Validate and package the output.
+
+**Do not convert uploaded PDFs into DOCX first.**
+
+Use the uploaded PDF directly as the visual reference.
+
+## Scanned PDFs
+
+Detect scanned or image-only PDFs.
+
+Where practical, use OCR to recover text and reading order.
+
+Preserve the original appearance as closely as possible.
+
+Do not fabricate uncertain OCR content.
+
+Report OCR limitations when the extracted text cannot be verified reliably.
+
+---
+
+# 3. TWO CONVERSION MODES
+
+The application must have one checkbox:
+
+**SEC EDGAR Compliance**
+
+It must be **unchecked by default**.
+
+This checkbox determines which HTML generation strategy is used.
+
+## MODE A — STANDARD HTM
+
+### Condition
+
+SEC EDGAR Compliance is unchecked.
+
+### Objective
+
+Generate a modern HTML5 document with maximum possible visual fidelity to the uploaded PDF or the PDF generated from the uploaded DOCX.
+
+There are no SEC-specific HTML restrictions in this mode.
+
+Use appropriate modern HTML and CSS features to preserve document formatting.
+
+Supported techniques may include:
+
+- HTML5 elements
+- CSS3
+- Embedded stylesheets
+- Inline styles
+- Flexbox
+- CSS Grid
+- Absolute positioning
+- CSS transforms
+- Modern table styling
+- Precise font sizing
+- Custom font embedding when legally permitted
+- Page-sized containers
+- Precise image positioning
+- Modern image formats
+- Advanced text spacing
+- Print-specific styling
+
+Use whichever combination provides the best visual accuracy.
+
+### Formatting Preservation
+
+Preserve the original document's:
+
+- Fonts
+- Font sizes
+- Font weights
+- Bold
+- Italics
+- Underlines
 - Text colors
-- Paragraph alignment
+- Highlighting
+- Paragraph spacing
+- Line spacing
 - Margins
 - Indentation
-- Line spacing
-- Paragraph spacing
-- Text wrapping
-- Table dimensions
-- Table borders
-- Cell spacing
-- Headers and footers
-- Page numbering
-- Images and logos
-- Mathematical expressions
-- Superscripts and subscripts
-- Special characters
-- Complex positioning
-- Vertical or rotated text
-- Multi-column layouts
-- Page boundaries where technically reproducible
-
-Do not arbitrarily change the source document's appearance to simplify conversion.
-
-However, SEC compliance is mandatory. If exact visual reconstruction conflicts with permitted EDGAR markup, do not silently produce an invalid filing.
-
-Record the incompatibility, report the discrepancy, and mark strict validation as failed.
-
-## Success Priorities
-
-1. SEC EDGAR compliance.
-2. Exact preservation of filing content.
-3. Maximum visual fidelity to the generated PDF.
-4. Selectable and searchable disclosure text.
-5. Reliable automated processing.
-6. Security and document confidentiality.
-7. Performance and scalability.
-8. Maintainability.
-
-Pixel-perfect appearance is the strict acceptance objective, not an assumption that every arbitrary document can satisfy.
-
----
-
-# 2. REFERENCE MATERIALS
-
-The project includes four reference files.
-
-### SEC Filer Manual
-
-`edgarfm-vol2-v78.pdf`
-
-EDGAR Filer Manual, Volume II, Version 78, September 14, 2026.
-
-This is the primary compliance reference.
-
-Inspect all relevant requirements, particularly:
-
-- Chapter 5 — Constructing Attached Documents and Document Types
-- Section 5.1.1 — File Naming Standards
-- Section 5.2.2 — HTML
-- Section 5.2.3 — PDF
-- Relevant graphics and hyperlink requirements
-- Document-validation requirements
-- Applicable submission restrictions
-
-Use the manual's actual rules rather than assuming that ordinary modern browser HTML is SEC-compatible.
-
-Create a versioned compliance rule registry with references to the relevant manual sections.
-
-Do not invent SEC requirements.
-
-Where the manual is ambiguous, document the uncertainty and implement conservative validation.
-
-### Original DOCX
-
-`06749LWD4_prelim_prospectus_automated.docx`
-
-Contains tracked changes.
-
-### Accepted DOCX
-
-`06749LWD4_prelim_prospectus_automated(1).docx`
-
-This document represents the expected result after accepting tracked changes.
-
-### Reference PDF
-
-`06749LWD4_prelim_prospectus_automated(1).pdf`
-
-This 23-page PDF represents the accepted document's intended appearance.
-
-Use these files as mandatory regression fixtures.
-
-If the files are not in the project directory, locate them in the accessible working environment.
-
-If unavailable, document the missing fixtures instead of fabricating test results.
-
-Never modify the original reference files.
-
----
-
-# 3. MANDATORY PROCESSING PIPELINE
-
-Implement the following pipeline exactly in its logical order:
-
-```text
-DOCX Upload
-    |
-    v
-DOCX Validation
-    |
-    v
-Accept All Tracked Changes
-    |
-    v
-Create Accepted DOCX
-    |
-    v
-Convert Accepted DOCX to PDF
-    |
-    v
-Validate PDF Generation
-    |
-    v
-Analyze PDF Layout
-    |
-    v
-Extract Text, Tables, Fonts,
-Images, Graphics, and Coordinates
-    |
-    v
-Build Intermediate Layout Model
-    |
-    v
-Generate EDGAR-Compatible HTM
-    |
-    v
-Extract and Normalize Image Assets
-    |
-    v
-Validate SEC Compliance
-    |
-    v
-Render HTM Using Chromium
-    |
-    v
-Compare HTM Against PDF
-    |
-    v
-Diagnose and Resolve Differences
-    |
-    v
-Run Final Validation
-    |
-    v
-Generate Clean ZIP
-    |
-    v
-Download ZIP
-```
-
-Use the generated PDF as the authoritative visual layout source for HTM reconstruction.
-
-You may additionally consult the accepted DOCX's OOXML structure to resolve:
-
-- Text reading order
-- Table relationships
-- Merged cells
-- Paragraph structure
-- Hyperlinks
-- Drawing relationships
-- Headers and footers
-- Footnotes
-- Semantic ambiguities
-
-Do not bypass PDF generation by substituting a generic DOCX-to-HTML converter.
-
-The PDF-first workflow is mandatory.
-
-Intermediate artifacts must remain outside the final ZIP.
-
----
-
-# 4. APPLICATION TECHNOLOGY STACK
-
-## Frontend
-
-- Next.js with App Router
-- React using JSX, not TypeScript
-- Tailwind CSS
-- DaisyUI
-- Lucide icons
-
-Use JavaScript and JSX throughout the frontend.
-
-## Backend
-
-- Python
-- FastAPI
-- Pydantic
-- PyMuPDF
-- Pillow
-- lxml
-- OpenCV where useful
-- Playwright
-
-## Processing Infrastructure
-
-- Redis
-- Celery
-- Isolated conversion workers
-- Persistent job-state storage
-- Temporary artifact storage
-
-## Packaging
-
-- Python `zipfile`
-
-## Deployment
-
-- Docker for compatible services
-- Separate document-rendering infrastructure
-- Reverse proxy
-- Environment-based configuration
-
-Keep the frontend, backend API, and processing workers independent.
-
-Do not perform resource-intensive conversions inside Next.js API routes.
-
-Use asynchronous jobs with polling or server-sent events.
-
-Do not assume Microsoft Office automation is supported for unattended production-server workloads. Investigate its support and licensing constraints, evaluate supported rendering alternatives, and document the selected implementation.
-
----
-
-# 5. DOCUMENT PROCESSING ENGINE
-
-## 5.1 Accept Tracked Changes
-
-Support Word revisions including:
-
-- Insertions
-- Deletions
-- Replacements
-- Formatting changes
-- Paragraph revisions
-- Table revisions
-- Moved content
-- Revisions in headers and footers
-- Revisions in supported text boxes and story ranges
-
-Prefer Word-compatible native revision processing where a supported execution environment exists.
-
-Do not assume `python-docx` can fully handle all revision types.
-
-Verify that:
-
-- Accepted text remains.
-- Deleted text is removed.
-- Formatting revisions are applied.
-- Tables remain structurally intact.
-- Embedded images remain intact.
-- Unresolved tracked changes do not remain.
-- The original DOCX is unchanged.
-
-If unsupported revisions are encountered, fail safely and report them.
-
-## 5.2 DOCX-to-PDF
-
-Produce a PDF matching the accepted document's Word print layout as closely as possible.
-
-Preserve:
-
-- Paper size and orientation
-- Sections
-- Margins
-- Page breaks
-- Fonts
-- Paragraph spacing
+- Alignment
 - Tables
-- Borders
-- Graphics
+- Merged cells
+- Table borders
+- Table backgrounds
+- Images
+- Logos
+- Headers
 - Footers
 - Page numbers
 - Footnotes
-- Rotated text
-- Text boxes
+- Endnotes
+- Mathematical expressions
+- Superscripts
+- Subscripts
 - Special characters
+- Multi-column layouts
+- Text boxes
+- Vertical text
+- Rotated elements
+- Page dimensions
+- Page boundaries
+- Page breaks
 
-Implement a pluggable rendering-provider interface.
+The visual target is **pixel-perfect reproduction of the source PDF**.
 
-Evaluate:
+However, do not falsely claim exact pixel equivalence when the rendering differs.
 
-- Supported Microsoft Word-compatible rendering
-- Commercial document-rendering services or libraries where appropriate
-- LibreOffice as a fallback, subject to fidelity testing
+Text should remain selectable and searchable wherever technically possible.
 
-Do not assume different rendering engines produce equivalent layouts.
+Do not convert entire document pages into screenshots simply to achieve an identical-looking result.
 
-Compare the generated PDF against the uploaded reference PDF.
+### Standard Mode Assets
 
-Use page dimensions, page count, text positions, and rendered-page differences.
+Allow:
 
-Do not proceed to HTM generation for a document whose PDF violates configured strict PDF validation.
+- JPG
+- JPEG
+- PNG
+- GIF
+- SVG
+- WebP
+- Locally referenced fonts where necessary and legally permitted
+
+Embed CSS directly inside the HTM.
+
+Do not generate separate CSS files unless there is a compelling reason and the user explicitly approves changing the output requirements.
+
+Avoid JavaScript dependencies for static document rendering.
+
+The Standard Mode output extension is `.html`. EDGAR Mode uses `.htm`.
 
 ---
 
-# 6. PDF-TO-HTM CONVERSION ENGINE
+## MODE B — SEC EDGAR-COMPLIANT HTM
 
-This is the most important part of the application.
+### Condition
 
-Do not use a generic PDF-to-HTML library as the entire implementation.
+SEC EDGAR Compliance is checked.
 
-Build a modular reconstruction engine.
+### Objective
 
-## 6.1 PDF Extraction
+Generate an HTM document using only the markup, attributes, character encoding, graphics, hyperlinks, and formatting techniques permitted by the SEC EDGAR Filer Manual.
+
+### Reference Manual
+
+Use:
+
+`edgarfm-vol2-v78.pdf`
+
+EDGAR Filer Manual, Volume II, Version 78, dated September 14, 2026.
+
+Pay particular attention to:
+
+- Section 5.1 — Constructing Attached Documents
+- Section 5.1.1 — File Naming Standards
+- Section 5.2.2 — HTML
+- Section 5.2.3 — PDF
+- Relevant EDGAR document-validation requirements
+
+Read the actual manual and implement its restrictions explicitly.
+
+Do not assume modern browser-compatible HTML is automatically accepted by EDGAR.
+
+### EDGAR Restrictions
+
+Enforce applicable restrictions on:
+
+- HTML tags
+- HTML attributes
+- Styling
+- Image formats
+- Image references
+- Hyperlinks
+- Character encoding
+- Filename lengths
+- Filename characters
+- Document resources
+- Unsupported embedded content
+
+Do not include:
+
+- JavaScript
+- Unsupported HTML5 elements
+- Unsupported CSS
+- SVG
+- External stylesheets
+- Remote images
+- External fonts
+- Iframes
+- Unsupported nested tables
+- Unsupported embedded objects
+- Unsupported hyperlink destinations
+
+Use JPG/GIF graphics according to the applicable manual requirements.
+
+All image references must resolve to local files in the ZIP.
+
+### Formatting Requirements
+
+Preserve the document's original appearance as closely as possible without violating SEC restrictions.
+
+Do not intentionally change:
+
+- Disclosure text
+- Financial figures
+- Paragraph formatting
+- Table structures
+- Text alignment
+- Image placement
+- Fonts
+- Special characters
+- Headers
+- Footers
+
+If exact appearance cannot be reproduced using permitted EDGAR markup, report the limitation.
+
+Do not silently use prohibited HTML or unsupported styling.
+
+**EDGAR compliance must not restrict the Standard HTM mode.**
+
+The two conversion modes should share PDF analysis but use separate HTML generation strategies.
+
+### Compliance Validation
+
+Validate generated EDGAR HTM against the supplied manual.
+
+Provide clear errors identifying unsupported elements, invalid attributes, broken image references, or other violations.
+
+Do not claim SEC acceptance unless the filing has actually passed an authorized EDGAR test submission.
+
+---
+
+# 4. SIMPLIFIED CONVERSION PIPELINE
+
+Implement a unified conversion engine.
+
+```text
+             Upload File
+                 |
+         +-------+-------+
+         |               |
+         v               v
+       DOCX             PDF
+         |               |
+         v               |
+   Accept Tracked        |
+      Changes            |
+         |               |
+         v               |
+   Generate PDF          |
+         |               |
+         +-------+-------+
+                 |
+                 v
+          Analyze PDF
+                 |
+                 v
+       Extract Document
+       Layout and Assets
+                 |
+                 v
+      SEC EDGAR Compliance?
+                 |
+         +-------+-------+
+         |               |
+        YES              NO
+         |               |
+         v               v
+   EDGAR-Compatible   Modern HTML5
+      HTM Renderer     HTM Renderer
+         |               |
+         +-------+-------+
+                 |
+                 v
+         Validate Output
+                 |
+                 v
+        Package HTM + Assets
+                 |
+                 v
+          Download ZIP
+```
+
+Do not create separate conversion engines for DOCX and PDF.
+
+The shared processing path starts at PDF analysis.
+
+Use the accepted DOCX's OOXML only when necessary to recover semantic structures that PDF extraction cannot reliably preserve.
+
+---
+
+# 5. UNIVERSAL DOCUMENT SUPPORT
+
+This must be a general-purpose document conversion engine.
+
+Do not design or optimize conversion logic exclusively around the supplied Barclays document.
+
+The uploaded reference documents are only regression fixtures.
+
+The application must dynamically analyze each document regardless of:
+
+- Filename
+- Issuer
+- Document length
+- Page count
+- Page size
+- Orientation
+- Font family
+- Table structure
+- Image placement
+- Paragraph structure
+- Document category
+
+Support documents such as:
+
+- Prospectuses
+- Pricing supplements
+- Financial reports
+- Legal agreements
+- Research documents
+- Business documents
+- Technical reports
+- Image-heavy documents
+- Documents containing complex tables
+- Multi-column documents
+- Landscape documents
+- Mixed-orientation documents
+
+Do not hardcode layout coordinates, font names, table widths, or other properties from a particular sample.
+
+Do not claim support for every possible document structure without testing.
+
+Unsupported cases must produce meaningful diagnostics rather than corrupted output.
+
+---
+
+# 6. SIMPLIFY THE EXISTING PROJECT
+
+The application already exists.
+
+**Refactor it instead of recreating it.**
+
+First inspect the current codebase.
+
+Identify:
+
+- Existing working components
+- Existing conversion logic
+- Existing frontend components
+- Existing PDF analysis code
+- Existing HTML generation code
+- Existing SEC validation rules
+- Unused dependencies
+- Unnecessary services
+- Duplicated code
+- Overengineered architecture
+
+Preserve functionality that already works.
+
+Remove unnecessary infrastructure where safe.
+
+Candidates for removal include:
+
+- Separate FastAPI service
+- Redis
+- Celery
+- Distributed workers
+- Message queues
+- Unnecessary databases
+- API gateways
+- Complex job orchestration
+- Unnecessary authentication infrastructure
+- Excessive deployment configuration
+- Redundant abstraction layers
+
+Do not remove required features simply to make the repository smaller.
+
+Do not introduce new infrastructure unless technically necessary.
+
+## Preferred Architecture
+
+Use:
+
+- Next.js
+- React JSX
+- Tailwind CSS
+- DaisyUI
+- Lightweight server-side document processing
+- Python for conversion where necessary
+- PyMuPDF for PDF analysis
+- Pillow for image processing
+- lxml for HTML validation
+
+Use additional dependencies only when justified by a demonstrated need.
+
+A single Next.js application may invoke a bundled Python conversion process internally.
+
+Avoid a separately running public Python API.
+
+Keep the application simple enough to run locally without starting several independent services.
+
+### Important Runtime Considerations
+
+File conversion is a server-side operation.
+
+Do not attempt to perform unsupported Word-processing operations entirely inside the browser.
+
+Evaluate a suitable DOCX-to-PDF renderer.
+
+Microsoft Word may provide superior compatibility for some DOCX documents, but unattended Office automation has support and operational limitations.
+
+Choose a practical implementation that works in the intended runtime and document any unavoidable dependency.
+
+Do not silently substitute an incompatible renderer when it introduces formatting changes.
+
+---
+
+# 7. DOCUMENT LAYOUT ANALYSIS
+
+Use the PDF as the primary source of visual layout information.
 
 Extract:
 
-- Page geometry
+- Page dimensions
+- Page orientation
+- Text coordinates
 - Text blocks
-- Text lines
-- Individual spans
-- Character coordinates where needed
-- Font names
+- Individual text spans
+- Font families
 - Font sizes
-- Font weights
-- Italic and underline properties where recoverable
-- Text colors
-- Bounding boxes
+- Font colors
 - Text baselines
-- Line heights
 - Paragraph relationships
+- Line spacing
 - Tables
-- Cell boundaries
-- Borders
+- Table boundaries
 - Images
-- Vector drawings
+- Vector graphics
 - Headers
 - Footers
 - Page numbers
 - Text rotation
-- White-space information
 
-Use PyMuPDF and other specialized libraries where justified.
+Create a shared internal document model.
 
-## 6.2 Intermediate Layout Model
-
-Create a structured document model independent of the final HTM generator.
-
-Suggested structure:
+Example:
 
 ```text
 Document
-  ├── Metadata
-  ├── Pages
-  │    ├── Geometry
-  │    ├── Text Blocks
-  │    │    ├── Paragraphs
-  │    │    ├── Lines
-  │    │    └── Text Spans
-  │    ├── Tables
-  │    ├── Images
-  │    ├── Vector Elements
-  │    ├── Headers
-  │    └── Footers
-  └── Assets
+ ├── Pages
+ │    ├── Geometry
+ │    ├── Text
+ │    ├── Tables
+ │    ├── Images
+ │    ├── Graphics
+ │    ├── Headers
+ │    └── Footers
+ └── Assets
 ```
 
-Maintain deterministic conversion behavior.
+Both HTML renderers must consume the same analyzed document model.
 
-Do not introduce Barclays-specific logic into the general-purpose engine.
+Do not duplicate PDF parsing logic between modes.
 
-## 6.3 HTM Reconstruction
+Use modular code, but avoid unnecessary layers of abstraction.
 
-Generate `.htm` using only permitted EDGAR HTML constructs.
+---
 
-Preserve the PDF's appearance as precisely as possible.
+# 8. HIGH-FIDELITY HTM GENERATION
 
-Handle:
+Implement two renderers:
 
-- Paragraph alignment
+1. Standard HTML5 Renderer
+2. SEC EDGAR Renderer
+
+## Standard Renderer
+
+Use modern browser features to reproduce PDF layout.
+
+Use CSS positioning, page containers, precise dimensions, and typography when appropriate.
+
+Prioritize:
+
+- Text accuracy
+- Font fidelity
 - Text positioning
-- Font size
-- Font weight
-- Font style
-- Spacing
-- Indentation
-- Tables
-- Borders
-- Merged cells
-- Financial data
-- Footnotes
-- Page numbers
-- Vertical text
-- Images
-- Mathematical expressions
-- Complex prospectus layouts
+- Line wrapping
+- Table geometry
+- Image positioning
+- Paragraph spacing
+- Page appearance
 
-Use the permitted HTML attributes and inline formatting capabilities defined in the manual.
+Preserve selectable text.
 
-Do not assume CSS positioning, external stylesheets, or arbitrary HTML5 elements are supported.
+Use embedded CSS.
 
-Where exact rendering cannot be achieved using allowed constructs, record an explicit fidelity failure.
+Do not create unnecessary external resource files.
 
-Ordinary disclosure text must remain selectable and searchable.
+## EDGAR Renderer
 
-Do not convert entire PDF pages into images merely to produce visual similarity.
+Use only compliant markup.
 
----
+Use a document-specific rendering strategy that respects the manual's supported formatting features.
 
-# 7. SEC COMPLIANCE ENGINE
+Avoid unsupported CSS positioning or modern tags.
 
-Build a dedicated, versioned compliance validator based on the supplied EDGAR manual.
+Preserve financial and legal text exactly.
 
-Create an explicit registry of:
+If the layout cannot be reproduced without violating SEC restrictions, return a clear validation failure.
 
-- Permitted HTML tags
-- Permitted attributes
-- Restricted attributes
-- Prohibited elements
-- Character-encoding rules
-- Hyperlink restrictions
-- Image-format restrictions
-- Local asset references
-- Filename requirements
-- Applicable document limits
-- PDF restrictions where relevant
+## Character Handling
 
-Validate the actual generated files, not just the intermediate layout model.
+Preserve:
 
-Reject unsupported constructs such as:
+- Currency symbols
+- Mathematical symbols
+- Registered trademarks
+- Copyright symbols
+- Dashes
+- Quotation marks
+- Superscripts
+- Subscripts
+- Special punctuation
+- Financial notation
 
-- JavaScript
-- Script elements
-- Event handlers
-- Unsupported HTML elements
-- Unsupported CSS
-- SVG
-- Iframes
-- External fonts
-- Remote images
-- Unsupported data URIs
-- Invalid links
-- Unsupported nested tables
-- Prohibited embedded objects
+Do not replace legitimate characters with question marks or unsupported glyphs.
 
-Apply the actual manual rules rather than a generic blanket HTML policy.
-
-Ensure special characters are encoded correctly.
-
-Preserve disclosure text without changing its meaning.
-
-For failed validation, provide:
-
-- Error code
-- Description
-- Affected file
-- Affected element
-- Relevant manual section
-- Suggested remediation
-
-Local validation is not proof of SEC acceptance.
-
-Where available, document how to perform authorized EDGAR test submissions.
+Use suitable HTML entities or character references when required.
 
 ---
 
-# 8. IMAGE AND ASSET ENGINE
+# 9. IMAGE AND ASSET HANDLING
 
-Extract and normalize graphics from the PDF.
+Extract images from the PDF.
 
-Support SEC-permitted image formats, primarily JPG and GIF, according to the manual.
+Where possible, preserve the original embedded image data.
 
-Handle:
+Avoid unnecessary recompression.
 
-- Logos
-- Charts
-- Diagrams
-- Signatures
-- Embedded images
-- Supported vector graphics requiring raster conversion
+For Standard Mode, use supported modern browser formats.
 
-Preserve image dimensions and proportions.
+For EDGAR Mode, generate only permitted SEC image formats.
 
-Avoid unnecessary quality loss.
+All images must retain correct:
 
-Do not convert ordinary text into images.
+- Width
+- Height
+- Aspect ratio
+- Placement
+- Color appearance
 
-Use deterministic, compliant filenames such as:
+Use deterministic asset names.
+
+Example:
 
 ```text
 image001.jpg
-image002.gif
-image003.jpg
+image002.png
+image003.gif
 ```
 
-Validate that:
+EDGAR mode must not output unsupported image formats.
 
-- Every referenced image exists.
-- All images use permitted formats.
-- No external images are referenced.
-- No unused images are included.
-- All asset references are relative and valid.
-- No image is corrupted.
+Do not convert ordinary text into images.
 
-All final image assets must be placed in the ZIP root.
+Do not include unused assets.
 
----
+Every referenced asset must exist.
 
-# 9. VISUAL VALIDATION ENGINE
-
-Implement automated page-by-page visual regression.
-
-## Rendering
-
-Render the generated PDF at a controlled DPI.
-
-Render the generated HTM using Playwright and Chromium.
-
-Use reproducible:
-
-- Browser versions
-- Viewport dimensions
-- Scale factors
-- Font environments
-- Rendering settings
-
-## Comparison
-
-Detect:
-
-- Text displacement
-- Missing content
-- Font substitution
-- Font-size mismatch
-- Incorrect line wrapping
-- Table misalignment
-- Border discrepancies
-- Missing graphics
-- Image displacement
-- Incorrect margins
-- Vertical spacing differences
-- Page-boundary differences
-- Text overflow
-
-Calculate pixel-difference metrics.
-
-Also perform content-integrity and geometry-based comparisons.
-
-Pixel-difference metrics alone are insufficient to establish correctness.
-
-## Strict Fidelity Mode
-
-Implement strict validation that requires zero unexplained visual discrepancies under the configured comparison method.
-
-Distinguish actual layout differences from antialiasing and renderer-specific pixel differences.
-
-Never conceal structural discrepancies through aggressive image normalization.
-
-Attempt safe layout corrections only when they remain EDGAR-compliant.
-
-If exact visual matching is impossible, report the unresolved differences and fail strict validation.
-
-Do not label output pixel-perfect without evidence.
+All assets must be located in the ZIP root directory.
 
 ---
 
-# 10. FINAL OUTPUT REQUIREMENTS
+# 10. OUTPUT ZIP REQUIREMENTS
 
-The output ZIP filename must match the uploaded DOCX basename.
+This section is mandatory for both modes.
+
+The ZIP filename must be derived from the uploaded filename.
 
 Example:
 
@@ -654,525 +691,463 @@ Output:
 06749LWD4_prelim_prospectus_automated.zip
 ```
 
-Inside the ZIP:
+For PDF:
+
+Input:
 
 ```text
-06749LWD4_prelim_prospectus_automated.zip
-│
-├── 06749LWD4_prelim_prospectus.htm
-├── image001.jpg
-├── image002.gif
-└── image003.jpg
+financial-report.pdf
 ```
 
-The internal HTM filename must comply with the EDGAR manual's filename limits.
+Output:
 
-Shorten it deterministically when required.
+```text
+financial-report.zip
+```
 
-The final ZIP must contain only:
+## ZIP Contents
 
-1. Exactly one `.htm` document.
-2. Its referenced JPG/GIF assets.
+Example for Standard Mode:
 
-All files must be at the root.
+```text
+financial-report.zip
+│
+├── financial-report.html
+├── image001.png
+├── image002.jpg
+└── image003.svg
+```
+
+Example for EDGAR Mode:
+
+```text
+financial-report.zip
+│
+├── financial-report.htm
+├── image001.jpg
+└── image002.gif
+```
+
+The `.htm` filename must be SEC-compatible when EDGAR mode is enabled.
+
+If the source filename is too long, shorten the internal HTM filename deterministically.
+
+The external ZIP filename should retain the input basename.
+
+## Strict ZIP Rules
+
+The ZIP must contain only:
+
+- Exactly one document: `.html` in Standard Mode or `.htm` in EDGAR Mode.
+- Required local assets referenced by that HTM.
+
+All contents must be in the ZIP root.
 
 Do not include:
 
 - DOCX
 - PDF
 - JSON
-- CSS
-- JavaScript
+- CSS files
+- JavaScript files
 - Logs
 - Screenshots
-- Validation reports
-- README
+- Reports
+- Temporary files
 - Nested directories
 - Unused assets
 
-Before making the ZIP downloadable, validate its complete contents.
+CSS in Standard Mode must be embedded in the HTM.
 
-Keep intermediate documents and diagnostic reports available only through the application's authorized internal processing workflow.
-
----
-
-# 11. WEB APPLICATION INTERFACE
-
-Create a professional, responsive, accessible interface.
-
-Use Next.js, React JSX, Tailwind CSS, DaisyUI, and Lucide icons.
-
-Support light and dark modes.
-
-## Main Features
-
-### Upload
-
-- Drag-and-drop DOCX upload
-- File picker
-- Multiple files
-- File-size limits
-- File validation
-- Upload progress
-
-### Conversion Dashboard
-
-Display each document and its processing stages:
-
-1. Uploaded
-2. Validating
-3. Accepting revisions
-4. Generating PDF
-5. Analyzing PDF
-6. Generating HTM
-7. Preparing assets
-8. Validating SEC compliance
-9. Comparing formatting
-10. Packaging ZIP
-11. Completed or Failed
-
-### Preview
-
-Implement an internal preview system supporting:
-
-- PDF preview
-- HTM preview
-- Side-by-side comparison
-- Zoom controls
-- Page navigation
-- Synchronized scrolling
-- Difference overlays
-- Highlighting formatting discrepancies
-
-### Download
-
-Allow ZIP download after successful validation.
-
-For failed conversions, show detailed diagnostics.
-
-Do not present unsuccessful files as SEC-ready.
-
-### Batch Processing
-
-Support several DOCX uploads.
-
-Generate one ZIP per input file.
-
-Maintain independent job progress, failures, and download controls.
+Validate the ZIP before allowing download.
 
 ---
 
-# 12. BACKEND API
+# 11. USER INTERFACE
 
-Implement versioned REST endpoints.
+Keep the interface minimal.
 
-Suggested API:
+Use a single primary page.
+
+## Header
+
+Title:
+
+**DOCX & PDF to HTM Converter**
+
+Subtitle:
+
+_Convert Word and PDF documents into high-fidelity HTM with optional SEC EDGAR compliance._
+
+## Upload Area
+
+Provide:
+
+- Drag-and-drop support
+- File selection
+- Accepted extensions: `.docx`, `.pdf`
+- Selected filename
+- File-size validation
+- Clear selection option
+
+## Compliance Checkbox
+
+Label:
+
+**SEC EDGAR Compliance**
+
+Unchecked by default.
+
+When unchecked, display:
+
+**Standard Mode — Modern HTML5 and CSS for maximum formatting fidelity.**
+
+When checked, display:
+
+**EDGAR Mode — Uses only SEC-permitted HTML tags, attributes, and supported assets.**
+
+## Convert Button
+
+Label:
+
+**Convert to HTM**
+
+Disable when no valid file is selected.
+
+## Processing Indicator
+
+Use simple progress messages:
+
+- Validating document
+- Accepting tracked changes (DOCX only)
+- Generating PDF (DOCX only)
+- Analyzing PDF
+- Generating HTM
+- Processing assets
+- Validating output
+- Packaging ZIP
+
+Do not introduce a complex dashboard.
+
+## Download
+
+On success, show:
+
+**Download ZIP**
+
+Display the output filename.
+
+On failure, show an understandable error message.
+
+## Design Requirements
+
+- Modern, professional appearance
+- Responsive layout
+- Light and dark modes
+- Tailwind CSS
+- DaisyUI
+- React JSX, not TypeScript
+- Keyboard accessibility
+- Clear loading states
+- Minimal UI clutter
+
+Remove unnecessary pages and features.
+
+The application should feel like a focused conversion utility, not an enterprise document-management platform.
+
+---
+
+# 12. FORMATTING VERIFICATION
+
+Visual accuracy is a core requirement.
+
+Use the PDF as the visual reference.
+
+In Standard Mode, maximize fidelity using modern HTML/CSS capabilities.
+
+In EDGAR Mode, maximize fidelity within SEC restrictions.
+
+Implement a practical verification process.
+
+At minimum:
+
+- Compare extracted text.
+- Verify page dimensions.
+- Check images.
+- Check tables.
+- Detect missing content.
+- Detect major positioning errors.
+- Verify HTM renders successfully.
+
+Where practical, add automated screenshot comparison using Playwright.
+
+Use pixel-level comparison for regression tests.
+
+Do not introduce a complex visual-analysis service.
+
+Keep validation integrated into the conversion engine.
+
+Do not claim pixel-perfect success without evidence.
+
+For EDGAR Mode, distinguish visual differences caused by SEC restrictions from conversion defects.
+
+---
+
+# 13. SIMPLIFIED BACKEND IMPLEMENTATION
+
+Avoid unnecessary distributed infrastructure.
+
+Use a straightforward conversion process that can be invoked by the existing web application.
+
+Suggested implementation:
 
 ```text
-POST   /api/v1/conversions
-GET    /api/v1/conversions/{job_id}
-GET    /api/v1/conversions/{job_id}/events
-GET    /api/v1/conversions/{job_id}/preview
-GET    /api/v1/conversions/{job_id}/validation
-GET    /api/v1/conversions/{job_id}/download
-DELETE /api/v1/conversions/{job_id}
-GET    /api/v1/health
-GET    /api/v1/readiness
+Next.js Web Application
+        |
+        v
+Internal Server-Side Conversion Handler
+        |
+        v
+Python Conversion Engine
+        |
+        v
+Generated ZIP
+        |
+        v
+Browser Download
 ```
 
-Implement:
+No separately running FastAPI service is required unless the current implementation demonstrates a compelling technical reason.
 
-- Secure uploads
-- File validation
-- Job creation
-- Asynchronous processing
-- Progress tracking
-- Structured errors
-- Retries
-- Cancellation
-- Download authorization
-- File cleanup
-- Worker health monitoring
-- Job expiration
+Do not use Redis or Celery.
 
-Use clean service boundaries and structured logging.
+Do not introduce a database solely for conversion state.
+
+Use temporary directories for each conversion.
+
+Ensure multiple conversion requests cannot overwrite one another's files.
+
+Handle errors and cleanup correctly.
+
+Do not block the frontend with synchronous UI operations.
+
+A simple server-side job mechanism or streamed processing response is acceptable.
+
+If conversions exceed request time limits, implement the smallest reliable solution rather than introducing distributed infrastructure prematurely.
 
 ---
 
-# 13. SECURITY AND PERFORMANCE
+# 14. SECURITY
 
-Treat all uploaded documents as untrusted and potentially confidential.
+Treat uploaded documents as untrusted.
 
 Implement:
 
-- Authentication or configurable access control
-- File-type verification
-- ZIP-bomb protection
-- File-size limits
-- Timeouts
-- Memory limits
-- CPU limits
-- Isolated workspaces
+- File extension validation
+- File signature validation
+- Upload-size limits
+- Safe temporary directories
 - Path traversal protection
+- Processing timeouts
+- Memory safeguards
+- Safe document parsing
+- Secure file downloads
+- Automatic temporary-file cleanup
 - No macro execution
 - No arbitrary code execution
-- Restricted outbound network access
-- Secure downloads
-- Unpredictable job identifiers
-- Temporary-file cleanup
-- Configurable retention periods
-- Sensitive-data-safe logging
 
-Optimize for:
+Avoid logging document contents.
 
-- Efficient worker utilization
-- Low memory consumption
-- Controlled concurrency
-- Streaming uploads
-- Lazy page analysis
-- Reusable rendering workers
-- Deterministic output
-- Minimal unnecessary temporary files
-- Stable processing of large documents
+Do not send uploaded documents to third-party services without explicit configuration and user authorization.
 
-Security and correctness must take priority over performance shortcuts.
+Keep processing local to the deployed application by default.
+
+Do not add an unnecessary user-account system for the initial application.
+
+If the app is exposed publicly, document appropriate access controls and rate limits.
 
 ---
 
-# 14. PROJECT STRUCTURE
+# 15. REFERENCE TEST FILES
 
-Use the following structure as a starting point.
+Use these existing files when available:
 
-```text
-edgar-converter/
-│
-├── apps/
-│   └── web/
-│       ├── app/
-│       ├── components/
-│       ├── hooks/
-│       ├── lib/
-│       ├── public/
-│       └── package.json
-│
-├── services/
-│   └── api/
-│       ├── app/
-│       │   ├── api/
-│       │   ├── core/
-│       │   ├── models/
-│       │   ├── schemas/
-│       │   ├── services/
-│       │   └── main.py
-│       └── pyproject.toml
-│
-├── packages/
-│   └── converter/
-│       ├── revisions/
-│       ├── pdf_export/
-│       ├── pdf_analysis/
-│       ├── layout/
-│       ├── html_generator/
-│       ├── assets/
-│       ├── sec_validation/
-│       ├── visual_validation/
-│       ├── packaging/
-│       └── pipeline.py
-│
-├── workers/
-│   ├── tasks/
-│   └── worker.py
-│
-├── tests/
-│   ├── fixtures/
-│   ├── unit/
-│   ├── integration/
-│   ├── regression/
-│   └── e2e/
-│
-├── docs/
-│   ├── architecture.md
-│   ├── conversion-pipeline.md
-│   ├── sec-compliance.md
-│   ├── deployment.md
-│   └── limitations.md
-│
-├── infrastructure/
-│   ├── docker/
-│   └── deployment/
-│
-├── AGENTS.md
-├── PROJECT_STATUS.md
-├── .agent-checkpoint.json
-├── .env.example
-├── .gitignore
-└── README.md
-```
+- `edgarfm-vol2-v78.pdf`
+- `06749LWD4_prelim_prospectus_automated.docx`
+- `06749LWD4_prelim_prospectus_automated(1).docx`
+- `06749LWD4_prelim_prospectus_automated(1).pdf`
 
-Do not initialize Git.
+The first is the SEC compliance reference.
 
-Do not overwrite unrelated existing project files.
+The remaining files are conversion regression fixtures.
 
-You may improve the directory structure if justified and documented.
+Use the accepted DOCX and its reference PDF to verify:
+
+- Track changes acceptance
+- PDF generation
+- Document text preservation
+- Page layout
+- Tables
+- Images
+- Fonts
+- Footnotes
+- Formatting fidelity
+
+Also test direct PDF upload using the reference PDF.
+
+Test both conversion modes for DOCX and PDF input.
+
+**Do not hardcode the converter to these files.**
+
+Add independent regression fixtures with different layouts.
 
 ---
 
-# 15. PERSISTENT AI AGENT PROGRESS TRACKING
+# 16. PERSISTENT AI AGENT PROGRESS TRACKING
 
-**This section is mandatory and must be implemented during Stage 1.**
+This requirement must remain in the simplified application project.
 
-The project must remain understandable and resumable even if:
+The development process must survive:
 
-- The current conversation becomes too long.
-- Chat context is truncated.
-- The chat session is lost.
-- The user starts a completely new conversation.
-- A different AI agent takes over development.
-- Development resumes after several days or weeks.
+- Lost chat context
+- New conversations
+- Agent switching
+- Interrupted implementation
+- Long development gaps
 
-Do not rely on chat history as the only source of project progress.
+Do not depend on conversation history alone.
 
-Persist project knowledge directly in repository files.
+Maintain the following files.
 
-## 15.1 AGENTS.md
+## AGENTS.md
 
-Create and maintain `AGENTS.md` in the project root.
+This is the permanent AI agent instruction file.
 
-This is the primary onboarding document for any AI coding agent.
-
-It must include:
+Include:
 
 - Project purpose
+- Architecture
 - Technology stack
-- High-level architecture
 - Coding conventions
-- Directory structure
-- SEC compliance constraints
-- PDF-first conversion requirement
-- Pixel-fidelity requirement
-- ZIP output restrictions
-- Testing requirements
+- Conversion requirements
+- Standard and EDGAR mode behavior
 - Git restrictions
-- Stage-by-stage workflow
-- Progress recovery instructions
-- Links to important project documentation
+- Stage execution workflow
+- Context recovery instructions
+- Testing requirements
 
-Add the following mandatory instruction near the beginning:
+Every AI agent must read `AGENTS.md` before making changes.
 
-**Before implementing any changes, every AI agent must read `AGENTS.md`, `PROJECT_STATUS.md`, and `.agent-checkpoint.json` and inspect the current repository state.**
+## PROJECT_STATUS.md
 
-Do not assume the previous AI agent completed the stage correctly.
+Maintain a human-readable record containing:
 
-Verify relevant files and tests before continuing.
+- Current stage
+- Completed stages
+- Current progress
+- Implemented features
+- Files changed
+- Test results
+- Known bugs
+- Pending tasks
+- Next stage
+- Suggested commit message
+- Last updated date
 
-## 15.2 PROJECT_STATUS.md
+Update this file after every development stage.
 
-Create a detailed, human-readable project status file.
+## .agent-checkpoint.json
 
-This must be updated after every meaningful development milestone.
-
-Suggested structure:
-
-```text
-# EDGAR Converter — Project Status
-
-## Overall Status
-Current Stage:
-Stage Status:
-Last Completed Stage:
-Next Stage:
-Last Updated:
-
-## Project Objective
-...
-
-## Completed Stages
-...
-
-## Current Stage
-...
-
-## Implemented Features
-...
-
-## Files Created or Modified
-...
-
-## Tests Executed
-...
-
-## Known Bugs
-...
-
-## Technical Limitations
-...
-
-## Architectural Decisions
-...
-
-## Pending Tasks
-...
-
-## Next Actions
-...
-
-## Suggested Commit Message
-...
-
-## Resume Instructions
-...
-```
-
-Do not mark a stage completed unless the required implementation and relevant tests have actually been performed.
-
-If a stage is blocked, record it as blocked.
-
-If a test has not been executed, explicitly state that.
-
-## 15.3 .agent-checkpoint.json
-
-Create a machine-readable checkpoint file in the project root.
+Maintain machine-readable progress.
 
 Example:
 
 ```json
 {
-  "project": "edgar-converter",
+  "project": "docx-pdf-to-htm-converter",
   "schema_version": 1,
   "current_stage": 1,
-  "current_stage_name": "Requirements and Architecture",
   "stage_status": "not_started",
   "last_completed_stage": 0,
   "next_stage": 1,
-  "authorization_required": true,
   "awaiting_user_approval": false,
-  "last_updated": null,
   "completed_stages": [],
-  "implemented_components": [],
   "pending_tasks": [],
   "known_issues": [],
   "last_test_results": [],
-  "suggested_commit_message": null,
-  "git_operations_performed": false,
-  "notes": []
+  "suggested_commit_message": null
 }
 ```
 
-Keep this file synchronized with `PROJECT_STATUS.md`.
+Update the checkpoint whenever meaningful progress is made.
 
-Allowed stage statuses:
+Keep it synchronized with `PROJECT_STATUS.md`.
 
-- `not_started`
-- `in_progress`
-- `completed`
-- `blocked`
-- `awaiting_user_approval`
+## docs/decisions.md
 
-Update the checkpoint atomically where possible.
+Record important technical decisions and their reasoning.
 
-Never invent successful test results.
+## docs/test-history.md
 
-Do not use the checkpoint to bypass the manual approval requirement.
+Record:
 
-## 15.4 Development Decision Log
+- Test commands
+- Results
+- Failures
+- Relevant environment details
+- Stage associated with each test
 
-Create:
+Do not fabricate successful tests.
 
-`docs/decisions.md`
+---
 
-Record important architectural decisions.
+# 17. CONTEXT RECOVERY PROTOCOL
 
-Each entry should contain:
-
-- Date
-- Decision
-- Context
-- Alternatives considered
-- Reasoning
-- Consequences
-
-Examples:
-
-- PDF rendering engine selection
-- Revision-acceptance strategy
-- EDGAR HTML reconstruction approach
-- Visual comparison methodology
-- Worker isolation design
-- File storage strategy
-
-This helps a new AI agent understand why particular implementations were chosen.
-
-## 15.5 Test History
-
-Create:
-
-`docs/test-history.md`
-
-After each development stage, record:
-
-- Stage
-- Test command
-- Test environment
-- Result
-- Number of passing tests
-- Number of failing tests
-- Outstanding failures
-
-Do not replace previous test history.
-
-Append new records so progress remains auditable.
-
-## 15.6 Context Recovery Protocol
-
-Whenever a new conversation or AI agent begins work:
+When starting a new conversation or resuming the project:
 
 1. Read `AGENTS.md`.
 2. Read `PROJECT_STATUS.md`.
 3. Read `.agent-checkpoint.json`.
 4. Read `docs/decisions.md`.
-5. Read relevant entries in `docs/test-history.md`.
-6. Inspect the existing project files.
-7. Inspect read-only Git status and diffs if Git is available.
-8. Determine the last verified completed stage.
-9. Identify the current pending tasks.
-10. Verify critical assumptions and relevant test results.
-11. Determine whether the previous stage is awaiting user approval.
-12. Continue only if the user has explicitly authorized the next stage.
+5. Read relevant test history.
+6. Inspect the existing code.
+7. Inspect read-only Git status if available.
+8. Identify the current development stage.
+9. Verify completed work.
+10. Identify unfinished work.
+11. Resume from the last verified checkpoint.
 
-Do not restart the entire project.
+Do not restart the project unnecessarily.
 
-Do not repeat completed work unnecessarily.
+Do not redo completed stages without reason.
 
-Do not assume an implementation is correct merely because a checkpoint says it is complete.
+If progress files conflict with actual code, trust verified implementation and test evidence.
 
-If progress records conflict with the actual code, prioritize verified repository state and report the discrepancy.
+If the previous stage is marked as awaiting user approval, stop until explicitly authorized.
 
-## 15.7 Recovery From Interrupted Work
-
-If a stage was interrupted:
-
-- Identify completed tasks.
-- Identify incomplete tasks.
-- Inspect partially modified files.
-- Re-run relevant tests.
-- Resume the unfinished stage.
-- Update progress records.
-
-If the checkpoint says `awaiting_user_approval`, do not start the next stage without explicit authorization.
-
-If the prior stage is complete but its Git changes remain uncommitted, leave them untouched and wait for the user's instruction.
-
-Never automatically commit or push changes during recovery.
+Do not proceed automatically merely because the project state has been recovered.
 
 ---
 
-# 16. STRICT GIT RESTRICTIONS
+# 18. STRICT GIT RESTRICTIONS
 
-**These restrictions override all other instructions.**
+These restrictions override all other instructions.
 
-You are prohibited from performing Git operations that modify repository state.
+**Never initialize a Git repository.**
 
-Never execute:
+**Never stage files.**
+
+**Never commit.**
+
+**Never push.**
+
+**Never create or switch branches.**
+
+**Never merge, rebase, reset, stash, or clean repository changes.**
+
+Do not perform Git write operations through shell commands, IDEs, libraries, scripts, or APIs.
+
+Prohibited examples:
 
 ```text
 git init
@@ -1188,19 +1163,7 @@ git stash
 git clean
 ```
 
-Do not create, delete, or modify branches or tags.
-
-Do not initialize Git, even if the project directory is empty.
-
-Do not create commits.
-
-Do not push changes.
-
-Do not stage files.
-
-Do not perform Git write operations through an IDE, API, library, shell script, automation, or another tool.
-
-Read-only commands are allowed, including:
+Read-only Git commands are permitted:
 
 ```text
 git status
@@ -1208,182 +1171,156 @@ git diff
 git log
 ```
 
-Creating and modifying normal project files is permitted.
+You may create, modify, refactor, and remove project application files as required by the authorized development stage.
 
-All Git state changes are the user's responsibility.
+Do not modify Git metadata or history.
 
-Provide suggested commit messages as plain text only.
+After each stage, provide a suggested commit message as plain text.
+
+The user will manually commit and push the changes.
 
 ---
 
-# 17. STAGE-BY-STAGE DEVELOPMENT
+# 19. STAGE-BY-STAGE REFACTORING PLAN
 
-Implement the system in the exact following order.
+Follow this sequence.
 
-## Stage 1 — Requirements Analysis and Architecture
+**Implement one stage at a time.**
 
-- Inspect reference files.
-- Extract SEC requirements.
-- Inspect existing project structure.
-- Design architecture.
-- Define module interfaces.
-- Create documentation.
-- Create `AGENTS.md`.
-- Create `PROJECT_STATUS.md`.
-- Create `.agent-checkpoint.json`.
-- Create decision and test history documents.
+## Stage 1 — Existing Project Audit
 
-Do not implement later stages.
+- Inspect the current application.
+- Read all persistent progress files.
+- Identify unnecessary infrastructure.
+- Identify reusable components.
+- Compare existing behavior against the revised requirements.
+- Document the simplification plan.
+- Update progress-tracking files.
 
-## Stage 2 — Backend Foundation
+Do not begin refactoring beyond this stage.
 
-- Initialize application files, not Git.
-- Create FastAPI service.
-- Implement configuration.
-- Create upload endpoints.
-- Implement job management.
-- Configure Redis and Celery.
-- Establish worker infrastructure.
-- Implement secure temporary storage.
-- Add basic API tests.
+## Stage 2 — Simplify Architecture
 
-## Stage 3 — DOCX Processing
+- Remove unnecessary services.
+- Remove unused infrastructure.
+- Consolidate conversion processing.
+- Simplify configuration.
+- Preserve functional code.
+- Ensure the application still starts.
+- Update dependencies and documentation.
 
-- Implement revision detection.
-- Implement revision acceptance.
-- Implement clean DOCX generation.
-- Implement PDF export.
-- Validate PDF output.
-- Compare against the supplied reference.
-- Add automated tests.
+## Stage 3 — DOCX and PDF Input Support
+
+- Support both `.docx` and `.pdf` uploads.
+- Implement input validation.
+- Add DOCX tracked-change acceptance.
+- Add DOCX-to-PDF conversion.
+- Add direct PDF analysis.
+- Unify both inputs into the shared pipeline.
 
 ## Stage 4 — PDF Layout Analysis
 
-- Implement PDF parsing.
-- Extract text and typography.
-- Extract image geometry.
-- Detect tables.
-- Analyze vector objects.
-- Build the intermediate layout model.
-- Add extraction tests.
+- Extract text and font information.
+- Analyze page geometry.
+- Identify tables.
+- Extract images.
+- Extract vector graphics.
+- Build the shared layout model.
+- Add tests.
 
-## Stage 5 — PDF-to-HTM Reconstruction
+## Stage 5 — Standard HTM Renderer
 
-- Implement permitted HTML generation.
-- Reconstruct text formatting.
-- Reconstruct tables.
-- Preserve spacing.
-- Handle complex layouts.
-- Generate valid `.htm`.
-- Add conversion tests.
+- Implement modern HTML5 output.
+- Implement advanced CSS styling.
+- Reconstruct PDF layouts.
+- Preserve selectable text.
+- Extract modern assets.
+- Improve formatting fidelity.
+- Test different document types.
 
-## Stage 6 — SEC Compliance Engine
+## Stage 6 — SEC EDGAR Renderer
 
-- Implement versioned manual-derived rules.
-- Validate HTML.
-- Validate attributes.
-- Validate hyperlinks.
-- Validate characters.
-- Validate assets.
-- Validate filenames.
-- Implement detailed diagnostics.
+- Read the supplied EDGAR manual.
+- Implement supported tags and attributes.
+- Implement permitted styling.
+- Implement JPG/GIF asset handling.
+- Implement filename restrictions.
+- Implement compliance validation.
+- Test EDGAR output.
 
-## Stage 7 — Pixel-Level Visual Validation
+## Stage 7 — ZIP Packaging
 
-- Render PDF pages.
-- Render HTM pages.
-- Compare text positions.
-- Compare page appearance.
-- Detect formatting discrepancies.
-- Generate internal visual-difference artifacts.
-- Add strict validation behavior.
-
-## Stage 8 — ZIP Packaging
-
-- Implement deterministic ZIP naming.
-- Implement compliant HTM naming.
-- Package root-level assets.
+- Derive ZIP filename from input.
+- Generate `.html` in Standard Mode or `.htm` in EDGAR Mode.
+- Include only referenced assets.
+- Use root-level files.
 - Validate ZIP contents.
-- Reject invalid packages.
-- Add packaging tests.
+- Support both modes.
 
-## Stage 9 — Next.js Frontend
+## Stage 8 — Simplify Frontend
 
-- Build responsive application interface.
-- Implement DOCX upload.
-- Implement batch selection.
-- Implement processing dashboard.
-- Implement job progress.
-- Implement preview.
-- Implement comparison controls.
-- Implement ZIP download.
-- Add accessibility and UI tests.
+- Build the minimal upload interface.
+- Support DOCX/PDF selection.
+- Add EDGAR checkbox.
+- Set checkbox to unchecked by default.
+- Add Convert button.
+- Add processing progress.
+- Add download control.
+- Remove unnecessary dashboard elements.
 
-## Stage 10 — Full Integration and Testing
+## Stage 9 — Full Integration Testing
 
-- Integrate frontend and backend.
-- Run the complete conversion pipeline.
-- Test the Barclays reference.
-- Compare all 23 pages.
-- Diagnose formatting differences.
-- Fix application defects.
-- Execute integration and E2E tests.
+Test:
 
-## Stage 11 — Deployment Configuration
+- DOCX to Standard HTM
+- DOCX to EDGAR HTM
+- PDF to Standard HTM
+- PDF to EDGAR HTM
 
-- Prepare Docker configuration for compatible services.
-- Document rendering-worker infrastructure.
-- Configure environment variables.
-- Add security hardening.
-- Add cleanup policies.
-- Add health checks.
-- Prepare deployment documentation.
+Verify ZIP contents and conversion behavior.
 
-## Stage 12 — Final Audit and Optimization
+Run regression tests against the supplied documents.
 
-- Review the entire codebase.
+Fix discovered defects.
+
+## Stage 10 — Final Cleanup and Optimization
+
 - Remove dead code.
-- Review dependencies.
-- Optimize performance.
-- Check memory usage.
-- Verify worker stability.
-- Run security checks.
-- Run the full automated test suite.
-- Verify ZIP restrictions.
-- Review SEC compliance.
-- Review visual fidelity.
-- Finalize documentation.
+- Remove unused packages.
+- Optimize conversion performance.
+- Improve error handling.
+- Verify security.
+- Verify output structure.
+- Update documentation.
+- Run final tests.
+- Record remaining limitations.
+
+Do not add new enterprise infrastructure.
 
 ---
 
-# 18. MANDATORY STAGE COMPLETION GATE
+# 20. MANDATORY STAGE APPROVAL GATE
 
-**Implement exactly one stage per user authorization.**
+After completing each stage:
 
-For each stage:
+1. Finish the actual implementation.
+2. Run relevant tests.
+3. Fix stage-specific defects.
+4. Update `PROJECT_STATUS.md`.
+5. Update `.agent-checkpoint.json`.
+6. Update test history.
+7. Update architectural decisions where necessary.
+8. Report completion.
+9. Provide a suggested Git commit message.
+10. Stop.
 
-1. Read the persistent project context.
-2. Verify the current stage.
-3. Implement only that stage.
-4. Run relevant tests.
-5. Fix defects within the stage.
-6. Update `PROJECT_STATUS.md`.
-7. Update `.agent-checkpoint.json`.
-8. Update `docs/test-history.md`.
-9. Update architectural decisions where applicable.
-10. Report the stage results.
-11. Provide a suggested Git commit message.
-12. Stop execution.
+Do not proceed to the next stage without explicit user authorization.
 
-Do not start the next stage automatically.
+The user will manually review, commit, and push the changes.
 
-The user will manually review the changes, commit them, and push them.
+Do not interpret silence or successful tests as permission to continue.
 
-Only continue after the user explicitly says to continue or begin the next stage.
-
-A user message reporting that a commit has been completed is not automatically authorization to continue unless that intent is explicitly stated.
-
-Do not interpret silence as approval.
+If the user requests changes to the current stage, implement those changes without automatically advancing.
 
 ## Required Stage Report
 
@@ -1393,319 +1330,218 @@ Use this format:
 
 **Status:** Completed / Blocked
 
-**Implemented**
+**Changes Implemented**
 
 - Actual changes made
-- Important files created or modified
-- Technical decisions
+- Files created or modified
+- Important technical decisions
 
-**Tests**
+**Testing**
 
-- Commands executed
+- Tests performed
 - Passed tests
 - Failed tests
-- Remaining limitations
+- Known limitations
 
 **Progress Tracking**
 
-- `AGENTS.md` updated if necessary
-- `PROJECT_STATUS.md` updated
-- `.agent-checkpoint.json` updated
+- Project status updated
+- Checkpoint updated
 - Test history updated
 
 **Suggested Commit Message**
 
 ```text
-feat: implement [stage description]
+refactor: simplify [stage description]
 ```
 
-**Next Stage:** Stage [N+1] — [Name]
+**Next Stage:** Stage [N+1] — [Stage Name]
 
-**Action Required:** Review the changes, commit and push manually, then explicitly instruct me to continue.
+**Action Required:** Review, commit, and push the changes manually, then explicitly instruct me to continue.
 
-Stop after this report.
-
-Do not run Git write commands.
+Stop execution after the report.
 
 ---
 
-# 19. HANDLING BLOCKERS AND FAILURES
+# 21. HANDLING BLOCKERS
 
-If implementation is blocked:
+If a stage cannot be completed:
 
 1. Identify the blocker.
-2. Explain the cause.
+2. Explain its technical cause.
 3. Preserve completed work.
-4. Record the blocker in progress files.
-5. Record unsuccessful tests.
-6. Suggest the next corrective action.
-7. Provide a commit message only if meaningful changes were completed.
-8. Stop and wait for instructions.
+4. Document the remaining tasks.
+5. Update progress records.
+6. Report available test results.
+7. Provide a suggested commit message if appropriate.
+8. Stop for user instructions.
 
 Do not fabricate results.
 
-Do not mark incomplete functionality as completed.
+Do not claim a stage is complete when major functionality remains broken.
 
-Do not silently skip mandatory requirements.
-
-If a particular document cannot meet SEC compliance and strict visual fidelity simultaneously, retain a clear diagnostic record.
+Do not silently replace the intended implementation with a mock or placeholder.
 
 ---
 
-# 20. TESTING REQUIREMENTS
+# 22. DEFINITION OF DONE
 
-Implement automated tests covering:
+The application is complete when:
 
-### Unit Tests
+- The web application starts with a simple setup.
+- DOCX uploads work.
+- PDF uploads work.
+- Track changes are accepted for DOCX inputs.
+- DOCX-to-PDF conversion works.
+- Direct PDF processing works.
+- Standard HTM mode works.
+- SEC EDGAR mode works.
+- The EDGAR checkbox is unchecked by default.
+- Standard mode supports modern HTML5/CSS.
+- EDGAR mode enforces the supplied manual's rules.
+- Document text is preserved.
+- Images are extracted correctly.
+- Formatting fidelity is measured and improved.
+- Standard Mode produces `.html`; EDGAR Mode produces `.htm`.
+- ZIP filenames match input basenames.
+- ZIP files contain only the HTM and referenced assets at the root.
+- Conversion failures are reported accurately.
+- The UI remains simple and responsive.
+- Unnecessary services have been removed.
+- Automated tests pass.
+- Documentation is updated.
+- Persistent progress tracking works.
+- Any AI agent can resume the project from the checkpoint files.
 
-- Revision detection and acceptance
-- PDF layout extraction
-- Text positioning
-- Table reconstruction
-- Character encoding
-- HTML tag validation
-- HTML attribute validation
-- Image processing
-- Filename normalization
-- ZIP inspection
+Do not claim universal pixel-perfect conversion unless demonstrated by actual testing.
 
-### Integration Tests
-
-- DOCX to accepted DOCX
-- Accepted DOCX to PDF
-- PDF to layout model
-- Layout model to HTM
-- Asset generation
-- SEC compliance validation
-- Visual comparison
-- Final ZIP generation
-
-### End-to-End Tests
-
-- Upload DOCX
-- Create job
-- Process document
-- Display progress
-- Validate output
-- Preview results
-- Download ZIP
-- Inspect ZIP contents
-
-### Regression Tests
-
-Use the uploaded Barclays reference.
-
-Verify:
-
-- Accepted DOCX content
-- PDF page count and dimensions
-- PDF layout
-- Text integrity
-- Tables
-- Footnotes
-- Vertical text
-- Graphics
-- Special characters
-- HTM compliance
-- HTM visual differences
-- ZIP structure
-
-Test all 23 pages.
-
-Do not test only the first page.
-
-Add additional fixtures for other document types where useful.
-
-Document which cases pass and which remain unsupported.
+Do not claim SEC filing acceptance without authorized EDGAR test validation.
 
 ---
 
-# 21. ENGINEERING QUALITY STANDARDS
+# 23. FINAL EXECUTION INSTRUCTIONS
 
-Follow these practices:
+You are working on an existing application.
 
-- Clean architecture
-- Modular code
-- Reusable components
-- Clear service boundaries
-- Meaningful naming
-- Comprehensive error handling
-- Structured logging
-- Deterministic processing
-- Minimal dependencies
-- Automated tests
-- Security-first file handling
-- Performance-conscious implementation
+Do not create another project.
 
-Frontend code must use React JSX rather than TypeScript.
+Do not initialize Git.
 
-Avoid unnecessary basic explanations in technical documentation.
+Start by reading:
 
-Focus on implementation details, maintainability, and scalability.
+1. `AGENTS.md`
+2. `PROJECT_STATUS.md`
+3. `.agent-checkpoint.json`
+4. `docs/decisions.md`
+5. `docs/test-history.md`
 
-For UI development:
+Read whichever of these files exist.
 
-- Follow modern Figma-quality design conventions.
-- Maintain consistent spacing and typography.
-- Use accessible interaction patterns.
-- Support keyboard navigation.
-- Use responsive layouts.
-- Avoid decorative elements that reduce usability.
+Inspect the current application and determine what was already implemented.
 
-Never sacrifice document correctness for a visually polished interface.
+Do not assume the previous architecture must be preserved.
 
----
+Do not assume every existing component must be removed.
 
-# 22. DOCUMENTATION REQUIREMENTS
+Evaluate each component based on whether it directly contributes to the simplified conversion workflow.
 
-Maintain:
+Begin with:
 
-### README.md
+**Stage 1 — Existing Project Audit**
 
-Include:
+During this stage:
 
-- Project overview
-- Features
-- Requirements
-- Installation
-- Local development
-- Environment configuration
-- Application usage
-- Architecture
-- Testing
-- Deployment
-- Troubleshooting
+- Inspect the repository.
+- Identify existing functionality.
+- Identify unnecessary infrastructure.
+- Identify reusable code.
+- Compare current functionality against the new requirements.
+- Create a practical refactoring plan.
+- Update persistent progress files.
+- Run relevant non-destructive checks.
 
-### AGENTS.md
+Then report:
 
-Include:
-
-- AI agent onboarding
-- Architecture
-- Engineering rules
-- SEC requirements
-- PDF-first workflow
-- Git restrictions
-- Stage execution protocol
-- Context recovery
-
-### PROJECT_STATUS.md
-
-Include:
-
-- Completed stages
-- Current stage
-- Progress
-- Implemented functionality
-- Tests
-- Known issues
-- Next actions
+- Findings
+- Proposed simplifications
+- Files changed
+- Tests/checks performed
+- Updated progress
 - Suggested commit message
 
-### .agent-checkpoint.json
+**Stop after Stage 1.**
 
-Maintain synchronized machine-readable progress.
-
-### docs/decisions.md
-
-Track architectural decisions.
-
-### docs/test-history.md
-
-Maintain an auditable testing history.
-
-### docs/sec-compliance.md
-
-Document EDGAR rules and manual references.
-
-### docs/limitations.md
-
-Document unsupported document features and fidelity limitations.
-
-### docs/deployment.md
-
-Document local and production deployment.
-
----
-
-# 23. DEFINITION OF DONE
-
-The complete system is functionally ready when:
-
-- The web application runs.
-- DOCX upload works.
-- Tracked changes are accepted correctly.
-- PDF generation works.
-- PDF layout analysis works.
-- HTM generation works.
-- SEC compliance validation works.
-- Text integrity is verified.
-- Image extraction works.
-- Visual comparison works.
-- ZIP packaging works.
-- Batch processing works.
-- Secure downloads work.
-- Relevant automated tests pass.
-- Project documentation is complete.
-- Deployment configuration is available.
-- Persistent progress tracking is implemented.
-- A new AI agent can recover project context from repository files.
-
-The system must not claim that every arbitrary DOCX can achieve pixel-perfect SEC-compliant HTML rendering unless that claim is supported by actual tests.
-
-Any document that fails strict fidelity validation must be reported as unsuccessful rather than silently accepted.
-
----
-
-# 24. FINAL EXECUTION INSTRUCTIONS
-
-Start by reading the repository's existing project files.
-
-If `AGENTS.md`, `PROJECT_STATUS.md`, or `.agent-checkpoint.json` already exist, read them before doing any work.
-
-If progress records exist, recover the current development stage.
-
-Do not reset or restart completed development.
-
-If no progress records exist, begin Stage 1.
-
-For Stage 1:
-
-1. Inspect the four reference documents.
-2. Inspect the existing project directory.
-3. Extract applicable SEC rules.
-4. Define the system architecture.
-5. Establish the conversion and validation strategy.
-6. Create persistent progress-tracking files.
-7. Document important technical decisions.
-8. Perform relevant verification.
-9. Update project progress.
-10. Report Stage 1 completion and provide its suggested commit message.
-
-Then stop.
-
-Do not begin Stage 2 until explicitly instructed.
+Wait for the user to review, commit, push, and explicitly authorize Stage 2.
 
 ## FINAL NON-NEGOTIABLE RULES
 
-**Never initialize Git.**
+- Never initialize Git.
+- Never stage files.
+- Never commit.
+- Never push.
+- Never modify branches or Git history.
+- Never automatically move to the next development stage.
+- Never rely only on chat history for project progress.
+- Never produce fake conversion results.
+- Never hardcode conversion logic to the Barclays sample.
+- Never sacrifice SEC compliance to imitate formatting.
+- Never impose EDGAR restrictions on Standard Mode.
+- Always support DOCX and PDF input.
+- Generate `.html` for Standard Mode and `.htm` for EDGAR Mode.
+- Always package only HTM and required assets in the ZIP root.
+- Always track development progress in repository files.
+- Always report a suggested commit message after each stage.
+- Always wait for explicit user approval before continuing.
 
-**Never stage files.**
+# MANDATORY UPDATE — MODE-DEPENDENT OUTPUT EXTENSIONS
 
-**Never create commits.**
+Update the existing DOCX/PDF converter to generate different HTML file extensions depending on the SEC EDGAR Compliance checkbox.
 
-**Never push changes.**
+## Standard Mode (Checkbox Unchecked — Default)
 
-**Never modify Git branches or repository history.**
+- Generate a `.html` file.
+- Use modern HTML5 and CSS3.
+- Preserve document formatting with maximum achievable visual fidelity.
+- Allow modern image formats and locally referenced assets.
+- Package the `.html` file and its referenced assets in the ZIP root directory.
 
-**Never proceed to the next stage without explicit user authorization.**
+Example:
 
-**Never rely exclusively on chat history for project progress.**
+```text
+financial-report.zip
+├── financial-report.html
+├── image001.png
+├── image002.jpg
+└── image003.svg
+```
 
-**Always maintain persistent, accurate, recoverable project state.**
+## EDGAR Mode (Checkbox Checked)
 
-**Always report completed work, testing results, and the suggested commit message at the end of each stage.**
+- Generate a `.htm` file.
+- Use only HTML tags, attributes, styling, and image formats permitted by the SEC EDGAR Filer Manual.
+- Apply SEC-compliant filename restrictions.
+- Package the `.htm` file and its referenced JPG/GIF assets in the ZIP root directory.
 
-**Always stop after completing the authorized stage.**
+Example:
 
-Begin Stage 1 now.
+```text
+financial-report.zip
+├── financial-report.htm
+├── image001.jpg
+└── image002.gif
+```
+
+## Implementation Requirements
+
+1. Determine the output extension dynamically from the checkbox value.
+2. Do not generate `.htm` in Standard Mode.
+3. Do not generate `.html` in EDGAR Mode.
+4. Ensure all generated asset references resolve correctly.
+5. Update the frontend labels, backend conversion logic, ZIP packaging, validators, and automated tests.
+6. Remove all previous requirements stating that both modes must use `.htm`.
+7. Preserve the original input basename for the ZIP filename.
+8. Do not introduce additional services or infrastructure.
+9. Update `AGENTS.md`, `PROJECT_STATUS.md`, and `.agent-checkpoint.json` to reflect the revised requirements.
+10. Follow the existing stage-by-stage workflow. Do not initialize Git, stage, commit, or push. Report changes and a suggested commit message, then wait for explicit authorization before continuing.
+
+**Begin Stage 1 now.**

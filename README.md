@@ -1,6 +1,10 @@
 # ConvX — DOCX-to-HTM converter
 
-Browser workspace for secure DOCX revision acceptance, PDF-first layout reconstruction, manual-derived EDGAR validation, all-page visual comparison and clean filing-asset ZIP download. Compliance and exact disclosure take priority; unresolved strict fidelity failures prevent download.
+**Current plan: simplified DOCX/PDF converter, refactor Stage 1 audited.** The revised target is one upload page, Standard `.html` output by default, and optional SEC EDGAR `.htm`. The application still runs the earlier DOCX-only workflow; those new modes and architecture are not implemented yet. See the [audit and staged plan](docs/refactor-audit.md) and [current progress](PROJECT_STATUS.md). Runtime instructions below describe the existing implementation until its replacement is verified.
+
+Existing browser workspace for secure DOCX revision acceptance, PDF-first layout reconstruction, manual-derived EDGAR validation, all-page visual comparison and clean filing-asset ZIP download. Compliance and exact disclosure take priority; unresolved strict fidelity failures prevent download.
+
+**Local startup:** run `.\.venv\Scripts\python dev.py` from the root, open the printed workspace URL, then choose **Use local access**. This starts the API, UI and a separate real local worker without Redis. See [one-command development](docs/local-development.md). Existing validation failures remain visible.
 
 **Stage 9 UI is implemented.** With the configured API running, use `cd apps/web`, `npm.cmd ci`, then `npm.cmd run dev`. Open http://127.0.0.1:3000. See [frontend setup](docs/frontend.md) for connection, batch upload, progress, diagnostic PDF/HTM preview and download controls. Current validation failures still prevent a qualified filing ZIP. The paragraph below records the Stage 8 engine handoff.
 

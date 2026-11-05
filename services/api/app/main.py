@@ -83,6 +83,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def readiness(request: Request):
         def probe():
             checks = {"database": False, "storage": False, "broker": False, "admission_worker": False}
+            local_queue = settings.execution_mode == "local_dev"
             try:
                 request.app.state.database.check_schema()
                 checks["database"] = True
@@ -99,13 +100,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 checks["storage"] = True
             except OSError:
                 pass
-            try:
-                with Redis.from_url(
-                    settings.redis_url.get_secret_value(), socket_connect_timeout=0.5, socket_timeout=0.5
-                ) as client:
-                    checks["broker"] = bool(client.ping())
-            except Exception:
-                checks["broker"] = False
+            if local_queue:
+                checks["local_queue"] = True
+            else:
+                try:
+                    with Redis.from_url(
+                        settings.redis_url.get_secret_value(), socket_connect_timeout=0.5, socket_timeout=0.5
+                    ) as client:
+                        checks["broker"] = bool(client.ping())
+                except Exception:
+                    checks["broker"] = False
             return checks
 
         checks = await run_in_threadpool(probe)
@@ -113,7 +117,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return JSONResponse(
             {
                 "ready": False,
-                "foundation_ready": all(checks.values()),
+                "foundation_ready": all(
+                    value
+                    for key, value in checks.items()
+                    if key != "broker" or settings.execution_mode == "celery"
+                ),
+                "queue_transport": settings.execution_mode,
                 "conversion_ready": False,
                 "checks": checks,
                 "code": "PIPELINE_NOT_AVAILABLE",

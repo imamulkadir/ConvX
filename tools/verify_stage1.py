@@ -1,4 +1,4 @@
-"""Stage 1 evidence/documentation checks; does not certify a converter."""
+"""Fixture/recovery checks across original and refactor workflows; no conversion certification."""
 from __future__ import annotations
 
 import hashlib
@@ -94,6 +94,13 @@ class StageOneChecks(unittest.TestCase):
 
     def test_stage_scope(self):
         checkpoint = read_json(".agent-checkpoint.json")
+        if checkpoint.get("workflow") == "simplification-refactor":
+            self.assertEqual(checkpoint["schema_version"], 2)
+            self.assertTrue((ROOT / "docs/refactor-audit.md").is_file())
+            legacy = read_json("docs/history/pre-refactor-checkpoint.json")
+            self.assertGreaterEqual(legacy["last_completed_stage"], 1)
+            self.assertTrue((ROOT / "packages/converter/pipeline.py").is_file())
+            return  # Existing-project audit; the historical empty-project assertion is inapplicable.
         if checkpoint["current_stage"] > 1:
             self.assertIn(1, checkpoint["completed_stages"])
             return  # Stage 1's historical absence-of-application assertion no longer applies.
