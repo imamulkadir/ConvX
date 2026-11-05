@@ -28,3 +28,5 @@ No production strict rules profile is approved yet. Confirmed rule entries can d
 ## Diagnostic contract and authorized SEC checks
 
 Each failure contains stable code, description, affected file/element, rule ID/manual section where applicable and suggested remediation. Report local validation as local only. Human filing operators may use EDGARLink Online Doc Validation and an authorized TEST submission under their filing account and applicable form workflow, inspect the actual SEC response, and reconcile it with local diagnostics. This project does not transmit filings or obtain credentials. No test or live submission was made in Stage 1.
+
+Stage 5 adds a [proposed generator profile](compliance/efm-v78.stage5-candidate.json) with manual-listed tags and candidate style vocabulary. This does not release or amend the v78.1 design registry and does not approve CSS/MANY/Unicode interpretation. No executable SEC validator was implemented early. All candidate compliance flags remain false pending Stage 6 actual-file validation.

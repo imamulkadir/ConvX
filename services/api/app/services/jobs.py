@@ -340,11 +340,14 @@ class JobRepository:
             )
             if not record:
                 return False
+            html_generated = report["status"] == "htm_generated"
             layout_passed = report["status"] == "layout_analyzed"
-            passed = report["status"] in {"pdf_validated", "layout_analyzed"}
+            passed = report["status"] in {"pdf_validated", "layout_analyzed", "htm_generated"}
             code = (
                 report["diagnostics"][0]["code"]
                 if report["diagnostics"]
+                else "SEC_ENGINE_NOT_AVAILABLE"
+                if html_generated
                 else "HTML_ENGINE_NOT_AVAILABLE"
                 if layout_passed
                 else "LAYOUT_ENGINE_NOT_AVAILABLE"
@@ -355,7 +358,9 @@ class JobRepository:
                     dict(record),
                     now,
                     state="blocked" if passed or report["status"] == "blocked" else "failed",
-                    stage="awaiting_htm_generation"
+                    stage="awaiting_sec_validation"
+                    if html_generated
+                    else "awaiting_htm_generation"
                     if layout_passed
                     else "awaiting_pdf_analysis"
                     if passed
@@ -375,6 +380,7 @@ class JobRepository:
                 "PDF_RENDERER_UNAVAILABLE",
                 "PDF_REFERENCE_REQUIRED",
                 "LAYOUT_ENGINE_NOT_AVAILABLE",
+                "HTML_ENGINE_NOT_AVAILABLE",
             }:
                 raise Problem(409, "JOB_NOT_RESUMABLE", "This job cannot resume document processing")
             if record["attempts"] >= self.settings.max_job_attempts:

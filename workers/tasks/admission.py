@@ -11,6 +11,7 @@ from app.services.jobs import JobRepository
 from app.services.storage import Storage
 from converter.context import ProcessingContext
 from converter.errors import fail
+from converter.html_generator.models import GenerationPolicy
 from converter.pdf_analysis.policy import AnalysisPolicy
 from converter.pdf_export.libreoffice import LibreOfficeProvider
 from converter.pdf_export.validation import PDFValidationPolicy
@@ -91,6 +92,9 @@ def admit_document(job_id: str, settings: Settings) -> None:
                 max_characters_per_page=settings.layout_max_characters_per_page,
                 max_layout_bytes=settings.layout_max_bytes,
                 max_memory_bytes=settings.layout_memory_bytes,
+            ),
+            generation_policy=GenerationPolicy(
+                max_html_bytes=settings.htm_max_bytes, max_nodes=settings.htm_max_nodes
             ),
         )
         repository.finish_processing(job_id, attempt_id, report)

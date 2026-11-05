@@ -1,4 +1,4 @@
-"""Stage 4 stops after gated PDF layout analysis; no HTML or ZIP implementation."""
+"""Stage 5 produces private HTM candidates; no compliance/fidelity/ZIP success."""
 
 from __future__ import annotations
 
@@ -9,6 +9,8 @@ from pathlib import Path
 
 from converter.context import ProcessingContext
 from converter.errors import ConversionFailure, fail
+from converter.html_generator.generator import generate_htm
+from converter.html_generator.models import GenerationPolicy
 from converter.ooxml import sha256
 from converter.pdf_analysis.extract import analyze_pdf, write_layout
 from converter.pdf_analysis.policy import AnalysisPolicy
@@ -36,19 +38,21 @@ def process_docx(
     policy: PDFValidationPolicy | None = None,
     context: ProcessingContext | None = None,
     analysis_policy: AnalysisPolicy | None = None,
+    generation_policy: GenerationPolicy | None = None,
 ) -> dict:
     context = context or ProcessingContext()
     workspace = workspace.resolve()
     workspace.mkdir(mode=0o700, parents=True, exist_ok=False)
     report = {
         "schema_version": 1,
-        "stage": 4,
+        "stage": 5,
         "source_sha256": sha256(source),
         "status": "in_progress",
         "revision_acceptance": None,
         "accepted_reference_comparison": None,
         "pdf_validation": None,
         "layout_analysis": None,
+        "html_generation": None,
         "provider": None,
         "diagnostics": [],
         "final_conversion_complete": False,
@@ -108,7 +112,24 @@ def process_docx(
                 "Layout extraction has unresolved reconstruction blockers",
                 "Review private layout diagnostics; do not generate HTML from this model",
             )
-        report["status"] = "layout_analyzed"
+        context.stage("generating_htm")
+        generation = generate_htm(
+            layout,
+            result.path,
+            report["pdf_validation"],
+            workspace / "candidate.htm",
+            generation_policy,
+            context,
+        )
+        report["html_generation"] = generation.model_dump(mode="json")
+        if not generation.generated:
+            raise fail(
+                "HTM_RECONSTRUCTION_UNSUPPORTED",
+                "generating_htm",
+                "Source layout has unresolved HTM reconstruction incompatibilities",
+                "Review generation diagnostics; do not label this output filing-ready",
+            )
+        report["status"] = "htm_generated"
     except ConversionFailure as exc:
         report["status"] = (
             "blocked"

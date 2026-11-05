@@ -50,3 +50,5 @@ Cancellation marks a requested state and stops active process trees; all publica
 1 architecture; 2 backend; 3 revisions/PDF; 4 layout; 5 HTML; 6 compliance; 7 visual validation; 8 ZIP; 9 frontend; 10 integration; 11 deployment; 12 audit. Each stage requires explicit authorization. Converter contracts remain planned; Stage 2 admission/lifecycle behavior is documented separately.
 
 Stage 4 implementation adds the PDF layout boundary described in [layout analysis](pdf-layout-analysis.md). Workers analyze only strictly validated generated PDFs and write private attempt-local `layout.json`; diagnostic inspection is separately marked ineligible. Stage 5 HTML remains unavailable.
+
+Stage 5 adds a manual-constrained normal-flow HTM generator after the strict PDF/layout gates. Private candidate generation and graphic requests do not authorize downstream success. Supported content/geometry, resource bounds and unsupported cases are documented in [HTM reconstruction](htm-reconstruction.md).

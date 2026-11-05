@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "generator": "convx-flow-htm-v1",
+  "profile": "efm78-stage5-candidate-v1",
+  "cases": [
+    {
+      "case": "simple",
+      "qualification": "Genuine synthetic PDF self-comparison tests mechanics only; not DOCX or Word-reference qualification",
+      "source_pdf_sha256": "503c92190f183497a2eeab2b9d1b8d9eb8f14805f0480f805712ca5783623ccf",
+      "candidate_sha256": "cf59b82f0305ccfbdc9162fa0134858de9639041ee67b53cceb0f536dc50b3f5",
+      "candidate_bytes": 2403,
+      "pages": 1,
+      "characters": 12,
+      "content_integrity_passed": true,
+      "tables": 0,
+      "nested_tables": 0,
+      "strict_validation_passed": false,
+      "diagnostics": [
+        "HTM_STYLE_PROFILE_PENDING",
+        "HTM_FONT_METRICS_UNVERIFIED"
+      ]
+    },
+    {
+      "case": "merged_table",
+      "qualification": "Genuine synthetic PDF self-comparison tests mechanics only; not DOCX or Word-reference qualification",
+      "source_pdf_sha256": "b5ed879a344fd51fffd7c786b9b60da808c5de9e5ce6233369ac2259cc90a680",
+      "candidate_sha256": "209923844ecffa28b2fe7f22c64d208af74424b861142a048eb2f855fa452b76",
+      "candidate_bytes": 5343,
+      "pages": 1,
+      "characters": 23,
+      "content_integrity_passed": true,
+      "tables": 1,
+      "nested_tables": 0,
+      "strict_validation_passed": false,
+      "diagnostics": [
+        "HTM_STYLE_PROFILE_PENDING",
+        "HTM_FONT_METRICS_UNVERIFIED"
+      ]
+    }
+  ],
+  "word_reference": {
+    "pdf_strict_passed": false,
+    "failed_pages": 23,
+    "html_generated": false,
+    "reason": "PDF strict validation fails before layout and HTM",
+    "evidence": "stage3-regression.json"
+  }
+}

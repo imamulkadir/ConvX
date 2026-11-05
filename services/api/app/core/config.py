@@ -51,6 +51,8 @@ class Settings(BaseSettings):
     layout_max_characters_per_page: int = Field(default=100000, ge=1, le=500000)
     layout_max_bytes: int = Field(default=64 * 1024 * 1024, ge=1024, le=256 * 1024 * 1024)
     layout_memory_bytes: int = Field(default=768 * 1024 * 1024, ge=64 * 1024 * 1024)
+    htm_max_bytes: int = Field(default=25 * 1024 * 1024, ge=1024, le=100 * 1024 * 1024)
+    htm_max_nodes: int = Field(default=1500000, ge=100, le=3000000)
 
     @model_validator(mode="after")
     def safe_configuration(self) -> Settings:

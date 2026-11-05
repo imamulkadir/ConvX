@@ -1,11 +1,11 @@
 {
   "project": "edgar-converter",
   "schema_version": 1,
-  "current_stage": 4,
-  "current_stage_name": "PDF Layout Analysis",
+  "current_stage": 5,
+  "current_stage_name": "PDF-to-HTM Reconstruction",
   "stage_status": "completed",
-  "last_completed_stage": 4,
-  "next_stage": 5,
+  "last_completed_stage": 5,
+  "next_stage": 6,
   "authorization_required": true,
   "awaiting_user_approval": true,
   "last_updated": "2026-11-05",
@@ -13,7 +13,8 @@
     1,
     2,
     3,
-    4
+    4,
+    5
   ],
   "implemented_components": [
     "architecture and module contracts",
@@ -40,28 +41,66 @@
     "native and inferred block/line reading order plus margin regions",
     "bounded private atomic layout serialization and cancellation",
     "explicit reconstruction-ineligible PDF inspection CLI",
-    "all-23-page native extraction regression and no-download stage completion"
+    "all-23-page native extraction regression and no-download stage completion",
+    "gated manual-constrained normal-flow HTM reconstruction",
+    "exact serialized disclosure ledger and proposed reading-order integrity",
+    "physical table/merged-cell/source-border reconstruction",
+    "text typography/advances/scripts and conservative hyperlinks/bookmarks",
+    "deterministic PDF graphic requests without rasterized disclosure",
+    "unsupported-layout diagnostics and bounded exclusive candidate publication",
+    "owned candidate metadata and stop-before-compliance lifecycle",
+    "genuine HTM layout/content/limits/security tests and native current-pipeline regression"
   ],
   "pending_tasks": [
-    "User review/manual commit/push and explicit authorization before Stage 5",
-    "Stage 5 permitted PDF-to-HTM reconstruction on eligible validated layouts only",
+    "User review/manual commit/push and explicit authorization before Stage 6",
+    "Stage 6 versioned manual-derived actual-file SEC validation and required profile research",
+    "Materialize/normalize and validate requested JPG/GIF graphics before publication",
+    "Stage 7 Chromium-vs-PDF full visual qualification including font metrics/searchability",
     "Resolve failed Word-reference PDF qualification using free components without gate bypasses",
-    "Run opt-in real Redis/PostgreSQL and Linux/deployment qualification when available"
+    "Run real Redis/PostgreSQL and Linux/deployment qualification when available"
   ],
   "known_issues": [
     "Word reference conversion fails strict PDF fidelity on all 23 pages",
     "Accepted story content/structure passes but full DOCX format equivalence is unproven; same-renderer PDFs differ on page 1",
     "Unsupported cell/custom-XML/conflict or ambiguous revisions fail safely",
-    "No HTM engine, frontend or final ZIP yet",
+    "No SEC validator, qualified HTML visuals, frontend or final ZIP yet",
     "Live Redis/PostgreSQL and Linux prefork deployment unverified locally",
     "Stage 11 process/network/disk/ACL hardening not deployed",
     "Starlette httpx test-client deprecation warning",
     "Manual CSS/attribute/character ambiguities unresolved",
     "Table/paragraph/reading order/font-resource association include explicit uncertain inference",
     "Relevant clipping, annotations, unknown Unicode and bidi ambiguity block reconstruction",
-    "Native parser allocation/stalls need OS-level isolation in deployment"
+    "Native parser allocation/stalls need OS-level isolation in deployment",
+    "Candidate inline CSS/MANY and Unicode mappings remain unapproved until Stage 6",
+    "Normal-flow HTM rejects unresolved rotation/overlap/complex painting/table semantics instead of silently changing appearance",
+    "Graphic requests are not normalized image files; candidates cannot be published as complete",
+    "Browser font/baseline/wrapping/table/page geometry has not been visually qualified",
+    "Candidate generation does not establish SEC compliance or strict fidelity"
   ],
   "last_test_results": [
+    {
+      "stage": 5,
+      "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
+      "passed": 179,
+      "failed": 0,
+      "skipped": 2,
+      "warnings": 1,
+      "line_coverage_percent": 90,
+      "seconds": 132.01,
+      "scope": "Final unit/integration/regression suite including genuine HTM generation, real LibreOffice positive and failed Word-reference gates, and 23-page read-only extraction"
+    },
+    {
+      "stage": 5,
+      "command": ".venv/Scripts/python -m pytest tests/unit/test_html_generator.py -q",
+      "passed": 34,
+      "failed": 0,
+      "warnings": 1
+    },
+    {
+      "stage": 5,
+      "command": "Ruff check/format, pip check, local documentation links/JSON and read-only git diff --check",
+      "result": "passed; 71 Python files formatted; LF/CRLF notices only"
+    },
     {
       "stage": 4,
       "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
@@ -178,7 +217,7 @@
     "not_a_successful_conversion": true
   },
   "free_components_only": true,
-  "suggested_commit_message": "feat: add gated PDF layout analysis and extraction regression tests",
+  "suggested_commit_message": "feat: add gated searchable HTM reconstruction and conversion tests",
   "git_operations_performed": false,
   "notes": [
     "User explicitly authorized Stage 3 with go for it",
@@ -190,8 +229,12 @@
     "No successful Word-reference conversion, HTM/ZIP or SEC acceptance claimed",
     "Stage 4 authorized by pushed, continue",
     "User confirms Word open-and-save-as-PDF source provenance; free native LibreOffice export remains distinct and unqualified",
-    "Stage 4 implementation completed; stop before Stage 5 and await explicit authorization",
-    "Inspection mode never authorizes reconstruction; generated reference PDF still fails its strict gate"
+    "Inspection mode never authorizes reconstruction; generated reference PDF still fails its strict gate",
+    "Stage 5 explicitly authorized by pushed, continue",
+    "Stage 5 completed after final 179-pass suite; stop before Stage 6 and await explicit authorization",
+    "HTM candidates stay private and compliance/visual/strict flags remain false",
+    "Current candidate results and source/proof hashes documented in docs/htm-reconstruction.md and redacted regression JSON",
+    "No Git state writes or source-fixture changes"
   ],
   "reference_layout_inspection": {
     "mode": "inspection_only",
@@ -207,5 +250,14 @@
     "layout_bytes": 40725093,
     "source_pdf_sha256": "4e978ec13451024838908889839548d6bee4c559c7c33e5ed3aa19f0a85b2431",
     "evidence": "docs/stage4-extraction-regression.json"
+  },
+  "html_reconstruction": {
+    "generator": "convx-flow-htm-v1",
+    "profile": "efm78-stage5-candidate-v1",
+    "compliance_passed": false,
+    "visual_fidelity_passed": false,
+    "strict_validation_passed": false,
+    "reference_html_generated": false,
+    "evidence": "docs/stage5-reconstruction-regression.json"
   }
 }

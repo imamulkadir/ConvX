@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "profile": "efm78-stage5-candidate-v1",
+  "purpose": "Generator vocabulary and proposed inline formatting; not a Stage 6 executable validator or approved filing profile",
+  "manual_sha256": "816bbe2b5d2677ddc94e6199b446a8a856a54596704021a7b9ff592c0bc26cf3",
+  "strict_profile_approved": false,
+  "document_tags": ["html", "head", "title", "body"],
+  "body_tags": ["div", "p", "font", "b", "i", "u", "sup", "sub", "a", "table", "tr", "td", "img"],
+  "tag_evidence": {"section": "5.2.2.2; 5.2.2.3", "pdf_pages": [159, 160, 161]},
+  "prohibited_construction": {"section": "5.2.2.3; 5.2.2.4", "items": ["nested TABLE", "SPAN", "TBODY", "SCRIPT", "SVG", "DOCTYPE", "event handlers"]},
+  "explicit_attributes": {"a": ["name", "href"], "table": ["border", "cellpadding", "cellspacing"], "td": ["rowspan", "colspan", "valign"], "img": ["src", "alt"]},
+  "attribute_evidence": {"section": "5.2.2.5", "pdf_pages": [162, 163]},
+  "proposed_style_elements": ["body", "div", "p", "font", "sup", "sub", "a", "table", "tr", "td", "img"],
+  "proposed_style_properties": ["margin", "margin-left", "padding", "width", "height", "display", "vertical-align", "white-space", "line-height", "font-family", "font-size", "color", "text-decoration", "page-break-after", "box-sizing", "border", "border-top", "border-bottom", "border-left", "border-right", "background-color", "border-collapse", "table-layout"],
+  "style_status": "Unapproved: MANY per-tag scope and property/value rules require Stage 6 research. No claim that ordinary browser support proves EDGAR acceptance.",
+  "encoding": "ASCII serialization with numeric references; extended-character mappings require Stage 6 verification",
+  "images": "Only local root-relative JPG requests; actual normalization/decoding/reference validation still required",
+  "output": "Private candidate only; compliance, visual fidelity and strict validation remain false"
+}

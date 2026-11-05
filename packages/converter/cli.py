@@ -9,7 +9,7 @@ from converter.pipeline import process_docx
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Free local DOCX processing, strict PDF gate and layout analysis"
+        description="Free DOCX processing, strict PDF gate and private HTM reconstruction"
     )
     parser.add_argument("source", type=Path)
     parser.add_argument(
@@ -34,7 +34,7 @@ def main() -> None:
         args.expected_accepted_docx,
     )
     print(f"Document processing result: {result['status']}; report: {args.workspace / 'processing.json'}")
-    raise SystemExit(0 if result["status"] == "layout_analyzed" else 2)
+    raise SystemExit(0 if result["status"] == "htm_generated" else 2)
 
 
 if __name__ == "__main__":
