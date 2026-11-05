@@ -20,6 +20,8 @@ from converter.pdf_export.validation import PDFValidationPolicy, validate_pdf
 from converter.revisions.accept import accept_revisions, compare_accepted_content
 from converter.sec_validation.models import SubmissionContext, ValidationPolicy
 from converter.sec_validation.validator import validate_files
+from converter.visual_validation.engine import compare_visuals
+from converter.visual_validation.models import VisualPolicy
 
 
 def write_report(path: Path, report: dict) -> None:
@@ -44,13 +46,14 @@ def process_docx(
     generation_policy: GenerationPolicy | None = None,
     sec_policy: ValidationPolicy | None = None,
     submission: SubmissionContext | None = None,
+    visual_policy: VisualPolicy | None = None,
 ) -> dict:
     context = context or ProcessingContext()
     workspace = workspace.resolve()
     workspace.mkdir(mode=0o700, parents=True, exist_ok=False)
     report = {
         "schema_version": 1,
-        "stage": 6,
+        "stage": 7,
         "source_sha256": sha256(source),
         "status": "in_progress",
         "revision_acceptance": None,
@@ -60,6 +63,7 @@ def process_docx(
         "html_generation": None,
         "asset_normalization": None,
         "sec_validation": None,
+        "visual_validation": None,
         "provider": None,
         "diagnostics": [],
         "final_conversion_complete": False,
@@ -168,11 +172,33 @@ def process_docx(
                 "Actual HTM/assets failed local rule or unresolved-permission checks",
                 "Resolve report diagnostics before any visual/packaging eligibility claim",
             )
-        report["status"] = "sec_validated"
+        context.stage("comparing_formatting")
+        visual = compare_visuals(
+            result.path,
+            filing / "candidate.htm",
+            tuple(filing / image["filename"] for image in report["asset_normalization"]["images"]),
+            report["pdf_validation"],
+            compliance,
+            workspace / "visual",
+            visual_policy,
+            context,
+            submission,
+            sec_policy,
+        )
+        report["visual_validation"] = visual.model_dump(mode="json")
+        if not visual.strict_passed:
+            raise fail(
+                "VISUAL_STRICT_VALIDATION_FAILED",
+                "comparing_formatting",
+                "Unexplained content, geometry or pixel discrepancies remain",
+                "Inspect private visual evidence; do not package unsuccessful output",
+            )
+        report["status"] = "visual_validated"
     except ConversionFailure as exc:
         report["status"] = (
             "blocked"
-            if exc.diagnostic.code in {"PDF_RENDERER_UNAVAILABLE", "PDF_REFERENCE_REQUIRED"}
+            if exc.diagnostic.code
+            in {"PDF_RENDERER_UNAVAILABLE", "PDF_REFERENCE_REQUIRED", "VISUAL_BROWSER_UNAVAILABLE"}
             else "failed"
         )
         report["diagnostics"].append(exc.diagnostic.to_dict())

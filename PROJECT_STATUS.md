@@ -2,13 +2,13 @@
 
 ## Overall Status
 
-Current Stage: 6 - SEC Compliance Engine
+Current Stage: 7 - Pixel-Level Visual Validation
 
 Stage Status: completed
 
-Last Completed Stage: 6
+Last Completed Stage: 7
 
-Next Stage: 7 - Pixel-Level Visual Validation (requires explicit authorization)
+Next Stage: 8 - ZIP Packaging (requires explicit authorization)
 
 Last Updated: 2026-11-05 (Asia/Dhaka)
 
@@ -24,17 +24,18 @@ Build secure DOCX upload, revision acceptance, accepted-DOCX PDF rendering, PDF-
 4. PDF Layout Analysis: schema-v1 layout, exact character ledger, typography/fonts/images/vectors, table/reading/region candidates, proof-bound production extraction and explicitly ineligible inspection. Final tests: 144 passed, 2 optional services skipped, 89% coverage.
 
 5. PDF-to-HTM Reconstruction: private searchable candidate generation, physical tables/merges and explicit unsupported-layout/asset requests. Historical final result: 179 passed, 2 skipped, 90% coverage.
-6. SEC Compliance Engine: executable source-first local rules, actual decoded assets, context-dependent limits and detailed fail-closed diagnostics. Stage 6 was explicitly authorized with "go for stage 6" and is now completed. Stop before Stage 7; all Git writes remain the user's responsibility.
+6. SEC Compliance Engine: executable source-first local rules, decoded assets/context limits and fail-closed diagnostics. Historical final tests: 261 passed, 2 skipped, 90% parent coverage.
+7. Pixel-Level Visual Validation: isolated pinned Chromium print/screen rendering, content/geometry/resource/pixel checks, private artifacts and strict/nonqualifying gates. User explicitly authorized with "continue"; implementation is completed. A further continue during work retained Stage 7 and did not authorize Stage 8. Stop for manual user review/commit/push.
 
 ## Current Stage and Implemented Features
 
-Stage 6 adds `converter.sec_validation` with a packaged v78.2 local registry pinned to the supplied manual, source-first HTML scanning, tag/attribute/character/CSS checks, links/bookmarks, filenames and actual graphic decoding. Diagnostics distinguish confirmed manual rules, project policy, supplementary SEC guidance and unresolved permissions. Parser repair cannot hide raw forbidden/nested tags or duplicate attributes. PAGE/R manual exceptions are recognized explicitly.
+Stage 7 adds `converter.visual_validation`: pinned sandboxed Chromium with document JavaScript disabled, CSP and captured manifest-only resource routing; isolated child deadline/RSS/output/artifact controls; print PDF and mapped page screen captures at controlled DPI; exact disclosure, fonts, origins/bounds, images/vectors/paint and pixel comparisons.
 
-STYLE/MANY permission scope remains unresolved and its actual use fails strict validation. Latin-1 and a narrow verified named-character repertoire pass; legacy C1 remapping and ambiguous Unicode fail without transliteration. Confirmed-subset actual files can pass local checks; strict local results also require actual form/whole MIME-encoded submission-size context. SEC acceptance and visual fidelity remain false. Combined submission component accounting remains unresolved from a total alone.
+Production comparison revalidates actual strict SEC/file evidence and binds the complete passing PDF proof. Explicit inspection remains nonqualifying even when measurements match, and its model rejects strict promotion. Missing/unsafe/stale/failed evidence never launches production comparison. No source file is modified or rasterized as disclosure.
 
-`converter.assets` materializes source-bound JPG/GIF assets in a new private filing/ directory, preserves original JPEG bytes where possible, verifies exact palette roundtrips and records all JPEG/alpha/compositing pixel differences. Only IMG src values change; disclosure remains exact. Xref/mask/source/candidate hashes, image dimensions and byte/pixel/count budgets are checked. Original candidates and fixtures remain unchanged.
+Raw pixel differences and neutral text-edge candidates are separate. Print edge explanations require independent matching layout/content/paint/font bytes and no images. Screen candidates are never suppressed without separate proof. Per-page evidence includes source/print/screen PNGs, heatmaps/overlays, bounded geometry records and private JSON. Missing pages/resources, overflow, changed inputs/fonts and truncated evidence fail. No eligible evidence-backed source correction was found; no unapproved formatting edit was applied.
 
-Generator v2 coalesces equivalent formatting runs following supplementary SEC guidance, replacing per-character formatting wrappers. Intra-run shaping is pending Chromium measurement. Normalized filing metadata and detailed local results are exposed only through owned validation reports. Current styled candidates fail SEC_VALIDATION_FAILED on explicit permission uncertainty. A future passing local gate stops at awaiting_visual_validation; no completion, serving UI, ZIP or download is enabled.
+A future strict visual success stops at awaiting_packaging/PACKAGING_ENGINE_NOT_AVAILABLE. Current Word-reference PDF and generated inline-style SEC failures still stop earlier. The web UI, ZIP packaging and final downloads remain unimplemented. Browser process/network isolation is application-level plus Chromium sandbox; deployment OS qualification remains outstanding.
 
 ## Reference Qualification and Evidence
 
@@ -46,23 +47,23 @@ Generated LibreOffice PDF has 23 pages but fails the strict Word-reference compa
 
 Read-only reference inspection retained 85,798 characters, 1,263 lines, 13 font resources, four image assets in five placements, 4,847 vector paths and eight ruled-table candidates. It remains reconstruction-ineligible. See [extraction evidence](docs/stage4-extraction-regression.json).
 
-Stage 5 positive/negative tests use genuine PDFs; synthetic PDF self-comparison isolates generator mechanics and is not Word/DOCX qualification. The actual one-page LibreOffice pipeline reaches HTM, normalizes assets and correctly fails unresolved CSS permissions in Stage 6. Redacted candidate examples are in [reconstruction evidence](docs/stage5-reconstruction-regression.json); full private artifacts stay ignored under var/.
+Stage 5 positive/negative tests use genuine PDFs; synthetic PDF self-comparison isolates generator mechanics and is not Word/DOCX qualification. The actual one-page LibreOffice pipeline reaches HTM, normalizes assets and correctly fails unresolved CSS permissions in Stage 6. Redacted candidate examples are in [reconstruction evidence](docs/stage5-reconstruction-regression.json); full private artifacts stay ignored under var/. Stage 7 also checks all 23 reference pages against a deliberately empty 23-page document solely for negative inspection coverage: all 85,798 characters are accounted for and all pages report missing disclosure. This is not a prospectus conversion result.
 
 ## Files Created or Modified
 
-Added packaged `sec_validation` rules/models/source scanner/validator/CLI, source-bound `assets` normalization, actual-source and image tests, runtime registry evidence and Stage 6 documentation. Updated shared-run generator v2, pipeline/CLI/worker/API stages and budget configuration, manual/profile research records, .env.example, package data/version 0.6.0, build-directory ignore and persistent context. No original reference files or Git state changed.
+Added visual-validation policy/results, isolated browser/control worker, geometry/pixel comparison and inspection CLI; genuine browser/unit/all-page regression tests; pinned Playwright/NumPy/transitive dependencies and browser setup; visual regression metrics/docs. Updated pipeline/worker/job/API/configuration, transient native-file size-monitor handling, converter 0.7.0 packaging, environment examples and all persistent records. No original fixtures or Git state changed.
 
 ## Tests Executed
 
-Windows/PowerShell, Python 3.12.10, pinned PyMuPDF 1.26.7, actual LibreOffice and free local dependencies. Recovery: 34 generator tests passed. Focused final source/asset/generator checks: 115 passed. First full Stage 6 suite: 256 passed, 2 skipped, 89% coverage. Final combined suite: **261 passed, 0 failed, 2 skipped**, 90% reported coverage, one existing Starlette/httpx warning, 155.62 seconds.
+Windows/PowerShell, Python 3.12.10, actual LibreOffice and Playwright 1.64.1 / Chromium 156.0.8078.4 revision 1248. Recovery: 115 tests passed. Intermediate focused visual/all-page suite: 23 passed. Strengthened valid-PDF SEC/stale-gate and inspection-promotion checks: 4 passed. Final full suite: **286 passed, 0 failed, 2 skipped**, 87% parent-reported coverage, one existing warning, 261.06 seconds. Browser/renderer child and manual command coverage is not collected by parent coverage.
 
-Ruff passed; 81 Python files formatted; pip check clean. Editable converter install and isolated wheel build passed; registry and final source/data were compared in the wheel, then imported from the wheel in isolated Python for real confirmed-subset validation. Documentation links, registry copies and read-only diff checks passed. Completed-record historical fixture/context checks passed 8/8.
+Pinned dependencies and Chromium installation succeeded. Editable 0.7.0 install and wheel build passed; wheel source bytes matched and isolated wheel parent/child comparison ran actual Chromium. Ruff passed; 92 Python files formatted; pip check clean. Completed-record fixture/context checks passed 8/8; documentation links/evidence JSON and read-only diff checks passed. Two optional skips remain real Redis/PostgreSQL with no configured services.
 
-The two skips are unconfigured real Redis/PostgreSQL services. No real-service pass was simulated. No Chromium visual qualification, SEC Doc Validation/test submission, full ZIP pipeline, UI or production Linux sandbox/prefork qualification was performed. Actual accepted-final Word-reference processing still fails all 23 pages at the PDF gate. Detailed actual commands/failures/fixes are in [test history](docs/test-history.md).
+Actual smoke comparison: identical print PDF/content/geometry and zero print pixel changes, but 1,169 unresolved screen pixels; strict visual failure was retained. Production source/SEC gate failure tests never reached Chromium. Current native one-page DOCX test correctly stops at SEC permission uncertainty; Word-reference conversion stops at its 23 failed PDF pages. All-page visual negative inspection passed its assertions without claiming conversion success. No SEC test submission, final ZIP/full filing E2E, web UI or Linux production qualification occurred. See [test history](docs/test-history.md) and [visual metrics](docs/stage7-visual-regression.json).
 
 ## Known Bugs and Technical Limitations
 
-Word-reference PDF fidelity still fails all 23 pages. Unsupported revisions fail safely. Table/paragraph/reading order/font-resource associations retain explicit inference. Stage 5 intentionally rejects unsupported overlap/rotation/vector painting and unresolved table semantics. Font availability/baselines, wrapping, borders/page breaks still require Chromium measurement; no pixel-perfect claim is made.
+Word-reference PDF fidelity still fails all 23 pages. Unsupported revisions fail safely. Table/paragraph/reading order/font-resource associations retain explicit inference. Stage 5 intentionally rejects unsupported overlap/rotation/vector painting and unresolved table semantics. Chromium comparison now measures font/content/geometry and raw pixels, but unresolved screen differences and prior gates prevent faithful-output qualification; no pixel-perfect claim is made.
 
 An executable confirmed-subset profile is implemented, but STYLE property/value permissions, MANY scope and further character mappings remain unresolved. Candidate vocabulary is documented separately without changing the historical design registry. Graphics are normalized and actual files are validated; no source text is rasterized. Link output is a conservative subset, not a claim that every other manual construct is illegal. Candidate success does not imply compliance or strict fidelity.
 
@@ -70,16 +71,16 @@ Live Redis/PostgreSQL, Linux prefork, global CPU/disk/network/ACL enforcement an
 
 ## Architectural Decisions
 
-Independent API/worker/frontend and PDF-first gates remain. Free-only native export and conservative revision acceptance are ADR-011 through ADR-014; layout/inspection gates are ADR-015 and ADR-016; normal-flow candidate reconstruction and integrity controls are ADR-017 through ADR-019; fail-closed local rules, actual-file checks and shared-run/asset choices are ADR-020 through ADR-022 in [decisions](docs/decisions.md).
+Independent API/worker/frontend and PDF-first gates remain. Free-only native export and conservative revision acceptance are ADR-011 through ADR-014; layout/inspection gates are ADR-015 and ADR-016; normal-flow candidate reconstruction and integrity controls are ADR-017 through ADR-019; fail-closed local rules and asset choices are ADR-020 through ADR-022; visual gate/inspection isolation, browser profiles and conservative raster/correction decisions are ADR-023 through ADR-025 in [decisions](docs/decisions.md).
 
 ## Pending Tasks and Next Actions
 
-Stage 6 implementation and relevant tests are complete. Stop for user review/manual commit/push and explicit Stage 7 authorization. Stage 7 implements controlled Chromium visual comparison; it must preserve the earlier PDF/SEC gates and label any diagnostic inspection separately. CSS/MANY/character evidence gaps still require resolution; no current styled candidate is SEC-ready. No automatic packaging/UI/deployment stage is authorized.
+Stage 7 implementation and relevant verification are complete. Stop for user review/manual commit/push and explicit Stage 8 authorization. Stage 8 must implement deterministic clean ZIP packaging only from current passing evidence; it must not bypass PDF/SEC/visual failures. Resolve earlier reference/permission and screen discrepancies before claiming filing-ready output. Stage 9 UI remains separate; no automatic later-stage work is authorized.
 
 ## Suggested Commit Message
 
-`feat: add versioned SEC file validation and source-bound graphic normalization`
+`feat: add isolated Chromium visual regression and strict fidelity gates`
 
 ## Resume Instructions
 
-Read AGENTS, status, checkpoint, decisions, test history and [SEC validation engine](docs/sec-validation-engine.md). Inspect actual files/read-only Git, verify relevant tests and immutable fixture hashes. Resume only the authorized stage. Never initialize/stage/commit/push or otherwise modify Git state. Do not treat candidate generation or a negative regression test passing as successful Word-reference conversion or SEC-ready output.
+Read AGENTS, status, checkpoint, decisions, test history and [visual validation](docs/visual-validation.md). Inspect actual files/read-only Git, verify relevant tests and immutable fixture hashes. Resume only the authorized stage. Never initialize/stage/commit/push or otherwise modify Git state. Do not treat candidate generation or a negative regression test passing as successful Word-reference conversion or SEC-ready output.

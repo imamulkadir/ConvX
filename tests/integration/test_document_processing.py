@@ -32,6 +32,8 @@ def test_real_libreoffice_render_and_positive_pdf_gate(tmp_path, libreoffice):
     assert not result["sec_validation"]["passed"]
     assert any(d["code"] == "CSS_PERMISSION_UNVERIFIED" for d in result["sec_validation"]["diagnostics"])
     assert result["asset_normalization"]["content_integrity_passed"]
+    assert result["visual_validation"] is None
+    assert not (tmp_path / "result/visual").exists()
     assert result["pdf_validation"]["passed"]
     assert not result["final_conversion_complete"]
     assert result["provider"]["provider"] == "libreoffice"
@@ -63,6 +65,7 @@ def test_real_23_page_reference_regression_records_failure(tmp_path, libreoffice
     assert result["layout_analysis"] is None
     assert result["html_generation"] is None
     assert result["sec_validation"] is None
+    assert result["visual_validation"] is None
     assert not (tmp_path / "regression/candidate.htm").exists()
     assert not (tmp_path / "regression/layout.json").exists()
 

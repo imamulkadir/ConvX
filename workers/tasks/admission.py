@@ -17,6 +17,7 @@ from converter.pdf_export.libreoffice import LibreOfficeProvider
 from converter.pdf_export.validation import PDFValidationPolicy
 from converter.pipeline import process_docx
 from converter.sec_validation.models import ValidationPolicy
+from converter.visual_validation.models import VisualPolicy
 from sqlalchemy.exc import OperationalError
 
 from workers.worker import celery
@@ -102,6 +103,12 @@ def admit_document(job_id: str, settings: Settings) -> None:
                 max_nodes=settings.sec_max_nodes,
                 max_assets=settings.sec_max_assets,
                 max_asset_bytes=settings.sec_max_asset_bytes,
+            ),
+            visual_policy=VisualPolicy(
+                browser_timeout_seconds=settings.visual_timeout_seconds,
+                browser_memory_bytes=settings.visual_memory_bytes,
+                max_total_pixels=settings.visual_max_total_pixels,
+                max_evidence_bytes=settings.visual_max_evidence_bytes,
             ),
         )
         repository.finish_processing(job_id, attempt_id, report)

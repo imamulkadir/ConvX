@@ -56,6 +56,10 @@ class Settings(BaseSettings):
     sec_max_nodes: int = Field(default=200000, ge=100, le=1000000)
     sec_max_assets: int = Field(default=1000, ge=1, le=5000)
     sec_max_asset_bytes: int = Field(default=20 * 1024 * 1024, ge=1024, le=64 * 1024 * 1024)
+    visual_timeout_seconds: int = Field(default=120, ge=15, le=600)
+    visual_memory_bytes: int = Field(default=1536 * 1024 * 1024, ge=128 * 1024 * 1024)
+    visual_max_total_pixels: int = Field(default=64_000_000, ge=1)
+    visual_max_evidence_bytes: int = Field(default=128 * 1024 * 1024, ge=1)
 
     @model_validator(mode="after")
     def safe_configuration(self) -> Settings:

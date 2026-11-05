@@ -1,11 +1,11 @@
 {
   "project": "edgar-converter",
   "schema_version": 1,
-  "current_stage": 6,
-  "current_stage_name": "SEC Compliance Engine",
+  "current_stage": 7,
+  "current_stage_name": "Pixel-Level Visual Validation",
   "stage_status": "completed",
-  "last_completed_stage": 6,
-  "next_stage": 7,
+  "last_completed_stage": 7,
+  "next_stage": 8,
   "authorization_required": true,
   "awaiting_user_approval": true,
   "last_updated": "2026-11-05",
@@ -15,7 +15,8 @@
     3,
     4,
     5,
-    6
+    6,
+    7
   ],
   "implemented_components": [
     "architecture and module contracts",
@@ -59,21 +60,29 @@
     "source-bound image/mask normalization, original JPEG retention and verified GIF conversion",
     "generator v2 shared formatting runs replacing independent character wrappers",
     "private normalized filing manifest, owned local SEC evidence and stop-before-visual lifecycle",
-    "standalone validation CLI and installed-wheel registry verification"
+    "standalone validation CLI and installed-wheel registry verification",
+    "pinned sandboxed Chromium child with manifest-only resource routing and script/CSP restrictions",
+    "strict hash-bound PDF/SEC visual entry gates and nonqualifying inspection mode",
+    "actual print PDF and mapped screen captures at controlled DPI",
+    "selectable content/font/geometry/image/vector/paint comparisons",
+    "raw pixel/neutral-edge candidate metrics and private heatmaps/overlays",
+    "bounded visual resources/evidence and transient profile-file race fix",
+    "typed inspection promotion rejection and stop-before-packaging lifecycle",
+    "real browser negative all-23-page reference coverage and installed-wheel parent/child execution"
   ],
   "pending_tasks": [
-    "User review/manual commit/push and explicit authorization before Stage 7",
-    "Resolve required CSS/MANY/extended-character permission evidence; current styled candidates fail strictly",
-    "Stage 7 controlled Chromium-vs-PDF content/geometry/pixel qualification without bypassing SEC/PDF gates",
-    "Combined 10-D/ABS-EE strict qualification needs separate component size context",
-    "Resolve failed Word-reference PDF fidelity using free components without relaxing gates",
-    "Run live Redis/PostgreSQL and Linux/deployment isolation qualification when available"
+    "User review/manual commit/push and explicit authorization before Stage 8",
+    "Stage 8 clean deterministic root-only ZIP packaging, only after current passing strict evidence",
+    "Resolve Word-reference PDF and SEC CSS/MANY/character permission failures without gate bypasses",
+    "Resolve unexplained screen/geometry differences; do not suppress unproven raster differences",
+    "Stage 9 frontend remains pending; no browser UI or final download yet",
+    "Run real Redis/PostgreSQL and Linux/deployment isolation qualification when available"
   ],
   "known_issues": [
     "Word reference conversion fails strict PDF fidelity on all 23 pages",
     "Accepted story content/structure passes but full DOCX format equivalence is unproven; same-renderer PDFs differ on page 1",
     "Unsupported cell/custom-XML/conflict or ambiguous revisions fail safely",
-    "No qualified HTML visual engine, frontend or final ZIP yet",
+    "Visual engine implemented but no qualified reference output, frontend or final ZIP yet",
     "Live Redis/PostgreSQL and Linux prefork deployment unverified locally",
     "Stage 11 process/network/disk/ACL hardening not deployed",
     "Starlette httpx test-client deprecation warning",
@@ -84,14 +93,57 @@
     "Applicable CSS/MANY/Unicode permissions remain unresolved and fail local strict validation",
     "Normal-flow HTM rejects unresolved rotation/overlap/complex painting/table semantics instead of silently changing appearance",
     "Graphics are normalized but current candidates still lack strict rule/visual qualification",
-    "Browser font/baseline/wrapping/table/page geometry has not been visually qualified",
+    "Browser comparison is implemented; current screen/geometry discrepancies are not qualified as faithful",
     "Candidate generation does not establish SEC compliance or strict fidelity",
     "Current generated styled HTM fails ATTRIBUTE_SCOPE_UNVERIFIED/CSS_PERMISSION_UNVERIFIED; no false SEC-ready status",
     "Only a confirmed character subset is locally approved; C1/ambiguous mappings fail without transliteration",
     "JPEG re-encoding and alpha/compositing changes are explicit pending visual fidelity evidence",
-    "Whole submission size context is not supplied by ordinary DOCX uploads; strict filing-size qualification remains pending"
+    "Whole submission size context is not supplied by ordinary DOCX uploads; strict filing-size qualification remains pending",
+    "Chromium print equality does not establish screen equality: observed smoke had zero print and 1169 unresolved screen pixels",
+    "Mixed/rotated source pages or unresolved/overlapping screen page mapping fail this fixed profile",
+    "Screen antialias candidates are not suppressed without independent screen proof",
+    "No evidence-backed source correction was eligible under current formatting constraints",
+    "Managed PNG evidence and private browser/input/PDF intermediates have separate bounded budgets"
   ],
   "last_test_results": [
+    {
+      "stage": 7,
+      "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
+      "passed": 286,
+      "failed": 0,
+      "skipped": 2,
+      "warnings": 1,
+      "line_coverage_percent": 87,
+      "seconds": 261.06,
+      "scope": "Final full native/browser/source/visual/all-page suite; child/manual coverage not collected by parent"
+    },
+    {
+      "stage": 7,
+      "command": ".venv/Scripts/python -m pytest tests/unit/test_visual_pixels.py tests/integration/test_visual_validation.py tests/regression/test_visual_reference.py -q",
+      "passed": 23,
+      "failed": 0,
+      "warnings": 1,
+      "scope": "Intermediate focused real-browser/all-page suite before final two security cases"
+    },
+    {
+      "stage": 7,
+      "command": "Strengthened valid-PDF SEC/stale-gate checks and inspection-promotion checks",
+      "passed": 4,
+      "failed": 0,
+      "warnings": 1
+    },
+    {
+      "stage": 7,
+      "command": "Ruff check/format, pip check, wheel build/source byte check and isolated wheel parent/child Chromium comparison",
+      "result": "passed; 92 Python files formatted; real browser invocation from wheel succeeded"
+    },
+    {
+      "stage": 7,
+      "command": "tools/verify_stage1.py; local documentation/evidence links/JSON; read-only git diff --check",
+      "passed": 8,
+      "failed": 0,
+      "scope": "Immutable fixture/context checks plus successful link/JSON/diff validation; LF/CRLF notices only"
+    },
     {
       "stage": 6,
       "command": ".venv/Scripts/python -m pytest -q --cov=app --cov=workers --cov=converter --cov-report=term-missing",
@@ -261,7 +313,7 @@
     "not_a_successful_conversion": true
   },
   "free_components_only": true,
-  "suggested_commit_message": "feat: add versioned SEC file validation and source-bound graphic normalization",
+  "suggested_commit_message": "feat: add isolated Chromium visual regression and strict fidelity gates",
   "git_operations_performed": false,
   "notes": [
     "User explicitly authorized Stage 3 with go for it",
@@ -279,11 +331,16 @@
     "Current candidate results and source/proof hashes documented in docs/htm-reconstruction.md and redacted regression JSON",
     "No Git state writes or source-fixture changes",
     "Stage 6 explicitly authorized: go for stage 6",
-    "Stage 6 completed; stop before Stage 7 and await explicit authorization",
     "Local confirmed-subset validation can pass with actual context; this is not SEC acceptance",
     "Generated styled HTM now correctly fails unresolved permissions rather than advancing to visual checks",
     "Original Word reference still fails strict PDF validation on all 23 pages; no HTM/SEC gate bypass",
-    "Runtime rule registry shipped and loaded successfully from built wheel; no premium dependencies"
+    "Runtime rule registry shipped and loaded successfully from built wheel; no premium dependencies",
+    "Stage 7 explicitly authorized by continue; initial Git state clean",
+    "Repeated continue during active Stage 7 steered the current task; it did not authorize automatic Stage 8 work",
+    "Stage 7 completed and verified; stop before Stage 8",
+    "Actual styled candidates and Word-reference PDF failures still prevent production visual/packaging success",
+    "All-23-page visual regression used an explicitly empty comparison document for negative inspection only, never a conversion result",
+    "No Git writes, original fixture edits, paid components, automatic source corrections or UI/ZIP implementation"
   ],
   "reference_layout_inspection": {
     "mode": "inspection_only",
@@ -317,5 +374,18 @@
     "style_permissions_resolved": false,
     "current_generated_candidates_passed": false,
     "sec_acceptance_confirmed": false
+  },
+  "visual_validation": {
+    "method": "chromium-print-screen-geometry-pixels-v1",
+    "playwright": "1.64.1",
+    "chromium_version": "156.0.8078.4",
+    "chromium_revision": "1248",
+    "numpy": "2.5.4",
+    "evidence": "docs/stage7-visual-regression.json",
+    "reference_production_visual_gate_reached": false,
+    "smoke_print_difference_pixels": 0,
+    "smoke_screen_unexplained_pixels": 1169,
+    "smoke_strict_passed": false,
+    "inspection_can_authorize_packaging": false
   }
 }

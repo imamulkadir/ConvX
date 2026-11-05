@@ -34,7 +34,7 @@ def main() -> None:
         args.expected_accepted_docx,
     )
     print(f"Document processing result: {result['status']}; report: {args.workspace / 'processing.json'}")
-    raise SystemExit(0 if result["status"] == "sec_validated" else 2)
+    raise SystemExit(0 if result["status"] == "visual_validated" else 2)
 
 
 if __name__ == "__main__":

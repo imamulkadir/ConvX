@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import signal
+import stat
 import subprocess
 import tempfile
 import time
@@ -11,6 +12,21 @@ import psutil
 
 from converter.context import ProcessingContext
 from converter.errors import fail
+
+
+def artifact_size(directory):
+    total = 0
+    try:
+        for path in directory.rglob("*"):
+            try:
+                info = path.stat(follow_symlinks=False)
+            except FileNotFoundError:
+                continue  # Chromium removes transient profile files while the monitor runs.
+            if stat.S_ISREG(info.st_mode):
+                total += info.st_size
+    except FileNotFoundError:
+        pass
+    return total
 
 
 def run_process(
@@ -78,8 +94,7 @@ def run_process(
                     )
                 if (
                     artifact_directory is not None
-                    and sum(p.stat().st_size for p in artifact_directory.rglob("*") if p.is_file())
-                    > artifact_limit_bytes
+                    and artifact_size(artifact_directory) > artifact_limit_bytes
                 ):
                     raise fail(
                         "PDF_OUTPUT_LIMIT",

@@ -124,7 +124,7 @@ def validation(job_id: str, request: Request):
             "complete": False,
             "sec_compliance_passed": bool((processing.get("sec_validation") or {}).get("strict_passed")),
             "local_sec_validation_passed": bool((processing.get("sec_validation") or {}).get("passed")),
-            "fidelity_passed": False,
+            "fidelity_passed": bool((processing.get("visual_validation") or {}).get("strict_passed")),
             "document_processing": processing,
             "diagnostics": processing["diagnostics"],
         }
