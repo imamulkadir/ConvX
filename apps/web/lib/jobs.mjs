@@ -39,6 +39,49 @@ export function stageIndex(job) {
   };
   return stages.findIndex(([key]) => key === (aliases[job.stage] || job.stage));
 }
+export function progressMessage(job) {
+  if (job.state === "queued") return "Waiting to convert";
+  const messages = {
+    uploaded: "Validating document",
+    validating: "Validating document",
+    validating_docx: "Validating document",
+    validating_pdf: "Validating document",
+    accepting_revisions: "Accepting tracked changes",
+    generating_pdf: "Generating PDF",
+    analyzing_pdf: "Analyzing PDF",
+    generating_htm: "Generating HTM",
+    preparing_assets: "Processing assets",
+    normalizing_assets: "Processing assets",
+    validating_output: "Validating output",
+    validating_sec: "Validating output",
+    comparing_formatting: "Validating output",
+    packaging_zip: "Packaging ZIP",
+  };
+  return messages[job.stage] || "Processing document";
+}
+export function failureMessage(diagnostic) {
+  if (!diagnostic) return "";
+  if (diagnostic.code === "INVALID_DOCX")
+    return "This file is not a valid Word document. Choose another DOCX or PDF.";
+  if (diagnostic.code === "EDGAR_CLIPPING_UNSUPPORTED")
+    return "This layout cannot be preserved using the supported EDGAR formatting. Try Standard Mode for this document.";
+  return diagnostic.description;
+}
+export function warningMessage(diagnostic) {
+  const messages = {
+    DOCX_RENDERER_COMPATIBILITY:
+      "Word files are rendered with free LibreOffice. Some formatting can differ from Microsoft Word.",
+    STANDARD_LOCAL_FONTS:
+      "Fonts available on this computer are used. Substitutions can change the appearance.",
+    STANDARD_VISUAL_DIFFERENCES:
+      "Visual differences were found against the PDF reference. Use Preview and compare to review them.",
+    EDGAR_VISUAL_DIFFERENCES:
+      "Visual differences were found against the PDF reference. Use Preview and compare to review them.",
+    OCR_NOT_AVAILABLE:
+      "Some pages contain only images. Their appearance is kept, but searchable text could not be recovered.",
+  };
+  return messages[diagnostic.code] || diagnostic.description;
+}
 export function bytes(value) {
   return value >= 1048576
     ? `${(value / 1048576).toFixed(1)} MB`

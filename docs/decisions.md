@@ -1,5 +1,9 @@
 # Development decision log
 
+## 2026-11-06 - ADR-049: one-file converter interface and optional review
+
+Decision: replace the dashboard with a single-file form and default-off EDGAR checkbox over the unchanged actual conversion/download pipeline. Current mode travels through the existing upload header, current opaque ID recovers from tab storage and the newest prior dashboard ID migrates when present. Remove the temporary current conversion explicitly when starting another. Keep notes and actual visual comparison collapsed, with understandable failures and no filing/pixel-perfect implication. Rationale: match the requested utility workflow without hiding material fidelity limits or discarding working validation. No new dependency/service/account.
+
 ## 2026-11-06 - ADR-047: source-verified two-mode archive contract
 
 Decision: implement typed source-verified-mode-zip-v1 packaging and audit alongside the unchanged historical strict Word/SEC gate. Reuse deterministic stored-ZIP mechanics, independently audit actual headers/CRC/hashes/root members and archived references, revalidate EDGAR bytes under its explicit local profile, and bind current source/render/browser evidence. Source-basename ZIP and mode-specific internal names change only ZIP entry names, preserving qualified document bytes. Rationale: the revised authoritative-PDF/Standard contract allows measured rendering differences and requires Standard assets; weakening a legacy strict gate would misrepresent old proof. Consequences: current downloadable output explicitly remains non-SEC-accepted and non-pixel-perfect; unsupported EDGAR sources still fail. See [ZIP contract](zip-packaging.md).

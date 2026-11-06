@@ -55,7 +55,7 @@ function Capture({ job, kind, page, zoom, dpi }) {
       }}
       onLoad={(event) => setNaturalWidth(event.target.naturalWidth)}
       src={url}
-      alt={`${kind === "htm" ? "Rendered HTM" : kind} diagnostic, page ${page}`}
+      alt={`${kind === "htm" ? "Converted document" : kind === "difference" ? "Print differences" : "PDF and HTM overlay"}, page ${page}`}
     />
   ) : (
     <p className="preview-message" role="status">
@@ -197,7 +197,10 @@ export default function Preview({ job }) {
     <section aria-label="Document preview">
       <div className="review-notice">
         <ScanLine size={16} aria-hidden="true" />
-        <span>Diagnostic preview · not a filing approval</span>
+        <span>
+          Compare the PDF reference and converted document. Fonts and spacing
+          may differ.
+        </span>
       </div>
       <div className="preview-toolbar">
         <div className="preview-mode-group" aria-label="Preview mode">
@@ -294,7 +297,7 @@ export default function Preview({ job }) {
       <div className={`preview-grid ${mode === "side" ? "split" : ""}`}>
         {(mode === "pdf" || mode === "side") && (
           <div>
-            <p className="pane-label">GENERATED PDF</p>
+            <p className="pane-label">PDF REFERENCE</p>
             <div
               className="page-scroll"
               ref={left}
@@ -305,7 +308,6 @@ export default function Preview({ job }) {
 
                 page={page}
                 zoom={zoom}
-                dpi={meta.capture_dpi === 144 ? 144 : 96}
                 onError={setError}
               />
             </div>
@@ -318,7 +320,7 @@ export default function Preview({ job }) {
                 ? "PDF / HTM PRINT OVERLAY"
                 : mode === "difference"
                   ? "PRINT DIFFERENCES"
-                  : "CHROMIUM HTM CAPTURE"}
+                  : "CONVERTED DOCUMENT"}
             </p>
             <div
               className="page-scroll"
@@ -332,11 +334,11 @@ export default function Preview({ job }) {
                   kind={capture}
                   page={page}
                   zoom={zoom}
+                  dpi={meta.capture_dpi === 144 ? 144 : 96}
                 />
               ) : (
                 <p className="preview-message">
-                  This capture has not been generated. Earlier validation must
-                  finish before comparison artifacts are available.
+                  This comparison is unavailable for this page.
                 </p>
               )}
             </div>

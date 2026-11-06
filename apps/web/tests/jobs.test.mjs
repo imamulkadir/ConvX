@@ -1,6 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { validateSelection, stageIndex, downloadName } from "../lib/jobs.mjs";
+import {
+  validateSelection,
+  stageIndex,
+  downloadName,
+  progressMessage,
+  failureMessage,
+} from "../lib/jobs.mjs";
 const limits = { max_upload_bytes: 1024, max_batch_files: 2 };
 test("batch selection retains valid files and explains each rejection", () => {
   const result = validateSelection(
@@ -43,5 +49,25 @@ test("download response names support Unicode and reject path separators", () =>
   assert.equal(
     downloadName("attachment; filename*=utf-8''%zz", "fallback.zip"),
     "fallback.zip",
+  );
+});
+
+test("current progress describes actual work without implying SEC acceptance", () => {
+  assert.equal(
+    progressMessage({ state: "running", stage: "accepting_revisions" }),
+    "Accepting tracked changes",
+  );
+  assert.equal(
+    progressMessage({ state: "running", stage: "validating_sec" }),
+    "Validating output",
+  );
+  assert.equal(
+    progressMessage({ state: "running", stage: "unknown" }),
+    "Processing document",
+  );
+  assert.equal(progressMessage({ state: "queued" }), "Waiting to convert");
+  assert.match(
+    failureMessage({ code: "EDGAR_CLIPPING_UNSUPPORTED" }),
+    /Standard Mode/,
   );
 });

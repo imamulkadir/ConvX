@@ -1,4 +1,4 @@
-import Workspace from "../components/workspace";
+import Converter from "../components/converter";
 export default function Home() {
-  return <Workspace />;
+  return <Converter />;
 }

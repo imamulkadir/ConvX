@@ -2,12 +2,12 @@
   "project": "convx",
   "schema_version": 2,
   "workflow": "simplification-refactor",
-  "current_stage": 7,
-  "current_stage_name": "ZIP Packaging",
+  "current_stage": 8,
+  "current_stage_name": "Simplify Frontend",
   "stage_status": "completed",
-  "last_completed_stage": 7,
-  "next_stage": 8,
-  "next_stage_name": "Simplify Frontend",
+  "last_completed_stage": 8,
+  "next_stage": 9,
+  "next_stage_name": "Full Integration Testing",
   "authorization_required": true,
   "awaiting_user_approval": true,
   "last_updated": "2026-11-06",
@@ -18,7 +18,8 @@
     4,
     5,
     6,
-    7
+    7,
+    8
   ],
   "implemented_components": [
     "existing-project audit and requirement gap matrix",
@@ -49,67 +50,54 @@
     "Real EDGAR DOM/print/pixel/word-origin checks and mode-bound retry/preview transport",
     "Mode-specific canonical source-basename ZIPs with exact root document/assets and full header/CRC/reference audits",
     "Fresh current source/output/browser/ZIP revalidation for each secure download without legacy gate promotion",
-    "Actual browser ZIP saves and offline renamed-document checks; Windows state-publication retry/fallback"
+    "Actual browser ZIP saves and offline renamed-document checks; Windows state-publication retry/fallback",
+    "Minimal single-file JSX upload/EDGAR-checkbox/progress/ZIP interface replacing dashboard",
+    "Single-job recovery/cancellation, responsive themes, keyboard access and collapsed actual comparison",
+    "Genuine both-input/both-mode form/download tests, network interruption and four theme/viewport axe captures"
   ],
   "pending_tasks": [
-    "User review/manual commit/push and explicit Stage 8 authorization",
-    "Stage 8 minimal single-file interface and default-unchecked EDGAR checkbox",
-    "Stage 9 broader four-path UI/package integration",
-    "Stage 10 cleanup and optimization"
+    "User review/manual commit/push and explicit Stage9 authorization",
+    "Stage9 broader full integration and regression testing",
+    "Stage10 final cleanup and optimization"
   ],
   "known_issues": [
-    "Supplied complex conversion fixtures fail EDGAR_CLIPPING_UNSUPPORTED page1; no successful EDGAR package for them",
-    "Local EDGAR interpretation is not SEC acceptance or legacy strict approval",
-    "Final minimal interface/checkbox remains Stage8; broader integration/cleanup Stages9/10",
-    "Existing font/pixel/OCR/geometry/mixed EDGAR print/platform limits remain",
-    "Stored ZIPs are larger; fresh download audit adds local-process cost; single Node instance only"
+    "Supplied complex EDGAR fixtures still fail clipping page1; no successful EDGAR result claimed",
+    "No SEC acceptance or pixel-perfect claim; current local EDGAR interpretation and font/pixel limits remain",
+    "Unsupported geometry/mixed EDGAR print/OCR/platform and single Node limits unchanged",
+    "Broader integration and final cleanup remain Stages9/10"
   ],
   "last_test_results": [
     {
-      "command": "full active Python before final Node-only publication change",
-      "passed": 431,
-      "failed": 0,
-      "seconds": 559.47
+      "command": "production build",
+      "result": "passed"
     },
     {
-      "command": "current plus legacy package/gates targeted",
-      "passed": 101,
-      "failed": 0,
-      "seconds": 21.32
-    },
-    {
-      "command": "current packaging/offline/tamper suite",
-      "passed": 48,
-      "failed": 0,
-      "seconds": 9.21
-    },
-    {
-      "command": "pre-fix Node14 (failure retained)",
-      "passed": 13,
-      "failed": 1,
-      "seconds": 494.28
-    },
-    {
-      "command": "real Windows lock and cancellation focused",
-      "passed": 2,
-      "failed": 0,
-      "seconds": 6.93
-    },
-    {
-      "command": "final Node15 after publication fix",
-      "passed": 15,
-      "failed": 0,
-      "seconds": 80.12
-    },
-    {
-      "command": "final production Next/Chromium with real ZIP downloads",
+      "command": "initial production UI10 (test-selector failures retained)",
       "passed": 6,
-      "failed": 0,
-      "minutes": 2.4
+      "failed": 4,
+      "minutes": 3.1
     },
     {
-      "command": "final fixture/context/history/hash/link/format/lint/pip/read-only diff",
-      "result": "8/8 passed (0.459sec); fixtures/history unchanged; all checks passed"
+      "command": "second production UI11 (test encoding/reset timing failures retained)",
+      "passed": 9,
+      "failed": 2,
+      "minutes": 3.4
+    },
+    {
+      "command": "final Node",
+      "passed": 16,
+      "failed": 0,
+      "seconds": 83.42
+    },
+    {
+      "command": "final production Next browser actual form/conversion/ZIP/network/axe",
+      "passed": 11,
+      "failed": 0,
+      "minutes": 3.1
+    },
+    {
+      "command": "final fixture/context/history/hash/link/format/pip/read-only diff",
+      "result": "8/8 passed (0.110sec); sources/history unchanged; all checks passed"
     }
   ],
   "historical_progress": {
@@ -140,18 +128,19 @@
     },
     "zip": "input-basename.zip; one document and exactly referenced local assets at root"
   },
-  "suggested_commit_message": "refactor: package verified Standard and EDGAR ZIP downloads",
+  "suggested_commit_message": "refactor: simplify converter UI with optional EDGAR mode",
   "git_operations_performed": false,
   "notes": [
-    "User explicitly authorized Stage7; implementation/testing completed, no Stage8 or Git writes.",
-    "Source-basename Standard/EDGAR ZIP downloads now work for supported cases with fresh audits.",
-    "Initial stranded-state exception was swallowed; exact cause unavailable, bounded Windows retries and terminal fallback tested with real lock.",
-    "All named test sessions finished; final fixture/history/hash/link/format checks recorded in test history.",
-    "Await explicit Stage8 authorization."
+    "Stage8 explicitly authorized and completed; no Stage9 implementation or Git writes.",
+    "Minimal UI uses real existing renderer/download; checkbox mode verified for both DOCX/PDF.",
+    "Final Node16 and production UI11 passed; no Python change or full Python rerun claimed.",
+    "All named test sessions finished, recovery records saved; final fixture/hash/link/format checks recorded in history.",
+    "Await explicit Stage9 authorization."
   ],
   "runtime_document": "docs/simplified-runtime.md",
   "layout_document": "docs/shared-layout.md",
-  "recovery_document": "docs/stage7-resume.md",
+  "recovery_document": "docs/stage8-resume.md",
   "edgar_document": "docs/edgar-renderer.md",
-  "packaging_document": "docs/zip-packaging.md"
+  "packaging_document": "docs/zip-packaging.md",
+  "interface_document": "docs/simple-interface.md"
 }

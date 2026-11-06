@@ -1,0 +1,60 @@
+{
+  "stage": 8,
+  "date": "2026-11-06",
+  "status": "completed",
+  "scope": "production Next and actual local Python conversions, real ZIP download events, no mocked engine results",
+  "production_browser": {
+    "passed": 11,
+    "failed": 0,
+    "minutes": 3.1,
+    "cases": [
+      "single-file validation/clear/keyboard checkbox",
+      "Standard PDF form conversion, ZIP/reload/reset",
+      "EDGAR PDF form conversion, ZIP/reload/reset",
+      "native DOCX Standard form conversion/ZIP",
+      "native DOCX EDGAR form conversion/ZIP",
+      "23-page reference PDF Standard/ZIP/actual comparison",
+      "reference EDGAR honest clipping failure/no download",
+      "invalid DOCX and active cancellation",
+      "single/multiple drag-and-drop",
+      "actual network-offline interruption and recovery",
+      "390/1440 light/dark axe, keyboard, screenshots"
+    ]
+  },
+  "node": {
+    "passed": 16,
+    "failed": 0,
+    "seconds": 83.42
+  },
+  "build": "passed",
+  "screenshots": [
+    {
+      "path": "var/refactor-stage8/final/converter-1440-dark.png",
+      "sha256": "843aa71b02ed6d25c2e58806b849876d76cd628c0c082897f34f53586ce31f9b",
+      "bytes": 53369
+    },
+    {
+      "path": "var/refactor-stage8/final/converter-1440-light.png",
+      "sha256": "1a3d9943a1c747b665c1084c399fbea2ca97ab2f93f1012fe3640648865b0763",
+      "bytes": 52530
+    },
+    {
+      "path": "var/refactor-stage8/final/converter-390-dark.png",
+      "sha256": "5cee8db28b7ef1cef44ba66bffa3ca42e86f02affeeabee7020eaf2e41a628d1",
+      "bytes": 42795
+    },
+    {
+      "path": "var/refactor-stage8/final/converter-390-light.png",
+      "sha256": "8c6c303255b3ab056662e35fb9158d5a0a02631270ed78cfac3acff6f94aecea",
+      "bytes": 41129
+    }
+  ],
+  "python_changed": false,
+  "python_full_suite_rerun": false,
+  "prior_backend_evidence": "Stage7 431 Python passed; not claimed as Stage8 rerun",
+  "limitations": [
+    "supplied complex EDGAR fixtures still fail clipping",
+    "no SEC filing acceptance or exact pixel claim",
+    "broader integration Stage9 not authorized"
+  ]
+}

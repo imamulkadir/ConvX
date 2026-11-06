@@ -2,146 +2,191 @@
 import { useEffect, useRef, useState } from "react";
 import { json, request, upload } from "../lib/api.mjs";
 import { downloadName, terminal } from "../lib/jobs.mjs";
-
-export default function useConversions() {
+const STORAGE = "convx-current-job";
+function remember(id) {
+  try {
+    if (id) sessionStorage.setItem(STORAGE, id);
+    else {
+      sessionStorage.removeItem(STORAGE);
+      sessionStorage.removeItem("convx-jobs");
+    }
+  } catch {
+    /* Conversion works without browser storage. */
+  }
+}
+export default function useConversion() {
   const [session, setSession] = useState(null),
-    [jobs, setJobs] = useState([]);
+    [job, setJob] = useState(null),
+    [report, setReport] = useState(null);
   const [error, setError] = useState(""),
     [progress, setProgress] = useState(null),
-    [busy, setBusy] = useState(false);
-  const controller = useRef(null),
-    jobsRef = useRef(jobs);
-  jobsRef.current = jobs;
+    [busy, setBusy] = useState(null);
+  const [connection, setConnection] = useState(0);
+  const lifecycle = useRef(null),
+    pendingUpload = useRef(null);
   useEffect(() => {
-    const lifecycle = new AbortController();
-    controller.current = lifecycle;
+    const controller = new AbortController();
+    lifecycle.current = controller;
     (async () => {
-      const limits = await json("/session", { signal: lifecycle.signal });
-      let ids = [];
+      const limits = await json("/session", { signal: controller.signal });
+      let id;
       try {
-        ids = JSON.parse(sessionStorage.getItem("convx-jobs") || "[]");
+        id =
+          sessionStorage.getItem(STORAGE) ||
+          JSON.parse(sessionStorage.getItem("convx-jobs") || "[]")[0];
       } catch {
-        /* Corrupt tab state grants no access. */
+        /* Optional tab state. */
       }
-      if (!Array.isArray(ids)) ids = [];
-      const restored = await Promise.allSettled(
-        ids
-          .slice(0, 100)
-          .filter((id) => typeof id === "string" && /^[a-f0-9-]{36}$/.test(id))
-          .map((id) => json(`/${id}`, { signal: lifecycle.signal })),
-      );
-      if (!lifecycle.signal.aborted) {
-        setJobs(
-          restored
-            .filter((item) => item.status === "fulfilled")
-            .map((item) => item.value),
-        );
+      let restored = null;
+      if (typeof id === "string" && /^[a-f0-9-]{36}$/.test(id)) {
+        try {
+          restored = await json(`/${id}`, { signal: controller.signal });
+        } catch (e) {
+          if (e.name === "AbortError") throw e;
+          if ([404, 410].includes(e.status)) remember(null);
+          else throw e;
+        }
+      }
+      if (!controller.signal.aborted) {
+        setJob(restored);
         setSession(limits);
+        setError("");
+        if (restored) remember(restored.id);
       }
     })().catch((e) => {
-      if (!lifecycle.signal.aborted) setError(e.message);
-    });
-    return () => lifecycle.abort();
-  }, []);
-  useEffect(() => {
-    if (session)
-      sessionStorage.setItem(
-        "convx-jobs",
-        JSON.stringify(jobs.map((job) => job.id)),
-      );
-  }, [jobs, session]);
-  useEffect(() => {
-    if (!session) return;
-    let cancelled = false,
-      timer;
-    async function poll() {
-      const current = jobsRef.current.filter((job) => !terminal.has(job.state));
-      const results = await Promise.allSettled(
-        current.map((job) =>
-          json(`/${job.id}`, { signal: controller.current.signal }),
-        ),
-      );
-      if (cancelled) return;
-      const updates = results
-        .filter((item) => item.status === "fulfilled")
-        .map((item) => item.value);
-      if (updates.length)
-        setJobs((previous) =>
-          previous.map(
-            (job) => updates.find((item) => item.id === job.id) || job,
-          ),
+      if (!controller.signal.aborted)
+        setError(
+          e.message || "The converter is unavailable. Please try again.",
         );
-      const failed = results.some((item) => item.status === "rejected");
-      if (failed)
-        setError("Connection lost. Status updates will retry automatically.");
-      timer = setTimeout(poll, failed ? 5000 : 1500);
-    }
-    timer = setTimeout(poll, 300);
+    });
     return () => {
-      cancelled = true;
+      controller.abort();
+      pendingUpload.current?.abort();
+    };
+  }, [connection]);
+  useEffect(() => {
+    if (!job || terminal.has(job.state)) return;
+    const controller = new AbortController();
+    let timer;
+    async function poll() {
+      let delay = 1200;
+      try {
+        const fresh = await json(`/${job.id}`, { signal: controller.signal });
+        if (controller.signal.aborted) return;
+        setJob(fresh);
+        setError("");
+        if (terminal.has(fresh.state)) return;
+      } catch (e) {
+        if (controller.signal.aborted) return;
+        if ([404, 410].includes(e.status)) {
+          setJob({ ...job, state: "expired", download_available: false });
+          return;
+        }
+        setError(
+          "Connection interrupted. Status updates will retry automatically.",
+        );
+        delay = 5000;
+      }
+      timer = setTimeout(poll, delay);
+    }
+    timer = setTimeout(poll, 250);
+    return () => {
+      controller.abort();
       clearTimeout(timer);
     };
-  }, [session]);
-  async function uploadFiles(files) {
-    const signal = controller.current.signal;
-    setBusy(true);
+  }, [job?.id, job?.state]);
+  useEffect(() => {
+    setReport(null);
+    if (!job || !terminal.has(job.state)) return;
+    const controller = new AbortController();
+    let timer;
+    async function load() {
+      try {
+        const result = await json(`/${job.id}/validation`, {
+          signal: controller.signal,
+        });
+        if (!controller.signal.aborted) {
+          setReport(result);
+          setError("");
+        }
+      } catch (e) {
+        if (controller.signal.aborted || [404, 410].includes(e.status)) return;
+        setError("Conversion details are unavailable. Reconnecting…");
+        timer = setTimeout(load, 5000);
+      }
+    }
+    load();
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [job?.id, job?.state]);
+  async function convert(file, mode) {
+    if (!session || job || busy) return;
+    const controller = new AbortController();
+    pendingUpload.current = controller;
+    const stop = () => controller.abort();
+    lifecycle.current.signal.addEventListener("abort", stop, { once: true });
+    setBusy("upload");
     setProgress(0);
     setError("");
     try {
-      const result = await upload(
-        files,
-        (value) => {
-          if (!signal.aborted) setProgress(value);
-        },
-        signal,
-      );
-      if (signal.aborted) return false;
-      setJobs((previous) => [...result.jobs, ...previous].slice(0, 100));
-      if (result.errors.length)
-        setError(
-          result.errors
-            .map((item) => `${item.filename}: ${item.message}`)
-            .join("\n"),
+      const result = await upload([file], setProgress, controller.signal, mode);
+      if (controller.signal.aborted) return;
+      if (result.jobs.length !== 1)
+        throw new Error(
+          result.errors[0]?.message || "Upload failed. Please try again.",
         );
-      return result.errors.length === 0;
+      setJob(result.jobs[0]);
+      remember(result.jobs[0].id);
     } catch (e) {
-      if (!signal.aborted) setError(e.message);
-      return false;
+      if (!controller.signal.aborted) setError(e.message);
     } finally {
-      if (!signal.aborted) {
-        setBusy(false);
+      lifecycle.current?.signal.removeEventListener("abort", stop);
+      pendingUpload.current = null;
+      if (!lifecycle.current?.signal.aborted) {
+        setBusy(null);
         setProgress(null);
       }
     }
   }
-  async function action(job, type) {
-    const signal = controller.current.signal;
+  async function reset() {
+    if (busy) return false;
+    setBusy("reset");
     setError("");
     try {
-      await json(`/${job.id}${type === "resume" ? "/resume" : ""}`, {
-        method: type === "resume" ? "POST" : "DELETE",
-        signal,
-      });
-      if (signal.aborted) return;
-      if (type === "resume") {
-        const fresh = await json(`/${job.id}`, { signal });
-        if (!signal.aborted)
-          setJobs((previous) =>
-            previous.map((item) => (item.id === job.id ? fresh : item)),
-          );
-      } else
-        setJobs((previous) => previous.filter((item) => item.id !== job.id));
+      if (job) {
+        try {
+          await json(`/${job.id}`, {
+            method: "DELETE",
+            signal: lifecycle.current.signal,
+          });
+        } catch (e) {
+          if (![404, 410].includes(e.status)) throw e;
+        }
+      }
+      if (lifecycle.current.signal.aborted) return false;
+      setJob(null);
+      setReport(null);
+      remember(null);
+      return true;
     } catch (e) {
-      if (!signal.aborted) setError(e.message);
+      if (e.name !== "AbortError") setError(e.message);
+      return false;
+    } finally {
+      if (!lifecycle.current.signal.aborted) setBusy(null);
     }
   }
-  async function download(job) {
-    const signal = controller.current.signal;
+  async function download() {
+    if (!job?.download_available || busy) return;
+    setBusy("download");
     setError("");
     try {
-      const response = await request(`/${job.id}/download`, { signal }),
-        blob = await response.blob();
-      if (signal.aborted) return;
+      const response = await request(`/${job.id}/download`, {
+        signal: lifecycle.current.signal,
+      });
+      const blob = await response.blob();
+      if (lifecycle.current.signal.aborted) return;
       const url = URL.createObjectURL(blob),
         anchor = document.createElement("a");
       anchor.href = url;
@@ -152,35 +197,23 @@ export default function useConversions() {
       anchor.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (e) {
-      if (!signal.aborted) setError(e.message);
-    }
-  }
-  async function recover(id) {
-    if (!/^[a-f0-9-]{36}$/.test(id)) {
-      setError("Enter a valid document reference.");
-      return;
-    }
-    const signal = controller.current.signal;
-    try {
-      const job = await json(`/${id}`, { signal });
-      if (!signal.aborted)
-        setJobs((previous) =>
-          [job, ...previous.filter((item) => item.id !== id)].slice(0, 100),
-        );
-    } catch (e) {
-      if (!signal.aborted) setError(e.message);
+      if (e.name !== "AbortError") setError(e.message);
+    } finally {
+      if (!lifecycle.current.signal.aborted) setBusy(null);
     }
   }
   return {
     session,
-    jobs,
+    job,
+    report,
     error,
     progress,
     busy,
-    uploadFiles,
-    action,
+    convert,
+    reset,
     download,
-    recover,
+    cancelUpload: () => pendingUpload.current?.abort(),
     clearError: () => setError(""),
+    reconnect: () => setConnection((v) => v + 1),
   };
 }

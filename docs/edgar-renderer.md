@@ -2,7 +2,7 @@
 
 The EDGAR path consumes the same verified authoritative PDF layout as Standard mode. It emits selectable normal-flow HTM, local JPG/GIF assets, inline literal formatting and source-bound local validation. It never serializes Standard SVG into EDGAR output. No premium dependency, hosted converter or public Python service is used.
 
-Stage 7 now provides [validated ZIP packaging and fresh audited downloads](zip-packaging.md); the final checkbox/interface remains Stage 8. Supported EDGAR conversions package `.htm` plus exactly referenced JPG/GIF, without granting legacy strict proof or SEC acceptance. Standard remains default with `.html` and unrestricted modern rendering. Unsupported EDGAR sources still fail before packaging.
+Stage 7 provides [validated ZIPs/fresh downloads](zip-packaging.md); Stage 8 now provides the [minimal form and default-off EDGAR checkbox](simple-interface.md). Supported EDGAR conversions package `.htm` plus exactly referenced JPG/GIF, without granting legacy strict proof or SEC acceptance. Standard remains default with `.html` and unrestricted modern rendering. Unsupported EDGAR sources fail before packaging.
 
 ## Manual and interpretation
 

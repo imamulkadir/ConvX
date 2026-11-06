@@ -24,7 +24,7 @@ export async function request(path, options = {}) {
 export async function json(path, options) {
   return (await request(path, options)).json();
 }
-export async function upload(files, onProgress, signal) {
+export async function upload(files, onProgress, signal, mode = "standard") {
   const jobs = [],
     errors = [];
   for (let index = 0; index < files.length; index++) {
@@ -37,6 +37,7 @@ export async function upload(files, onProgress, signal) {
         xhr.timeout = 180000;
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
         xhr.setRequestHeader("X-Convx-Filename", encodeURIComponent(file.name));
+        xhr.setRequestHeader("X-Convx-Mode", mode);
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable)
             onProgress(
