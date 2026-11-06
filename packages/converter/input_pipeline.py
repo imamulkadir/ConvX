@@ -9,6 +9,8 @@ from converter.errors import ConversionFailure, fail
 from converter.ooxml import sha256
 from converter.pdf_admission import admit_pdf
 from converter.pdf_analysis.extract import analyze_authoritative_pdf, write_layout
+from converter.pdf_analysis.policy import AnalysisPolicy
+from converter.pdf_analysis.resources import extract_resources
 from converter.pdf_export.provider import PDFProvider
 from converter.pipeline import write_report
 from converter.revisions.accept import accept_revisions
@@ -29,7 +31,7 @@ def process_input(
     report = {
         "schema_version": 2,
         "workflow": "simplification-refactor",
-        "stage": 3,
+        "stage": 4,
         "original_filename": original_filename,
         "input_type": kind.lstrip("."),
         "source_sha256": None,
@@ -105,6 +107,7 @@ def process_input(
         report["visual_reference"] = provenance
         context.stage("analyzing_pdf")
         layout = analyze_authoritative_pdf(pdf, provenance, context=context)
+        layout = extract_resources(pdf, layout, workspace / "resources", AnalysisPolicy(), context)
         report["layout_analysis"] = write_layout(workspace / "layout.json", layout)
         report["input_preparation_complete"] = True
         scanned = [page.page_number for page in layout.pages if page.character_count == 0 and page.images]

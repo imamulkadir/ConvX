@@ -4,48 +4,46 @@
 
 Workflow: simplification-refactor (revised AGENTS.md; existing repository)
 
-Current Stage: 3 - DOCX and PDF Input Support
+Current Stage: 4 - PDF Layout Analysis
 
 Stage Status: completed
 
-Last Completed Stage: 3
+Last Completed Stage: 4
 
-Next Stage: 4 - PDF Layout Analysis (explicit authorization required)
+Next Stage: 5 - Standard HTM Renderer (explicit authorization required)
 
 Last Updated: 2026-11-06 (Asia/Dhaka)
 
 ## Completed Stages
 
-Stage 1: [existing-project audit and migration plan](docs/refactor-audit.md). Stage 2: one self-hosted Next.js application invokes bounded Python internally, without API tokens, FastAPI/Redis/Celery/database setup. Stage 3: both DOCX and PDF uploads now enter a unified authoritative PDF preparation/analysis path. Earlier implementation stages remain [historical status](docs/history/pre-refactor-status.txt) and [checkpoint](docs/history/pre-refactor-checkpoint.json), not evidence of revised-stage completion.
+Stage 1 audited the existing project; Stage 2 consolidated the runtime into one Next server with bounded internal Python processes; Stage 3 added DOCX/PDF preparation and generated/uploaded-PDF authority. Stage 4 now extends and verifies the common layout and retains real private image resources. See [audit](docs/refactor-audit.md), [runtime](docs/simplified-runtime.md) and [shared layout contract](docs/shared-layout.md). Earlier implementation status/checkpoint remain archived under docs/history.
 
-## Stage 3 Implemented Features
+## Stage 4 Implemented Features
 
-- DOCX: existing bounded ZIP/XML/macro admission, tracked-change acceptance into a separate copy, free local LibreOffice PDF export and shared analysis. Original input stays unchanged; export/provider/font-environment hashes and a Word-compatibility warning are recorded.
-- PDF: extension/signature/size checks, bounded structural/object/page/geometry validation, rejection of encryption, embedded files, active content and repair requirements. Direct exact-byte private PDF copy goes to the same analyzer, without renderer calls or any DOCX conversion.
-- Explicit authoritative_pdf layout mode and generated/uploaded-PDF provenance replace the routine extra Word-reference prerequisite. No self-comparison, fabricated passing gate or inspection promotion. Legacy strict analysis/rendering/package checks remain unchanged and do not authorize these new models.
-- Image-only pages receive an OCR limitation with no invented text. Actual text, mixed dimensions/rotation, font/image/vector/table records use the existing extractor; Stage 4 must extend and qualify this shared model.
-- The existing upload page accepts both extensions, skips DOCX-only stages/checks for PDFs, labels structural PDF validation correctly and serves hash-verified previews for either type. The final minimal redesign and mode checkbox remain Stage 8.
-
-## Current Behavior and Limitations
-
-Prepared documents stop at MODE_RENDERER_PENDING after real analysis. Revised HTML renderers and ZIP packaging are pending approved later stages; no final conversion or downloadable ZIP is claimed. This is input-stage completion only. Standard .html/EDGAR .htm mode selection is not implemented yet. OCR is not installed/integrated. Complex layout/font/annotation issues remain explicit in private layout diagnostics; input preparation is not rendering qualification.
-
-Both supplied DOCX variants and the 23-page PDF reach shared analysis, with unchanged source hashes. Accepted DOCX content matches the supplied accepted baseline. Historical LibreOffice-vs-Word comparison still failed all 23 pages; those tests/evidence remain unchanged and do not block the revised input contract. LibreOffice layout equivalence to Word is not verified. SEC styling/character ambiguities and the positive whole-chain download remain unqualified.
+- Current-source provenance checks before authoritative analysis; no fabricated Word-reference pass or promotion of inspection. One extraction model serves both future output modes.
+- Independent native verification of exact text/count/order, glyph origins/bounds, font resource membership and span typography, image resource association/dimensions/transforms, page geometry/rotation and image/vector counts. Typed source/page verification survives serialization; mismatches fail with explicit diagnostics.
+- Bounded real native image payloads and separate soft masks in private per-attempt resources, with deterministic safe basenames, sizes and SHA-256. Repeated placements share assets and JPEG bytes are retained without recompression. No unlicensed font embedding or page screenshots.
+- Existing tables/merged-cell ledgers, paragraph/line relationships, rotation/crop matrices, vectors/paint order, header/footer/page-number candidates and reading orders remain shared. Summary reports add verification and font/image/vector/table/resource counts.
+- Explicit inline-image association and shading limitations; no invented resources or silently omitted unsupported paint.
 
 ## Files Changed
 
-New converter input_pipeline.py and pdf_admission.py; runtime.py selects source extension and invokes unified preparation; pdf_analysis/extract.py exposes the shared authoritative entry and layout/models.py records its distinct provenance mode. Web runtime/upload helpers/components support PDF and verified previews. Added tests/runtime/test_inputs.py and expanded real Node/browser tests. Updated README, AGENTS, runtime/pipeline documentation, decisions, test history, Stage 3 evidence and these progress records. No new dependencies or paid licenses. User .env, prior data, fixtures and Git history remain untouched.
+New pdf_analysis/verification.py and resources.py, additive typed fields in layout/models.py, policy resource limits, authoritative extraction/provenance checks and summaries, and input_pipeline integration. New tests/unit/test_shared_layout.py; Node test diagnostics improved. Updated README, AGENTS, runtime/shared-layout docs, decisions/test history, Stage 4 evidence and progress records. No new dependencies, paid licenses or Git writes; original fixtures/user data unchanged.
 
 ## Testing
 
-Final fast focused Python input/admission/runtime/PDF-analysis/revisions: 83 passed, 3 native/reference cases deselected. Real supplied DOCX variants both passed the separate native regression rerun; final direct supplied PDF rerun passed (28.24 seconds). Legacy renderer/packaging compatibility checks: 89 passed. Initial broader focused run: 85 passed before the additional security regression; subsequent inline-action/outline guard defects were fixed and retested. Node: 12 passed. Production-build browser checks: 5 passed, covering actual DOCX/PDF uploads, native export/shared analysis, unchanged sources and verified PDF review. No mocked engine or successful ZIP simulation. See [test history](docs/test-history.md) and [Stage 3 evidence](docs/stage3-input-regression.json).
+293 unit/runtime/regression Python tests passed (228.73 seconds), including real supplied DOCX variants/PDF and preserved legacy checks. New shared-layout suite: 20 passed. Final Node suite: 12 passed; initial isolated PDF case failed once, then focused/full reruns passed, root cause not established. Production-build browser suite: 5 passed (2.0 minutes). Real direct PDF output: 23 verified pages, 85,798 characters, 13 fonts, 5 placements, 4 extracted resources/123,008 bytes, 4,847 vectors and 8 table candidates; unchanged source. These are extraction checks, not HTML visual fidelity. See [test history](docs/test-history.md) and [evidence](docs/stage4-layout-regression.json).
 
-## Startup and Progress Tracking
+## Known Limitations and Pending Work
 
-Run `.\.venv\Scripts\python dev.py` and open its printed URL. No token or independently started backend. See [setup and limits](docs/simplified-runtime.md).
+Jobs still stop at MODE_RENDERER_PENDING. Standard/EDGAR rendering, mode selection, mode-specific ZIP and final minimal UI remain later stages; no final conversion/download success is claimed. Semantic tables/headers/footnotes, arbitrary clipping/annotations, bidirectional order, inline payloads, shading and font licensing remain explicit uncertainty. Native consistency does not prove every vector parameter or pixel-perfect HTML. OCR remains unavailable. Historical Word comparison failed 23 pages and is unchanged. The Node test's isolated initial failure is recorded without an invented explanation.
 
-Status/checkpoint/decisions/test history synchronized. Await review/manual commit/push and explicit Stage 4 authorization. Stage 4 will qualify/extend shared PDF layout; Stages 5-7 implement the two renderers and packaging, Stage 8 final UI, Stage 9 four-path integration and Stage 10 cleanup. Single Node instance only; public access/rate controls, stronger OS sandboxing and broader OS/browser/font qualification remain pending. No automatic stage advancement or Git writes.
+Single Node instance only; stronger OS isolation, public access/rate controls and broader platform/font/browser coverage remain unqualified. Partial private assets from failed attempts are retained only until normal cleanup, never packaged as successful output.
+
+## Startup and Resume
+
+Run `.\.venv\Scripts\python dev.py`, open its printed URL and upload DOCX/PDF. No token or separate backend. Status/checkpoint/decisions/test history synchronized. Await manual review/commit/push and explicit Stage 5 authorization; do not advance automatically. Stage 5 implements Standard HTML5, Stage 6 EDGAR, Stage 7 packaging, Stage 8 minimal UI, Stage 9 integration and Stage 10 cleanup.
 
 ## Suggested Commit Message
 
-refactor: unify DOCX and PDF input preparation
+refactor: verify shared PDF layout and retain image resources

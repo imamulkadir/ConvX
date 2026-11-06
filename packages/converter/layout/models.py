@@ -130,6 +130,21 @@ class FontDefinition(Record):
     referring_xrefs: tuple[int, ...]
 
 
+class ImageResource(Record):
+    filename: str = Field(pattern=r"^(?:image|mask)[0-9]{4,}\.[a-z0-9]{2,5}$")
+    sha256: Digest
+    bytes: int = Field(gt=0)
+    format: str
+    width_px: int = Field(gt=0)
+    height_px: int = Field(gt=0)
+
+    @model_validator(mode="after")
+    def format_matches(self):
+        if self.filename.rsplit(".", 1)[-1] != self.format:
+            raise ValueError("Image resource format differs from filename")
+        return self
+
+
 class ImageAsset(Record):
     id: str
     xref: int
@@ -141,6 +156,17 @@ class ImageAsset(Record):
     decoded_pixel_digest: str | None
     digest_algorithm: Literal["mupdf-md5-nonsecurity-identity", "not_available"]
     inline: bool
+    original: ImageResource | None = None
+    mask: ImageResource | None = None
+
+    @model_validator(mode="after")
+    def resource_dimensions(self):
+        for resource in (self.original, self.mask):
+            if resource and (resource.width_px, resource.height_px) != (self.width_px, self.height_px):
+                raise ValueError("Image payload dimensions differ from source asset")
+        if self.mask and not self.soft_mask_xref:
+            raise ValueError("Image mask lacks a source reference")
+        return self
 
 
 class ImagePlacement(Record):
@@ -296,6 +322,23 @@ class PageLayout(Record):
     diagnostics: tuple[LayoutDiagnostic, ...]
 
 
+class PageVerification(Record):
+    page: int = Field(ge=1)
+    character_sha256: Digest
+    characters: int = Field(ge=0)
+    images: int = Field(ge=0)
+    vectors: int = Field(ge=0)
+    width_pt: Number
+    height_pt: Number
+    rotation: Literal[0, 90, 180, 270]
+
+
+class LayoutVerification(Record):
+    method: Literal["native-pdf-text-geometry-resources-v1"] = "native-pdf-text-geometry-resources-v1"
+    source_pdf_sha256: Digest
+    pages: tuple[PageVerification, ...]
+
+
 class DocumentLayout(Record):
     schema_version: Literal[1] = 1
     extractor: Literal["convx-pdf-layout-v1"] = "convx-pdf-layout-v1"
@@ -314,6 +357,7 @@ class DocumentLayout(Record):
     extraction_complete: bool
     reconstruction_eligible: bool
     diagnostics: tuple[LayoutDiagnostic, ...]
+    verification: LayoutVerification | None = None
 
     @model_validator(mode="after")
     def references_and_ledger(self):
@@ -425,4 +469,22 @@ class DocumentLayout(Record):
             or blocking
         ):
             raise ValueError("Ineligible or unresolved layout cannot authorize reconstruction")
+        if self.verification:
+            if self.verification.source_pdf_sha256 != self.source_pdf_sha256 or len(
+                self.verification.pages
+            ) != len(self.pages):
+                raise ValueError("Verification source/page count differs")
+            for page, checked in zip(self.pages, self.verification.pages, strict=True):
+                bounds = page.geometry.display_bounds
+                if (
+                    checked.page != page.page_number
+                    or checked.characters != page.character_count
+                    or checked.character_sha256 != page.character_sha256
+                    or checked.images != len(page.images)
+                    or checked.vectors != len(page.vectors)
+                    or checked.rotation != page.geometry.rotation_degrees
+                    or abs(checked.width_pt - (bounds[2] - bounds[0])) > 0.01
+                    or abs(checked.height_pt - (bounds[3] - bounds[1])) > 0.01
+                ):
+                    raise ValueError("Verified page differs from layout")
         return self

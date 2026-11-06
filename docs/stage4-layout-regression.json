@@ -1,0 +1,55 @@
+{
+  "stage": 4,
+  "date": "2026-11-06",
+  "status": "completed",
+  "python_unit_runtime_regression": {
+    "passed": 293,
+    "failed": 0,
+    "seconds": 228.73
+  },
+  "new_shared_layout_tests": 20,
+  "node_initial": {
+    "passed": 11,
+    "failed": 1,
+    "root_cause": "unestablished"
+  },
+  "node_focused_rerun": {
+    "passed": 1,
+    "failed": 0
+  },
+  "node_final": {
+    "passed": 12,
+    "failed": 0
+  },
+  "production_browser": {
+    "passed": 5,
+    "failed": 0,
+    "minutes": 2.0
+  },
+  "actual_direct_pdf": {
+    "verified_pages": 23,
+    "characters": 85798,
+    "fonts": 13,
+    "image_placements": 5,
+    "extracted_image_resources": 4,
+    "resource_bytes": 123008,
+    "vectors": 4847,
+    "table_candidates": 8,
+    "source_unchanged": true
+  },
+  "html_visual_fidelity_qualified": false,
+  "final_zip_qualified": false,
+  "stage5_started": false,
+  "git_writes": false,
+  "final_checks": {
+    "fixture_context_passed": 8,
+    "fixture_hashes": "unchanged",
+    "historical_progress_hashes": "unchanged",
+    "active_links": "passed",
+    "checkpoint": "consistent",
+    "ruff": "passed",
+    "pip_check": "passed",
+    "prettier": "passed",
+    "read_only_diff_check": "passed; LF/CRLF notices only"
+  }
+}

@@ -1,4 +1,4 @@
-# Simplification Stage 3 — active runtime
+# Simplification Stage 4 — active runtime
 
 The active application is one self-hosted Next.js Node server. Internal handlers directly start the existing Python converter in a bounded child process. FastAPI, Redis, Celery, SQLAlchemy/PostgreSQL, an account system and separate workers are not runtime dependencies. Their original source and user data are retained for recovery; they are not started or installed by current setup.
 
@@ -55,4 +55,8 @@ The active pytest suite now targets converter unit/runtime/native/visual/regress
 
 Node tests run real Python admission and cover byte budgets/rollback, origin/filename/path guards, cancellation, interruption and expiry. Browser tests start only a production Next server and use the clean Python environment for real native DOCX processing, honest renderer-pending boundaries, direct PDF input and PDF canvas review, invalid-input rejection and accessible light/dark views. No mocked conversion engine, external processing API or fabricated success is used. See [test history](test-history.md) and [current status](../PROJECT_STATUS.md).
 
-Stage 4 is the next approval-gated step: qualify and extend the shared layout model for both new input paths. Word-reference mismatch remains regression evidence; do not treat the authoritative PDF model as passing that historical comparison. Mode renderers, validation, ZIP and the final minimal UI remain later stages.
+Stage 5 is the next approval-gated step: implement the Standard HTML5 renderer using the verified shared model and resources. Word-reference mismatch remains regression evidence; do not treat the authoritative PDF model as passing that historical comparison. Mode renderers, validation, ZIP and the final minimal UI remain later stages.
+
+## Stage 4 source-verified shared analysis
+
+The authoritative analyzer now validates provenance against current bytes and independently checks native text/glyph positions/typography/font resources, page geometry, image associations/transforms and resource counts. Each private attempt also retains source image payloads and separate soft masks with deterministic names and SHA-256; resource budgets are 32 MiB each/128 MiB total. The layout summary includes verification and font/image/vector/table/resource counts. See [shared layout contract](shared-layout.md). Inline payload and shading limitations are explicit; no fonts are silently embedded and no page is replaced by a screenshot. Rendering and ZIP remain pending. Stage 5 is the next approval-gated step.

@@ -1,6 +1,6 @@
 # ConvX - document conversion
 
-**Simplification Stage 3:** one Next.js application invokes Python internally. No API connection, token, Redis, Celery or database setup is required. DOCX and PDF uploads now enter shared PDF analysis. Revised Standard/EDGAR rendering and ZIP output are pending their stages. The application is not yet a qualified end-to-end converter.
+**Simplification Stage 4:** one Next.js application invokes Python internally. No API connection, token, Redis, Celery or database setup is required. DOCX and PDF uploads now enter source-verified shared PDF analysis with retained image resources. Revised Standard/EDGAR rendering and ZIP output are pending their stages. The application is not yet a qualified end-to-end converter.
 
 ## Run locally
 
@@ -21,7 +21,7 @@ Use an existing configured .venv when available. Open the URL printed by dev.py.
 
 DOCX is validated, tracked changes are accepted in a copy and free LibreOffice generates its visual-reference PDF. Uploaded PDFs are validated and analyzed directly, without DOCX conversion. Neither path requires an extra Word-exported reference. Current jobs stop at MODE_RENDERER_PENDING after analysis: Standard .html, EDGAR .htm and ZIP are not yet implemented under the revised contract. The revised final contract is Standard .html by default, optional EDGAR .htm, with one document and exactly its referenced assets in the ZIP root. Each later stage requires explicit authorization.
 
-See [runtime/setup and limits](docs/simplified-runtime.md), [audit and staged plan](docs/refactor-audit.md), [project status](PROJECT_STATUS.md), [checkpoint](.agent-checkpoint.json), [agent instructions](AGENTS.md), [decisions](docs/decisions.md) and [test history](docs/test-history.md). Retired service source and existing user data remain preserved; do not start the old API/worker commands for the active application.
+See [shared layout contract](docs/shared-layout.md), [runtime/setup and limits](docs/simplified-runtime.md), [audit and staged plan](docs/refactor-audit.md), [project status](PROJECT_STATUS.md), [checkpoint](.agent-checkpoint.json), [agent instructions](AGENTS.md), [decisions](docs/decisions.md) and [test history](docs/test-history.md). Retired service source and existing user data remain preserved; do not start the old API/worker commands for the active application.
 
 ## Checks
 

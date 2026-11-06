@@ -2,19 +2,20 @@
   "project": "convx",
   "schema_version": 2,
   "workflow": "simplification-refactor",
-  "current_stage": 3,
-  "current_stage_name": "DOCX and PDF Input Support",
+  "current_stage": 4,
+  "current_stage_name": "PDF Layout Analysis",
   "stage_status": "completed",
-  "last_completed_stage": 3,
-  "next_stage": 4,
-  "next_stage_name": "PDF Layout Analysis",
+  "last_completed_stage": 4,
+  "next_stage": 5,
+  "next_stage_name": "Standard HTM Renderer",
   "authorization_required": true,
   "awaiting_user_approval": true,
   "last_updated": "2026-11-06",
   "completed_stages": [
     1,
     2,
-    3
+    3,
+    4
   ],
   "implemented_components": [
     "existing-project audit and requirement gap matrix",
@@ -31,60 +32,69 @@
     "free DOCX tracked-change acceptance/export with explicit renderer compatibility warning",
     "direct PDF admission without DOCX conversion; verified preview for both inputs",
     "distinct authoritative layout provenance without legacy gate promotion",
-    "image-only/OCR limitation reporting and real input/security/Node/browser regressions"
+    "image-only/OCR limitation reporting and real input/security/Node/browser regressions",
+    "source-bound authoritative provenance and independent native layout consistency verification",
+    "typed page verification and bounded private image/mask resource records",
+    "safe deterministic native image extraction with source hashes and byte-exact JPEG preservation",
+    "20 independent shared-layout regressions including inline/shading limitation diagnostics"
   ],
   "pending_tasks": [
-    "User review/manual commit/push and explicit Stage 4 authorization",
-    "Stage 4 qualify and extend shared layout for authoritative PDF inputs",
-    "Stages 5-8 Standard/EDGAR renderers, validation, mode-specific ZIP and minimal UI",
-    "Stage 9 genuine four-path conversion integration and Stage 10 cleanup"
+    "User review/manual commit/push and explicit Stage 5 authorization",
+    "Stage 5 Standard HTML5 renderer consuming verified shared layout/resources",
+    "Stages 6-8 EDGAR renderer, mode-specific ZIP and minimal final UI",
+    "Stage 9 genuine four-path integration and Stage 10 cleanup"
   ],
   "known_issues": [
-    "Prepared inputs stop at MODE_RENDERER_PENDING; revised renderers and ZIP not implemented",
-    "No Standard/EDGAR mode selection or qualified successful whole-chain download",
-    "OCR unavailable; image-only pages reported without invented text",
-    "Historical Word comparison failed 23 pages; LibreOffice/Word equivalence unverified",
-    "SEC styling/character ambiguities and complex layout/font issues remain",
-    "Single Node instance only; public access/rate controls and stronger OS isolation unqualified"
+    "No revised HTML renderers/ZIP output yet; MODE_RENDERER_PENDING is expected",
+    "Native consistency does not prove semantic tables, every vector parameter or HTML visual equality",
+    "Inline image payloads, shading, clipping, annotations, bidi order and font permissions remain constrained",
+    "OCR unavailable; historical Word comparison failed all 23 pages",
+    "Initial Node PDF test failed once; focused/full reruns passed, root cause unestablished",
+    "Single Node instance; public access/rate controls and stronger OS isolation unqualified"
   ],
   "last_test_results": [
     {
-      "command": "pytest tests/runtime tests/unit/test_pdf_analysis.py tests/unit/test_revisions.py -k not_real_reference",
-      "passed": 83,
-      "deselected": 3,
+      "command": "pytest tests/unit tests/runtime tests/regression -q --tb=short",
+      "passed": 293,
       "failed": 0,
-      "seconds": 10.71
+      "seconds": 228.73
     },
     {
-      "command": "real supplied input regression reruns",
-      "native_docx_passed": 2,
-      "direct_pdf_passed": 1,
-      "direct_pdf_final_seconds": 28.24,
-      "note": "Separate runs; PDF outline false rejection corrected before final direct PDF rerun"
-    },
-    {
-      "command": "legacy HTML renderer/packaging/gate compatibility",
-      "passed": 89,
+      "command": "pytest tests/unit/test_shared_layout.py -q",
+      "passed": 20,
       "failed": 0,
-      "seconds": 8.11
+      "seconds": 1.84
     },
     {
-      "command": "npm.cmd test",
+      "command": "initial npm test",
+      "passed": 11,
+      "failed": 1,
+      "note": "isolated PDF failure; detailed output truncated; no root cause claimed"
+    },
+    {
+      "command": "focused Node PDF rerun",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "final npm test",
       "passed": 12,
-      "failed": 0
+      "failed": 0,
+      "seconds": 47.9
     },
     {
-      "command": "npm.cmd run test:ui (production Next, clean Python)",
+      "command": "production-build browser suite with clean Python",
       "passed": 5,
-      "failed": 0
+      "failed": 0,
+      "minutes": 2.0
     },
     {
       "command": "Ruff and clean pip check",
       "result": "passed"
     },
     {
-      "command": "final production browser/format/fixture/context/history hashes/links/read-only diff checks",
-      "result": "5 browser tests passed (1.8 minutes); 8/8 fixture-context checks; format/hashes/links/JSON/diff passed"
+      "command": "fixture/context/hash/link/format/read-only whitespace checks",
+      "result": "8/8 fixture-context checks; fixtures/history unchanged; links/checkpoint/Prettier/diff passed"
     }
   ],
   "historical_progress": {
@@ -115,13 +125,14 @@
     },
     "zip": "input-basename.zip; one document and exactly referenced local assets at root"
   },
-  "suggested_commit_message": "refactor: unify DOCX and PDF input preparation",
+  "suggested_commit_message": "refactor: verify shared PDF layout and retain image resources",
   "git_operations_performed": false,
   "notes": [
-    "Stage 3 explicitly authorized by continue after Stage 2 report. No Git write or Stage 4 implementation.",
-    "Generated/uploaded PDF is authoritative through a distinct model mode; legacy strict gate and reconstruction eligibility remain intact.",
-    "All successful input tests stop at MODE_RENDERER_PENDING; no renderer/ZIP success fabricated.",
-    "Await explicit Stage 4 authorization."
+    "Stage 4 explicitly authorized by proceed; no Stage 5 implementation or Git write.",
+    "Shared source verification and private resources do not establish HTML visual fidelity or legacy Word gate success.",
+    "Prepared documents remain blocked at MODE_RENDERER_PENDING until mode renderers/packaging are implemented.",
+    "Await explicit Stage 5 authorization."
   ],
-  "runtime_document": "docs/simplified-runtime.md"
+  "runtime_document": "docs/simplified-runtime.md",
+  "layout_document": "docs/shared-layout.md"
 }

@@ -71,7 +71,11 @@ test("real PDF upload reaches shared analysis and exposes only its verified PDF 
   );
   const { jobs } = await service.create(upload(input, "independent-name.PDF"));
   const job = await terminal(service, jobs[0].id);
-  assert.equal(job.state, "blocked");
+  assert.equal(
+    job.state,
+    "blocked",
+    JSON.stringify(await service.validation(job.id)),
+  );
   assert.equal(job.diagnostic_code, "MODE_RENDERER_PENDING");
   const result = (await service.validation(job.id)).document_processing;
   assert.equal(result.input_preparation_complete, true);

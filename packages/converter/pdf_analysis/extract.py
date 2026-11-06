@@ -173,6 +173,14 @@ def _extract(path, mode, gate_hash, policy, context, expected_pages=None, proven
                     PaintOperation(sequence=i, kind=item[0], bbox=box(item[1]), layer=item[2])
                     for i, item in enumerate(page.get_bboxlog(layers=True))
                 )
+                if mode == "authoritative_pdf" and any(paint.kind == "fill-shade" for paint in paint_order):
+                    diagnostic(
+                        "PDF_SHADING_UNRESOLVED",
+                        "error",
+                        prefix,
+                        "Shading paint is detected but not represented by vector paths",
+                        "Add source-bound shading support before rendering; do not omit the paint",
+                    )
                 blocks, text_paints, character_count, character_digest = extract_text(
                     page, prefix, policy, guard, font_registry, paths, bounds, diagnostic
                 )
@@ -371,14 +379,40 @@ def analyze_authoritative_pdf(
     The generated/uploaded PDF is the visual authority. Legacy reconstruction
     eligibility remains false; later mode renderers must validate their own output.
     """
-    return _extract(
+    policy, context = policy or AnalysisPolicy(), context or ProcessingContext()
+    source_digest = sha256(path)
+    method = provenance.get("method")
+    digests = [provenance.get("source_sha256"), provenance.get("pdf_sha256")]
+    if method == "accepted_docx_local_export":
+        digests.append(provenance.get("accepted_docx_sha256"))
+    if (
+        method not in {"direct_uploaded_pdf", "accepted_docx_local_export"}
+        or provenance.get("visual_authority") is not True
+        or provenance.get("word_equivalence_verified") is not False
+        or provenance.get("pdf_sha256") != source_digest
+        or any(
+            not isinstance(value, str) or len(value) != 64 or any(c not in "0123456789abcdef" for c in value)
+            for value in digests
+        )
+        or (method == "direct_uploaded_pdf" and provenance.get("source_sha256") != source_digest)
+    ):
+        raise fail(
+            "PDF_PROVENANCE_INVALID",
+            "analyzing_pdf",
+            "PDF authority provenance is missing, inconsistent or stale",
+            "Prepare the unchanged input through the unified pipeline",
+        )
+    layout = _extract(
         path.resolve(),
         "authoritative_pdf",
         None,
-        policy or AnalysisPolicy(),
-        context or ProcessingContext(),
+        policy,
+        context,
         provenance=provenance,
     )
+    from converter.pdf_analysis.verification import verify_layout
+
+    return verify_layout(path, layout, policy, context)
 
 
 def write_layout(path: Path, layout: DocumentLayout, max_bytes: int | None = None) -> dict:
@@ -418,5 +452,18 @@ def write_layout(path: Path, layout: DocumentLayout, max_bytes: int | None = Non
         "characters": sum(p.character_count for p in layout.pages),
         "mode": layout.mode,
         "reconstruction_eligible": layout.reconstruction_eligible,
-        "diagnostics": [d.model_dump(mode="json") for p in layout.pages for d in p.diagnostics],
+        "verification": layout.verification.model_dump(mode="json") if layout.verification else None,
+        "fonts": len(layout.fonts),
+        "images": sum(len(p.images) for p in layout.pages),
+        "image_resources": sum(asset.original is not None for asset in layout.assets),
+        "resource_bytes": sum(
+            item.bytes for asset in layout.assets for item in (asset.original, asset.mask) if item
+        ),
+        "vectors": sum(len(p.vectors) for p in layout.pages),
+        "tables": sum(len(p.tables) for p in layout.pages),
+        "resolved_tables": sum(t.grid_resolved for p in layout.pages for t in p.tables),
+        "diagnostics": [
+            d.model_dump(mode="json")
+            for d in (*layout.diagnostics, *(d for p in layout.pages for d in p.diagnostics))
+        ],
     }
