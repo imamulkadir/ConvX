@@ -7,7 +7,7 @@ import pytest
 from conftest import ROOT
 from converter.context import ProcessingContext
 from converter.errors import ConversionFailure
-from converter.html_generator.generator import generate_htm
+from converter.html_generator.generator import generate_htm, zero_width_ligature_backstep
 from converter.html_generator.models import GenerationPolicy
 from converter.pdf_analysis.extract import analyze_pdf, inspect_pdf
 from converter.pdf_analysis.policy import AnalysisPolicy
@@ -15,6 +15,35 @@ from converter.pdf_export.validation import validate_pdf
 from layout_fixtures import merged_table_pdf, simple_pdf
 from lxml import html
 from PIL import Image
+
+
+@pytest.mark.parametrize(
+    "change,expected",
+    [
+        ({}, True),
+        ({"glyph_ids": [15]}, False),
+        ({"synthetic": True}, False),
+        ({"bbox": (190.317, 100, 191, 112)}, False),
+        ({"origin": (191, 110)}, False),
+        ({"origin": (190.317, 111)}, False),
+        ({"origin": (190.295, 110)}, False),
+    ],
+)
+def test_ligature_exception_requires_native_zero_width_tiny_backstep(change, expected):
+    # Actual LibreOffice Calibri-Italic f/i continuation coordinates from Stage9.
+    span = SimpleNamespace(id="italic-run")
+    char = SimpleNamespace(
+        **{
+            "synthetic": False,
+            "glyph_ids": [],
+            "bbox": (190.317, 100, 190.317, 112),
+            "origin": (190.317, 110),
+            **change,
+        }
+    )
+    following = SimpleNamespace(origin=(190.295, 110))
+    assert zero_width_ligature_backstep(span, char, span, following) is expected
+    assert not zero_width_ligature_backstep(span, char, SimpleNamespace(id="other-run"), following)
 
 
 def generate(path, output=None, policy=None):

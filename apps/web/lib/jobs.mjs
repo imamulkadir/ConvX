@@ -69,6 +69,8 @@ export function failureMessage(diagnostic) {
 }
 export function warningMessage(diagnostic) {
   const messages = {
+    HTM_ZERO_WIDTH_LIGATURE:
+      "Some ligatures use local font shaping. Review the preview for small spacing differences.",
     DOCX_RENDERER_COMPATIBILITY:
       "Word files are rendered with free LibreOffice. Some formatting can differ from Microsoft Word.",
     STANDARD_LOCAL_FONTS:

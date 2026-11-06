@@ -59,9 +59,22 @@ def simple_stroke(path):
     )
 
 
+def zero_width_ligature_backstep(span, char, next_span, following):
+    """Bounded extraction continuation within one unchanged formatting run."""
+    return (
+        span.id == next_span.id
+        and not char.synthetic
+        and not char.glyph_ids
+        and char.bbox[2] == char.bbox[0]
+        and char.origin[1] == following.origin[1]
+        and 0 < char.origin[0] - following.origin[0] <= 0.05
+    )
+
+
 class Builder:
-    def __init__(self, layout, policy, context):
+    def __init__(self, layout, policy, context, *, allow_ligature_backstep=False):
         self.layout, self.policy, self.context = layout, policy, context
+        self.allow_ligature_backstep = allow_ligature_backstep
         self.diagnostics = []
         self.emitted = []
         self.asset_requests = []
@@ -220,14 +233,31 @@ class Builder:
                         number,
                         line.id,
                     )
-                chars = [c for s in line.spans for c in s.characters]
-                if any(b.origin[0] < a.origin[0] for a, b in zip(chars, chars[1:], strict=False)):
+                positioned = [(s, c) for s in line.spans for c in s.characters]
+                backward = [
+                    (s, a, t, b)
+                    for (s, a), (t, b) in zip(positioned, positioned[1:], strict=False)
+                    if b.origin[0] < a.origin[0]
+                ]
+                if any(
+                    not (self.allow_ligature_backstep and zero_width_ligature_backstep(s, a, t, b))
+                    for s, a, t, b in backward
+                ):
                     self.diagnostic(
                         "HTM_TEXT_ADVANCE_UNSUPPORTED",
                         "Nonmonotonic horizontal glyph origins require overlapping or bidirectional layout",
                         "Resolve logical order and glyph placement",
                         number,
                         line.id,
+                    )
+                elif backward:
+                    self.diagnostic(
+                        "HTM_ZERO_WIDTH_LIGATURE",
+                        "A zero-width source ligature continuation is retained in its unchanged formatting run",
+                        "Review actual browser typography and source comparisons",
+                        number,
+                        line.id,
+                        "warning",
                     )
                 for span in line.spans:
                     if font_family(span.font_name) is None:

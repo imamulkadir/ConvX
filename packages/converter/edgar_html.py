@@ -45,7 +45,7 @@ def render_edgar(source, layout, directory, original_filename, context):
         )
     if directory.exists() or directory.is_symlink():
         raise ValueError("EDGAR output must be new")
-    builder = Builder(layout, GenerationPolicy(), context)
+    builder = Builder(layout, GenerationPolicy(), context, allow_ligature_backstep=True)
     # Do not silently discard appearances or unresolved native extraction failures.
     if any(page.annotations for page in layout.pages):
         raise fail(

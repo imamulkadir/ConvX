@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import path from "node:path";
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { independentPdf } from "../helpers.mjs";
 const fixture = path.resolve("../../var/t2ui-source.docx");
 const reference = path.resolve(
@@ -53,6 +54,36 @@ async function download(page, name) {
   expect(result.suggestedFilename()).toBe(name);
   expect(await result.failure()).toBeNull();
   expect(readFileSync(await result.path()).readUInt32LE(0)).toBe(0x04034b50);
+  const id = await page.evaluate(() =>
+    sessionStorage.getItem("convx-current-job"),
+  );
+  const project = path.resolve("../..");
+  const python =
+    process.env.CONVX_TEST_PYTHON ||
+    path.join(
+      project,
+      ".venv",
+      process.platform === "win32" ? "Scripts/python.exe" : "bin/python",
+    );
+  const raw = execFileSync(
+    python,
+    [
+      path.join(project, "tools/verify_download.py"),
+      await result.path(),
+      path.join(project, "var/t2ui", id),
+    ],
+    { cwd: project, windowsHide: true, encoding: "utf8", timeout: 65000 },
+  );
+  const checked = JSON.parse(raw);
+  expect(checked.crc_verified).toBe(true);
+  expect(checked.source_text_verified).toBe(true);
+  expect(checked.download_filename).toBe(name);
+  const evidence = path.join(project, "var/refactor-stage9/downloads");
+  mkdirSync(evidence, { recursive: true });
+  writeFileSync(
+    path.join(evidence, id + ".json"),
+    JSON.stringify(checked, null, 2) + "\n",
+  );
 }
 
 test("minimal form, file validation, clear selection and keyboard checkbox", async ({

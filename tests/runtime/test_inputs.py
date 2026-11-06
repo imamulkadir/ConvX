@@ -13,6 +13,8 @@ from converter.pdf_export.libreoffice import LibreOfficeProvider
 from converter.revisions.accept import compare_accepted_content
 from PIL import Image
 
+from tools.verify_download import verify_archive
+
 
 def pdf_bytes(*, encrypted=False, scanned=False, active=False, attachment=False):
     with pymupdf.open() as document:
@@ -63,6 +65,13 @@ def test_pdf_uses_unchanged_bytes_and_shared_analysis_without_docx(tmp_path):
     assert result["pdf_input"]["pages"][1]["rotation"] == 90
     assert result["final_conversion_complete"] and result["status"] == "packaged"
     assert result["packaging"]["validated"]
+    summary = verify_archive(
+        tmp_path / "attempt/package/result.zip",
+        tmp_path / "attempt" / result["generated_pdf_artifact"],
+        result,
+    )
+    assert summary["pages"] == 2 and summary["source_text_verified"]
+    assert summary["crc_verified"]
 
 
 @pytest.mark.parametrize("options", [{"encrypted": True}, {"active": True}, {"attachment": True}])
@@ -133,6 +142,10 @@ def test_real_reference_inputs_reach_shared_analysis_without_word_gate(tmp_path,
     assert result["layout_analysis"]["pages"] == 23 and result["layout_analysis"]["characters"] > 10000
     assert not result["pdf_input"]["word_equivalence_verified"]
     assert result["packaging"]["validated"]
+    summary = verify_archive(
+        tmp_path / "real/package/result.zip", tmp_path / "real" / result["generated_pdf_artifact"], result
+    )
+    assert summary["pages"] == 23 and summary["source_text_verified"] and summary["crc_verified"]
     if name.endswith(".docx"):
         assert result["revision_acceptance"]["after"]["total"] == 0
         accepted = ROOT / "tests/fixtures/06749LWD4_prelim_prospectus_automated (1).docx"

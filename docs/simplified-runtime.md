@@ -1,4 +1,4 @@
-# Simplification Stage 8 — active runtime
+# Simplification Stage 9 — active runtime
 
 The active application is one self-hosted Next.js Node server. Internal handlers directly start the existing Python converter in a bounded child process. FastAPI, Redis, Celery, SQLAlchemy/PostgreSQL, an account system and separate workers are not runtime dependencies. Their original source and user data are retained for recovery; they are not started or installed by current setup.
 
@@ -61,3 +61,5 @@ Stage 9 is the next approval-gated step: broader integration through the complet
 ## Stage 4 source-verified shared analysis
 
 The authoritative analyzer now validates provenance against current bytes and independently checks native text/glyph positions/typography/font resources, page geometry, image associations/transforms and resource counts. Each private attempt also retains source image payloads and separate soft masks with deterministic names and SHA-256; resource budgets are 32 MiB each/128 MiB total. The layout summary includes verification and font/image/vector/table/resource counts. See [shared layout contract](shared-layout.md). Inline payload and shading limitations are explicit; no fonts are silently embedded and no page is replaced by a screenshot. Both current renderers and ZIP consume this shared analysis; Stage 9 remains separately approval-gated.
+
+Stage9 verifies actual four-path bounded-runtime conversion and saved HTTP ZIPs against authoritative PDF text/CRC and fresh production proof. See [integration tests and limitations](integration-testing.md) and [current recovery](stage9-resume.md). Runtime capability report.stage remains7; this records the implemented pipeline contract, not the development stage. Stage10 requires explicit authorization.

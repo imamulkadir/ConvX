@@ -135,7 +135,7 @@ def test_reference_inputs_fail_honestly_for_unsupported_edgar_geometry(tmp_path,
         "HTM_TABLE_SEMANTICS_UNRESOLVED",
     }, report["diagnostics"]
     assert before == sha256(source)
-    assert not list((tmp_path / "attempt").glob("*.zip"))
+    assert not list((tmp_path / "attempt").rglob("*.zip"))
     (tmp_path / "observed.json").write_text(
         json.dumps({"input": name, "diagnostics": report["diagnostics"]}, indent=2)
     )

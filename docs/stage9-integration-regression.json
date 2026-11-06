@@ -1,0 +1,362 @@
+{
+  "stage": 9,
+  "status": "completed",
+  "date": "2026-11-06",
+  "independent_runtime_matrix": [
+    {
+      "mode": "standard",
+      "input_type": "docx",
+      "pages": 1,
+      "characters": 93,
+      "source_unchanged": true,
+      "archive_sha256": "6f5925dd1d216f116bf602ca514fdeeb35912886b7e726892842aedd85b17eb6",
+      "archive_bytes": 3041,
+      "members": [
+        "independent quarterly report.html"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "exact_ordered_character_ledger",
+      "screen_max_mean_channel_error": 0.12222756053178847,
+      "print_max_mean_channel_error": 0.004003732174688057,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "download_filename": "independent quarterly report.zip"
+    },
+    {
+      "mode": "standard",
+      "input_type": "pdf",
+      "pages": 1,
+      "characters": 45,
+      "source_unchanged": true,
+      "archive_sha256": "cc26e0e069085971e917ae290c878baebe541c4d7c9400ce5b8568e824b8844a",
+      "archive_bytes": 4499,
+      "members": [
+        "independent quarterly report.html",
+        "image0001.jpg"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "exact_ordered_character_ledger",
+      "screen_max_mean_channel_error": 0.32854556803995005,
+      "print_max_mean_channel_error": 0.14204588014981273,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "download_filename": "independent quarterly report.zip"
+    },
+    {
+      "mode": "edgar",
+      "input_type": "docx",
+      "pages": 1,
+      "characters": 93,
+      "source_unchanged": true,
+      "archive_sha256": "ef62aecce0f01333fd52b5959772eaee9590887714686f97efc5ad572e2ea9f8",
+      "archive_bytes": 1674,
+      "members": [
+        "independent_quarter-5d4affa2.htm"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "per_page_characters_and_word_multiset",
+      "screen_max_mean_channel_error": 0.42539480280748665,
+      "print_max_mean_channel_error": 0.38383374183006536,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "download_filename": "independent quarterly report.zip"
+    },
+    {
+      "mode": "edgar",
+      "input_type": "pdf",
+      "pages": 1,
+      "characters": 45,
+      "source_unchanged": true,
+      "archive_sha256": "ec1aea825313964f6288153aad3cf6200bb5a4cda77ecdf60362fa74d3bcaca5",
+      "archive_bytes": 4094,
+      "members": [
+        "independent_quarter-5d4affa2.htm",
+        "image001.jpg"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "per_page_characters_and_word_multiset",
+      "screen_max_mean_channel_error": 1.7195661672908864,
+      "print_max_mean_channel_error": 1.6956382646691635,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "download_filename": "independent quarterly report.zip"
+    }
+  ],
+  "saved_http_downloads": [
+    {
+      "mode": "standard",
+      "input_type": "pdf",
+      "pages": 1,
+      "characters": 35,
+      "source_unchanged": true,
+      "archive_sha256": "970bb1303a65e1fd6a2629b867ec6c85a1b3d13b6e93ffeecb58a4f73ba1f1d9",
+      "archive_bytes": 1897,
+      "members": [
+        "reconnect.html"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "exact_ordered_character_ledger",
+      "screen_max_mean_channel_error": 0.22044007490636705,
+      "print_max_mean_channel_error": 0.10144194756554308,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "download_filename": "reconnect.zip"
+    },
+    {
+      "mode": "standard",
+      "input_type": "pdf",
+      "pages": 23,
+      "characters": 85798,
+      "source_unchanged": true,
+      "archive_sha256": "13d784fbc1717ac7afa838546fc4bed314c0b0fa467845e200c23b6366e06e9f",
+      "archive_bytes": 2311996,
+      "members": [
+        "06749LWD4_prelim_prospectus_automated.html",
+        "image0001.jpg",
+        "image0002.png",
+        "image0003.png",
+        "image0004.png"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "exact_ordered_character_ledger",
+      "screen_max_mean_channel_error": 9.370502667607447,
+      "print_max_mean_channel_error": 0.9457879190186176,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "download_filename": "06749LWD4_prelim_prospectus_automated.zip"
+    },
+    {
+      "mode": "edgar",
+      "input_type": "pdf",
+      "pages": 1,
+      "characters": 35,
+      "source_unchanged": true,
+      "archive_sha256": "e02090a65cb8f0e8210ce28c261010d28407749984fd9c75d904aabac2acdb69",
+      "archive_bytes": 785,
+      "members": [
+        "independent-edgar.htm"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "per_page_characters_and_word_multiset",
+      "screen_max_mean_channel_error": 0.7637570224719101,
+      "print_max_mean_channel_error": 0.7548103932584269,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "download_filename": "independent-edgar.zip"
+    },
+    {
+      "mode": "standard",
+      "input_type": "pdf",
+      "pages": 1,
+      "characters": 35,
+      "source_unchanged": true,
+      "archive_sha256": "ffe005f58f2c67a2877955594c86c94e371a9458586d3daf9b634440685f5f64",
+      "archive_bytes": 1930,
+      "members": [
+        "independent-standard.html"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "exact_ordered_character_ledger",
+      "screen_max_mean_channel_error": 0.22044007490636705,
+      "print_max_mean_channel_error": 0.10144194756554308,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "download_filename": "independent-standard.zip"
+    },
+    {
+      "mode": "edgar",
+      "input_type": "docx",
+      "pages": 1,
+      "characters": 15,
+      "source_unchanged": true,
+      "archive_sha256": "6b5c07bbcad7d2ca7c1f0c109ff50cff3884b4a8507d1788328715daee1572a0",
+      "archive_bytes": 741,
+      "members": [
+        "t2ui-source.htm"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "per_page_characters_and_word_multiset",
+      "screen_max_mean_channel_error": 0.062314319667260844,
+      "print_max_mean_channel_error": 0.05752608808674985,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "download_filename": "t2ui-source.zip"
+    },
+    {
+      "mode": "standard",
+      "input_type": "docx",
+      "pages": 1,
+      "characters": 15,
+      "source_unchanged": true,
+      "archive_sha256": "4b13fbd0f365ddae8f9e80ea4f30f59727ad448ac39c6a9c6b5d7fd3696d1877",
+      "archive_bytes": 1889,
+      "members": [
+        "t2ui-source.html"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "exact_ordered_character_ledger",
+      "screen_max_mean_channel_error": 0.016457079991087344,
+      "print_max_mean_channel_error": 0,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "download_filename": "t2ui-source.zip"
+    }
+  ],
+  "verification": {
+    "focused_python": "45 passed in 73.25s",
+    "node": "16 passed in 99.46s",
+    "browser": "11 passed in 4.7min",
+    "full_python": "435 passed in 729.04s; started before ligature fix; final affected paths separately rerun",
+    "current_edgar": "7 passed, 3 deselected in 37.92s",
+    "optimized_python": "QA CLI explicitly rejected -O with exit1",
+    "format_and_environment": "Ruff/check+format, Prettier and clean pip check passed",
+    "fixture_and_recovery": "8/8 passed in0.105s; hashes/links/evidence/approval/read-only whitespace checks passed"
+  },
+  "limitations": [
+    "No SEC acceptance or exact pixel equivalence claimed",
+    "All supplied complex EDGAR fixtures fail clipping on page1 and produce no ZIP"
+  ],
+  "supplied_standard": [
+    {
+      "mode": "standard",
+      "input_type": "docx",
+      "pages": 23,
+      "characters": 84555,
+      "source_unchanged": true,
+      "archive_sha256": "5a8f49bd75809be5281c44f18874a1c52cb2720c1ae5e6aec07d3522d399fa2b",
+      "archive_bytes": 1315446,
+      "members": [
+        "06749LWD4_prelim_prospectus_automated.html",
+        "image0001.png",
+        "image0002.png",
+        "image0003.png",
+        "image0004.png",
+        "image0005.png"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "exact_ordered_character_ledger",
+      "screen_max_mean_channel_error": 9.070633185408001,
+      "print_max_mean_channel_error": 0.24204243724004754,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "input_filename": "06749LWD4_prelim_prospectus_automated.docx"
+    },
+    {
+      "mode": "standard",
+      "input_type": "docx",
+      "pages": 23,
+      "characters": 84555,
+      "source_unchanged": true,
+      "archive_sha256": "744392c000dcd56caa3c4227cb4183780e23ef7c0782cb286e1b3bec723c58c8",
+      "archive_bytes": 1315359,
+      "members": [
+        "06749LWD4_prelim_prospectus_automated (1).html",
+        "image0001.png",
+        "image0002.png",
+        "image0003.png",
+        "image0004.png",
+        "image0005.png"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "exact_ordered_character_ledger",
+      "screen_max_mean_channel_error": 9.070633185408001,
+      "print_max_mean_channel_error": 0.24204243724004754,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "input_filename": "06749LWD4_prelim_prospectus_automated (1).docx"
+    },
+    {
+      "mode": "standard",
+      "input_type": "pdf",
+      "pages": 23,
+      "characters": 85798,
+      "source_unchanged": true,
+      "archive_sha256": "13d784fbc1717ac7afa838546fc4bed314c0b0fa467845e200c23b6366e06e9f",
+      "archive_bytes": 2311996,
+      "members": [
+        "06749LWD4_prelim_prospectus_automated.html",
+        "image0001.jpg",
+        "image0002.png",
+        "image0003.png",
+        "image0004.png"
+      ],
+      "crc_verified": true,
+      "source_text_verified": true,
+      "text_check": "exact_ordered_character_ledger",
+      "screen_max_mean_channel_error": 9.370502667607447,
+      "print_max_mean_channel_error": 0.9457879190186176,
+      "pixel_equivalence_verified": false,
+      "sec_acceptance_confirmed": false,
+      "input_filename": "06749LWD4_prelim_prospectus_automated.pdf"
+    }
+  ],
+  "supplied_edgar": [
+    {
+      "input_filename": "06749LWD4_prelim_prospectus_automated.pdf",
+      "mode": "edgar",
+      "status": "failed",
+      "code": "EDGAR_CLIPPING_UNSUPPORTED",
+      "page": 1,
+      "zip_created": false
+    },
+    {
+      "input_filename": "06749LWD4_prelim_prospectus_automated.docx",
+      "mode": "edgar",
+      "status": "failed",
+      "code": "EDGAR_CLIPPING_UNSUPPORTED",
+      "page": 1,
+      "zip_created": false
+    },
+    {
+      "input_filename": "06749LWD4_prelim_prospectus_automated (1).docx",
+      "mode": "edgar",
+      "status": "failed",
+      "code": "EDGAR_CLIPPING_UNSUPPORTED",
+      "page": 1,
+      "zip_created": false
+    }
+  ],
+  "fixture_hashes": [
+    {
+      "path": "tests/fixtures/06749LWD4_prelim_prospectus_automated (1).docx",
+      "sha256": "ad2c5274f9949e19f655386143e8087e925411e6b4daf9ece2e1b1a5f70cb33d"
+    },
+    {
+      "path": "tests/fixtures/06749LWD4_prelim_prospectus_automated.docx",
+      "sha256": "9a9c22ddb0c496bde3dda78f70f0e267e30efd4b8cb410807d2846fbcdda666a"
+    },
+    {
+      "path": "tests/fixtures/06749LWD4_prelim_prospectus_automated.pdf",
+      "sha256": "4e978ec13451024838908889839548d6bee4c559c7c33e5ed3aa19f0a85b2431"
+    },
+    {
+      "path": "tests/fixtures/edgarfm-vol1-v43.pdf",
+      "sha256": "1abb4c0faf4ce9261fddc147fb2cf28ffe4ba434b0cc7420707c0d001511aeb7"
+    },
+    {
+      "path": "tests/fixtures/edgarfm-vol2-v78.pdf",
+      "sha256": "816bbe2b5d2677ddc94e6199b446a8a856a54596704021a7b9ff592c0bc26cf3"
+    }
+  ],
+  "defect": {
+    "initial_matrix": "3 passed, 1 failed in57.48s",
+    "code": "HTM_TEXT_ADVANCE_UNSUPPORTED",
+    "native_zero_width_backstep_pt": 0.022003173828125,
+    "current_renderer_max_backstep_pt": 0.05,
+    "legacy_default_unchanged": true,
+    "subsequent_matrix": "4 passed in113.00s",
+    "final_focused": "45 passed in73.25s"
+  }
+}
