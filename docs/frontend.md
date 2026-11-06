@@ -1,3 +1,5 @@
+> Historical architecture reference: the revised Stage 2 runtime uses one Next.js server and internal Python processes. Service/token/queue setup below describes the retired architecture. Use [current runtime and setup](simplified-runtime.md) for active instructions.
+
 # Stage 9 filing workspace
 
 The UI is in `apps/web`: Next.js App Router, React JSX, Tailwind 4, DaisyUI 5 and Lucide. It performs uploads and review; Python workers still do every conversion. All dependencies are free. No hosted Site, Git write or deployment is performed.

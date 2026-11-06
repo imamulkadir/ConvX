@@ -5,6 +5,7 @@ __pycache__/
 node_modules/
 .next/
 .next-local/
+.next-local-*/
 .env
 .env.*
 !.env.example

@@ -170,21 +170,6 @@ def test_owned_browser_memory_and_timeout_limits(baseline, tmp_path):
         inspect_visuals(pdf, htm, (), tmp_path / "cancel", context=ProcessingContext(cancelled=lambda: True))
 
 
-def test_fidelity_success_still_does_not_enable_download(client):
-    from conftest import upload_one
-
-    job = upload_one(client)
-    repository = client.app.state.repository
-    record = repository.claim(job["id"])
-    assert repository.finish_processing(
-        job["id"], record["attempt_id"], {"status": "visual_validated", "diagnostics": []}
-    )
-    result = repository.get(job["id"], "alice")
-    assert result["state"] == "blocked" and result["stage"] == "awaiting_packaging"
-    assert result["diagnostic_code"] == "PACKAGING_ENGINE_NOT_AVAILABLE"
-    assert client.get(f"/api/v1/conversions/{job['id']}/download").status_code == 409
-
-
 def test_renderer_itself_blocks_document_scripts_and_remote_requests(tmp_path):
     markup = b'<html><body>Visible<script>document.body.textContent="executed"</script><img src="https://example.com/must-not-fetch.jpg"></body></html>'
     result = render_browser(

@@ -2,73 +2,77 @@
   "project": "convx",
   "schema_version": 2,
   "workflow": "simplification-refactor",
-  "current_stage": 1,
-  "current_stage_name": "Existing Project Audit",
+  "current_stage": 2,
+  "current_stage_name": "Simplify Architecture",
   "stage_status": "completed",
-  "last_completed_stage": 1,
-  "next_stage": 2,
-  "next_stage_name": "Simplify Architecture",
+  "last_completed_stage": 2,
+  "next_stage": 3,
+  "next_stage_name": "DOCX and PDF Input Support",
   "authorization_required": true,
   "awaiting_user_approval": true,
-  "last_updated": "2026-11-05",
+  "last_updated": "2026-11-06",
   "completed_stages": [
-    1
+    1,
+    2
   ],
   "implemented_components": [
     "existing-project audit and requirement gap matrix",
     "reusable-code/dependency retirement inventory",
     "single-Next plus bounded Python-process architecture proposal",
     "mode-specific .html/.htm contracts and staged migration plan",
-    "preserved prior status/checkpoint history and phase-aware verification"
+    "preserved prior status/checkpoint history and phase-aware verification",
+    "single Next server and internal bounded Python conversion subprocesses",
+    "pure converter admission/config/artifact audit without service imports",
+    "automatic local UI and one-command launcher without tokens or external API",
+    "private local manifests, bounded scheduling, cancellation, restart failure and cleanup",
+    "clean runtime/development requirements and real Node/browser/converter tests"
   ],
   "pending_tasks": [
-    "User review/manual commit/push and explicit Stage 2 authorization",
-    "Stage 2 simplify runtime without implementing later-stage modes",
-    "Stage 3 safe DOCX/PDF admission and authoritative shared PDF entry",
-    "Stages 4-8 shared layout, separate renderers, packaging and minimal UI",
-    "Stage 9 all four genuine conversion paths and Stage 10 final audit"
+    "User review/manual commit/push and explicit Stage 3 authorization",
+    "Stage 3 safe DOCX/PDF admission and generated/uploaded PDF authority",
+    "Stages 4-8 shared layout, separate renderers, mode-specific ZIP and minimal UI",
+    "Stage 9 genuine four-path conversion qualification and Stage 10 cleanup"
   ],
   "known_issues": [
-    "Current runtime remains legacy DOCX-only with reference/SEC gates and no Standard renderer",
-    "Word fixture failed all 23 PDF pages in prior actual live test",
-    "SEC styling/character permission ambiguities remain unresolved",
-    "Current archive always requires .htm/JPG/GIF and DOCX input naming",
-    "OCR unavailable; arbitrary complex layouts and font permission not qualified",
-    "Windows long rendering paths, live distributed deployment and wider browsers unqualified"
+    "Legacy DOCX-only reference/SEC behavior retained; missing reference blocks honestly",
+    "No qualified successful whole-chain ZIP/high-level download; branch remains unqualified",
+    "Historical Word fixture failed all 23 pages; SEC styling/character ambiguities remain",
+    "Standard renderer, direct PDF upload, mode selection/packaging and OCR pending later stages",
+    "Single Node instance only; public access/rate controls and stronger OS isolation unqualified",
+    "Broad layout/font/OS/browser compatibility not demonstrated"
   ],
   "last_test_results": [
     {
-      "command": "pytest focused revisions/pdf_analysis/html_generator/sec_validation/assets/packaging",
-      "passed": 216,
+      "command": "clean Python pytest --cov=converter --cov-report=term",
+      "passed": 270,
       "failed": 0,
-      "warnings": 1,
-      "seconds": 9.7,
-      "scope": "Existing engine behavior only, not revised modes"
+      "seconds": 322.86,
+      "parent_coverage_percent": 83
+    },
+    {
+      "command": "clean Python pytest tests/runtime -q after 18 added admission cases",
+      "passed": 25,
+      "failed": 0,
+      "seconds": 4.43
     },
     {
       "command": "npm.cmd test",
-      "passed": 3,
+      "passed": 11,
       "failed": 0
     },
     {
-      "command": "npm.cmd run check:format; pip check",
+      "command": "npm.cmd run test:ui (production build, clean Python)",
+      "passed": 4,
+      "failed": 0,
+      "minutes": 1.2
+    },
+    {
+      "command": "targeted Ruff; clean pip check; web check:format",
       "result": "passed"
     },
     {
-      "command": "Initial historical fixture/context checker",
-      "passed": 7,
-      "failed": 1,
-      "scope": "Recovery phrase removed by revised instructions; corrected onboarding and phase-specific check"
-    },
-    {
-      "command": "tools/verify_stage1.py after context migration",
-      "passed": 8,
-      "failed": 0,
-      "seconds": 0.07
-    },
-    {
-      "command": "Archived record SHA256, audit/context local links and read-only git diff --check",
-      "result": "passed; fixture bytes unchanged; LF/CRLF notices only"
+      "command": "fixture/recovery checker; history hashes/links; read-only diff check; final launcher smoke",
+      "result": "8/8 fixture/context checks; all hashes/links/diff passed; root/session HTTP 200; unrelated preload excluded; owned launcher stopped"
     }
   ],
   "historical_progress": {
@@ -99,11 +103,13 @@
     },
     "zip": "input-basename.zip; one document and exactly referenced local assets at root"
   },
-  "suggested_commit_message": "refactor: audit existing converter and plan simplified dual-mode architecture",
+  "suggested_commit_message": "refactor: consolidate conversion runtime inside Next.js",
   "git_operations_performed": false,
   "notes": [
-    "Stage 1 audit explicitly authorized by yeah proceed after updated AGENTS.md. No runtime refactor, service removal or new conversion performed.",
-    "Earlier implementation stage numbers are archived history; this is the revised staged refactor in the same repository.",
-    "Do not start Stage 2 automatically; preserve all existing uncommitted application and startup repair work."
-  ]
+    "Stage 2 explicitly authorized by go on / continue. No Git write or Stage 3 implementation.",
+    "Retired services/workers and their tests remain for recovery; current setup does not install/start their infrastructure.",
+    "Real native missing-reference block and PDF preview tested; no fabricated successful conversion or relaxed eligibility.",
+    "Await explicit Stage 3 authorization; generated/uploaded PDF authority contract must be deliberately revised in that stage."
+  ],
+  "runtime_document": "docs/simplified-runtime.md"
 }

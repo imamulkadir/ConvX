@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { json, request } from "../lib/api.mjs";
 
-function Capture({ job, token, kind, page, zoom, dpi }) {
+function Capture({ job, kind, page, zoom, dpi }) {
   const [naturalWidth, setNaturalWidth] = useState(null);
   const [url, setUrl] = useState(""),
     [error, setError] = useState("");
@@ -20,7 +20,7 @@ function Capture({ job, token, kind, page, zoom, dpi }) {
     const controller = new AbortController();
     setUrl("");
     setError("");
-    request(`/${job.id}/preview?kind=${kind}&page=${page}`, token, {
+    request(`/${job.id}/preview?kind=${kind}&page=${page}`, {
       signal: controller.signal,
     })
       .then((response) => response.blob())
@@ -38,7 +38,7 @@ function Capture({ job, token, kind, page, zoom, dpi }) {
       controller.abort();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [job.id, token, kind, page]);
+  }, [job.id, kind, page]);
   if (error)
     return (
       <p className="preview-message" role="status">
@@ -64,7 +64,7 @@ function Capture({ job, token, kind, page, zoom, dpi }) {
   );
 }
 
-function PdfPage({ job, token, page, zoom, onError }) {
+function PdfPage({ job, page, zoom, onError }) {
   const canvas = useRef(null),
     [document, setDocument] = useState(null);
   useEffect(() => {
@@ -78,7 +78,7 @@ function PdfPage({ job, token, page, zoom, onError }) {
       pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
       const data = new Uint8Array(
         await (
-          await request(`/${job.id}/preview?kind=pdf`, token, {
+          await request(`/${job.id}/preview?kind=pdf`, {
             signal: controller.signal,
           })
         ).arrayBuffer(),
@@ -103,7 +103,7 @@ function PdfPage({ job, token, page, zoom, onError }) {
       if (loaded) loaded.destroy();
       else task?.destroy();
     };
-  }, [job.id, token, onError]);
+  }, [job.id, onError]);
   useEffect(() => {
     if (!document) return;
     let active = true,
@@ -145,7 +145,7 @@ function PdfPage({ job, token, page, zoom, onError }) {
   );
 }
 
-export default function Preview({ job, token }) {
+export default function Preview({ job }) {
   const [meta, setMeta] = useState(null),
     [error, setError] = useState("");
   const [page, setPage] = useState(1),
@@ -161,13 +161,13 @@ export default function Preview({ job, token }) {
     setError("");
     setPage(1);
     setMode("pdf");
-    json(`/${job.id}/preview`, token, { signal: controller.signal })
+    json(`/${job.id}/preview`, { signal: controller.signal })
       .then(setMeta)
       .catch((e) => {
         if (e.name !== "AbortError") setError(e.message);
       });
     return () => controller.abort();
-  }, [job.id, token, job.version]);
+  }, [job.id, job.version]);
   const scroll = (from, to) => {
     if (!sync || syncing.current || !to.current) return;
     syncing.current = true;
@@ -302,7 +302,7 @@ export default function Preview({ job, token }) {
             >
               <PdfPage
                 job={job}
-                token={token}
+
                 page={page}
                 zoom={zoom}
                 dpi={meta.capture_dpi === 144 ? 144 : 96}
@@ -328,7 +328,7 @@ export default function Preview({ job, token }) {
               {has(capture) ? (
                 <Capture
                   job={job}
-                  token={token}
+
                   kind={capture}
                   page={page}
                   zoom={zoom}

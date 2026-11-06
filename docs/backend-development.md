@@ -1,3 +1,5 @@
+> Historical architecture reference: the revised Stage 2 runtime uses one Next.js server and internal Python processes. Service/token/queue setup below describes the retired architecture. Use [current runtime and setup](simplified-runtime.md) for active instructions.
+
 # Stage 2 backend operation
 
 Stage 9 update: [frontend setup](frontend.md) describes the implemented browser workspace. Authenticated /conversions/session returns admission limits. The owned preview route serves bounded generated PDF/declared visual PNG diagnostic artifacts after current source/attempt and ownership/retention checks. Preview never grants a ZIP; active HTM is not served. Earlier unimplemented-UI statements below are historical.

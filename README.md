@@ -1,36 +1,37 @@
-# ConvX — DOCX-to-HTM converter
+# ConvX - document conversion
 
-**Current plan: simplified DOCX/PDF converter, refactor Stage 1 audited.** The revised target is one upload page, Standard `.html` output by default, and optional SEC EDGAR `.htm`. The application still runs the earlier DOCX-only workflow; those new modes and architecture are not implemented yet. See the [audit and staged plan](docs/refactor-audit.md) and [current progress](PROJECT_STATUS.md). Runtime instructions below describe the existing implementation until its replacement is verified.
+**Simplification Stage 2:** one Next.js application invokes Python internally. No API connection, token, Redis, Celery or database setup is required. Existing secure DOCX processing is retained; PDF upload and the revised Standard/EDGAR renderers are pending their stages. The application is not yet a qualified end-to-end converter.
 
-Existing browser workspace for secure DOCX revision acceptance, PDF-first layout reconstruction, manual-derived EDGAR validation, all-page visual comparison and clean filing-asset ZIP download. Compliance and exact disclosure take priority; unresolved strict fidelity failures prevent download.
+## Run locally
 
-**Local startup:** run `.\.venv\Scripts\python dev.py` from the root, open the printed workspace URL, then choose **Use local access**. This starts the API, UI and a separate real local worker without Redis. See [one-command development](docs/local-development.md). Existing validation failures remain visible.
-
-**Stage 9 UI is implemented.** With the configured API running, use `cd apps/web`, `npm.cmd ci`, then `npm.cmd run dev`. Open http://127.0.0.1:3000. See [frontend setup](docs/frontend.md) for connection, batch upload, progress, diagnostic PDF/HTM preview and download controls. Current validation failures still prevent a qualified filing ZIP. The paragraph below records the Stage 8 engine handoff.
-
-**Current delivery: Stage 8 ZIP packaging.** Authenticated uploads, durable jobs, revision acceptance, free local LibreOffice PDF export and strict reference validation and a versioned PDF layout model are implemented. The supplied DOCX's accepted content matches its baseline; its generated 23-page PDF fails strict layout comparison and remains unsuccessful. Read-only inspection retains 85,798 reference characters without authorizing reconstruction. See [layout analysis](docs/pdf-layout-analysis.md). Private HTM candidates now preserve disclosure text and reconstruct supported flow/table layouts. Local actual-file SEC checks and source-bound JPG/GIF normalization are implemented. Unresolved CSS/MANY/character permissions fail strict validation; Pinned Chromium print/screen rendering and content/geometry/pixel comparison are implemented, with explicit strict failures for unresolved differences. Deterministic ZIP creation, independent archive audit and protected download checks are implemented. The Word reference remains unqualified; no successful full-chain download is demonstrated. The frontend remains Stage 9 work. See [ZIP packaging](docs/zip-packaging.md). See [visual validation](docs/visual-validation.md). See [SEC validation](docs/sec-validation-engine.md). See [HTM reconstruction](docs/htm-reconstruction.md). See [project status](PROJECT_STATUS.md), [checkpoint](.agent-checkpoint.json) and [agent instructions](AGENTS.md). No SEC acceptance or pixel-perfect conversion is claimed.
-
-## Architecture and requirements
-
-Next.js App Router with React JSX, Tailwind, DaisyUI and Lucide; Python FastAPI/Pydantic API; Redis/Celery workers; PostgreSQL job storage; private artifacts; PyMuPDF, Pillow, lxml and Playwright/Chromium conversion tooling. All implemented/planned components must be free to use: no premium SDK, trial renderer or paid service is included. See [architecture](docs/architecture.md), [contracts](docs/interfaces.md), [pipeline](docs/conversion-pipeline.md), [SEC constraints](docs/sec-compliance.md) and [limitations](docs/limitations.md).
-
-## Stage 1 inspection and verification
-
-Python 3.12 is the inspected environment. Use a private development environment; installation below is for read-only analysis tooling, not the eventual application:
+Install Python 3.12+ and Node 22.19+, then from the repository root:
 
 ```powershell
-python -m venv .venv-analysis
-.\.venv-analysis\Scripts\python -m pip install -r tools/requirements-analysis.txt
-.\.venv-analysis\Scripts\python tools/inspect_references.py --output docs/fixture-inventory.json
-python tools/verify_stage1.py
+python -m venv .venv
+.\.venv\Scripts\python -m pip install -r requirements.txt
+cd apps/web
+npm.cmd ci
+cd ../..
+.\.venv\Scripts\python dev.py
 ```
 
-The inventory reads every PDF page and DOCX Word XML part and records hashes. It is not safe admission logic for arbitrary uploads. Use it only with the supplied trusted regression fixtures. Do not modify originals; review fixture changes explicitly and regenerate inventory after intentional replacements. [Reference findings](docs/reference-findings.md) explains identities and unresolved mappings. Test commands and actual results are recorded in [test history](docs/test-history.md).
+Use an existing configured .venv when available. Open the URL printed by dev.py. Upload controls connect automatically; no token or local-access button. LibreOffice is the free native DOCX renderer; its workspace installation is detected when present. Renderer, reference or fidelity failures are reported honestly rather than shown as successful ZIPs.
 
-## Development and operation
+## Current scope
 
-Follow [backend setup](docs/backend-development.md) and [document-processing setup](docs/docx-processing.md) for pinned installation, `.env`, schema initialization, FastAPI startup, independent Redis/Celery processes and real reference checks. Install both local API and converter packages. Workers accept supported revisions and render PDF when a trusted LibreOffice path is configured. Missing renderer/reference blocks processing; strict differences fail. Preview/download remain gated, and readiness still reports full conversion unavailable.
+The architecture is simplified and tested. The old routine reference-PDF requirement still blocks a bare DOCX; direct PDF and Standard .html are not implemented yet. The revised final contract is Standard .html by default, optional EDGAR .htm, with one document and exactly its referenced assets in the ZIP root. Each later stage requires explicit authorization.
 
-Stage 4 introduces the intermediate PDF layout model; Stage 9 builds the UI; Stage 10 integrates the full pipeline; Stage 11 supplies deployment files and process/network hardening. See [deployment design](docs/deployment.md). The Windows/SQLite/native-renderer suite does not certify Linux workers or live Redis/PostgreSQL deployments; optional real-service tests are included. Do not expose unfinished services as production-ready.
+See [runtime/setup and limits](docs/simplified-runtime.md), [audit and staged plan](docs/refactor-audit.md), [project status](PROJECT_STATUS.md), [checkpoint](.agent-checkpoint.json), [agent instructions](AGENTS.md), [decisions](docs/decisions.md) and [test history](docs/test-history.md). Retired service source and existing user data remain preserved; do not start the old API/worker commands for the active application.
 
-If inspection cannot import pypdf, use the analysis environment above. Missing fixtures must be located and verified, never replaced by fabricated test results. Read [decisions](docs/decisions.md) before changing a provider or compliance interpretation. Keep one stage per authorization; Git initialization, staging, committing, pushing and other Git writes are prohibited. Review and Git changes belong to the user.
+## Checks
+
+Install requirements-dev.txt (or the verified Windows requirements-dev-lock.txt), then:
+
+```powershell
+.\.venv\Scripts\python -m pytest -q
+cd apps/web
+npm.cmd test
+npm.cmd run test:ui
+```
+
+Tests use real local processes and regression fixtures, never simulated conversion success. No SEC acceptance or universal pixel-perfect fidelity is claimed. Git initialization/staging/committing/pushing and all other Git writes are prohibited for agents; review and Git changes belong to the user.

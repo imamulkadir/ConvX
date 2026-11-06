@@ -1,5 +1,6 @@
 .next/
 .next-local/
+.next-local-*/
 node_modules/
 public/pdf.worker.min.mjs
 test-results/

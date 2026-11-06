@@ -1,3 +1,5 @@
+> Historical architecture reference: the revised Stage 2 runtime uses one Next.js server and internal Python processes. Service/token/queue setup below describes the retired architecture. Use [current runtime and setup](simplified-runtime.md) for active instructions.
+
 # Proposed module and API contracts
 
 Stage 9: authenticated GET /conversions/session returns configured admission limits. Owned GET /{id}/preview returns diagnostic metadata or bounded current PDF/declared PNG bytes for kind=pdf|htm|overlay|difference and a one-based page. No active HTM or arbitrary path is served. The JSX frontend forwards per-user authorization through trusted Next rewrites, uploads via XHR and polls actual jobs. No conversion eligibility or schema change. See [frontend](frontend.md).

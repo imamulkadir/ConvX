@@ -1,3 +1,5 @@
+> Historical architecture reference: the revised Stage 2 runtime uses one Next.js server and internal Python processes. Service/token/queue setup below describes the retired architecture. Use [current runtime and setup](simplified-runtime.md) for active instructions.
+
 # Architecture — Stage 1 design
 
 Status: Stage 1 design, updated 2026-11-05 after Stage 3 implementation. API, durable jobs, private storage/outbox, revision acceptance, free LibreOffice PDF export and strict PDF gates are implemented. HTM/layout reconstruction, frontend, object storage and deployed sandbox remain future stages. See [backend operation](backend-development.md) and [document processing](docx-processing.md) for actual behavior and limitations.

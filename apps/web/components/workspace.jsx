@@ -15,7 +15,6 @@ import {
   Layers3,
   LoaderCircle,
   LockKeyhole,
-  LogOut,
   Moon,
   Plus,
   RefreshCw,
@@ -26,7 +25,7 @@ import {
   TriangleAlert,
   X,
 } from "lucide-react";
-import useWorkspace from "../hooks/use-workspace";
+import useWorkspace from "../hooks/use-conversions";
 import { json } from "../lib/api.mjs";
 import {
   bytes,
@@ -60,7 +59,7 @@ function Badge({ job }) {
   );
 }
 
-function JobDetail({ job, token, action, download }) {
+function JobDetail({ job, action, download }) {
   const [tab, setTab] = useState("checks"),
     [report, setReport] = useState(null),
     [error, setError] = useState(""),
@@ -71,13 +70,13 @@ function JobDetail({ job, token, action, download }) {
     setReport(null);
     setError("");
     setConfirm(false);
-    json(`/${job.id}/validation`, token, { signal: controller.signal })
+    json(`/${job.id}/validation`, { signal: controller.signal })
       .then(setReport)
       .catch((e) => {
         if (e.name !== "AbortError") setError(e.message);
       });
     return () => controller.abort();
-  }, [job.id, job.version, token]);
+  }, [job.id, job.version, job.state, job.stage]);
   const processing = report?.document_processing;
   const index = stageIndex(job);
   const run = async (fn) => {
@@ -263,7 +262,7 @@ function JobDetail({ job, token, action, download }) {
         id="preview-panel"
         aria-labelledby="preview-tab"
       >
-        {tab === "preview" && <Preview job={job} token={token} />}
+        {tab === "preview" && <Preview job={job} />}
       </div>
       <div className="detail-actions">
         <p>
@@ -325,8 +324,7 @@ function JobDetail({ job, token, action, download }) {
 
 export default function Workspace() {
   const ws = useWorkspace();
-  const [credential, setCredential] = useState(""),
-    [files, setFiles] = useState([]),
+  const [files, setFiles] = useState([]),
     [selectionErrors, setSelectionErrors] = useState([]);
   const [selected, setSelected] = useState(""),
     [filter, setFilter] = useState("all"),
@@ -385,13 +383,6 @@ export default function Workspace() {
     }
     setFiles(unique);
     setSelectionErrors(result.errors);
-  };
-  const connect = async (token) => {
-    setFiles([]);
-    setSelected("");
-    setSelectionErrors([]);
-    await ws.connect(token);
-    setCredential("");
   };
   const current = ws.jobs.find((job) => job.id === selected) || ws.jobs[0];
   const counts = {
@@ -455,7 +446,7 @@ export default function Workspace() {
           <div className="header-actions">
             <span className={`connection ${ws.session ? "connected" : ""}`}>
               <span />
-              {ws.session ? "Connected" : "Not connected"}
+              {ws.session ? "Ready" : "Starting"}
             </span>
             <button
               className="btn btn-ghost btn-sm btn-square"
@@ -464,19 +455,6 @@ export default function Workspace() {
             >
               {dark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-            {ws.session && (
-              <button
-                className="btn btn-ghost btn-sm"
-                onClick={() => {
-                  ws.disconnect();
-                  setFiles([]);
-                  setSelected("");
-                }}
-              >
-                <LogOut size={15} />
-                Disconnect
-              </button>
-            )}
           </div>
         </header>
         <main id="main">
@@ -502,52 +480,9 @@ export default function Workspace() {
             </div>
           </div>
           {!ws.session && (
-            <section
-              className="connection-card"
-              aria-labelledby="connect-title"
-            >
-              <div>
-                <LockKeyhole size={20} />
-                <h2 id="connect-title">Connect to your workspace</h2>
-                <p>
-                  Use your API access token or local access on this computer.
-                </p>
-              </div>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  connect(credential);
-                }}
-              >
-                <label className="sr-only" htmlFor="access-token">
-                  API access token
-                </label>
-                <input
-                  id="access-token"
-                  type="password"
-                  className="input"
-                  placeholder="API access token"
-                  value={credential}
-                  onChange={(e) => setCredential(e.target.value)}
-                  autoComplete="off"
-                  spellCheck="false"
-                />
-                <button
-                  className="btn btn-primary"
-                  disabled={!credential || ws.connecting}
-                >
-                  {ws.connecting ? "Connecting…" : "Connect"}
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-ghost"
-                  disabled={ws.connecting}
-                  onClick={() => connect("")}
-                >
-                  Use local access
-                </button>
-              </form>
-            </section>
+            <p role="status" className="preview-message">
+              Starting document processing?
+            </p>
           )}
           {ws.error && (
             <div className="alert error-alert" role="alert">
@@ -826,7 +761,7 @@ export default function Workspace() {
               <JobDetail
                 key={current.id}
                 job={current}
-                token={ws.token}
+
                 action={ws.action}
                 download={ws.download}
               />
@@ -895,9 +830,9 @@ export default function Workspace() {
               for review and do not establish SEC acceptance.
             </p>
             <p>
-              Access tokens stay in this page’s memory. Only job IDs and your
-              theme preference are saved in this browser. Disconnect to clear
-              the tab’s job list.
+              Processing stays local. Only opaque document references and your
+              theme preference are stored in this browser. Temporary documents
+              expire automatically.
             </p>
             <p>
               The current Word-reference conversion still fails strict fidelity.

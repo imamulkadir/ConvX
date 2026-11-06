@@ -1,53 +1,49 @@
-# ConvX ? Simplification Refactor Status
+# ConvX - Simplification Refactor Status
 
 ## Overall Status
 
-Workflow: simplification-refactor (revised AGENTS.md; same existing repository)
+Workflow: simplification-refactor (revised AGENTS.md; existing repository)
 
-Current Stage: 1 - Existing Project Audit
+Current Stage: 2 - Simplify Architecture
 
 Stage Status: completed
 
-Last Completed Stage: 1
+Last Completed Stage: 2
 
-Next Stage: 2 - Simplify Architecture (explicit authorization required)
+Next Stage: 3 - DOCX and PDF Input Support (explicit authorization required)
 
-Last Updated: 2026-11-05 (Asia/Dhaka)
+Last Updated: 2026-11-06 (Asia/Dhaka)
 
-## Objective and Mode Contract
+## Completed Stages
 
-One simple page accepts DOCX/PDF, defaults to Standard mode (.html with embedded modern CSS), optionally selects SEC EDGAR (.htm with confirmed manual-permitted markup/JPG/GIF), then returns input-basename.zip containing only the document and its referenced root-level assets. Processing stays local, with a single Next application invoking bounded Python processes. No user-managed API connection, Redis/Celery/database/accounts. This is the revised target, not implemented behavior.
+Stage 1 audited the existing project and produced the [staged migration plan](docs/refactor-audit.md). Stage 2 replaced the active service architecture with one self-hosted Next application invoking bounded local Python processes. Stage 3 is not started. Earlier implementation stages are preserved in [historical status](docs/history/pre-refactor-status.txt) and [historical checkpoint](docs/history/pre-refactor-checkpoint.json); they do not qualify the revised feature requirements.
 
-## Stage 1 Findings and Completed Work
+## Stage 2 Implemented Features
 
-Inspected current UI, API/admission/config/database/workers, DOCX revision/PDF providers, shared extraction/model, renderer, assets, SEC validation, visual checks, packaging, dependencies and tests. The existing workflow is DOCX-only and couples reconstruction/publication to external Word-reference and SEC gates. No Standard renderer, direct PDF upload, optional EDGAR mode or .html packaging exists.
+- Single startup with `.\.venv\Scripts\python dev.py`; internal Next routes handle upload/status/diagnostics/preview/retry/delete/download. No API token, connection form, separate public Python server, Redis/Celery/database or account setup. See [setup and runtime](docs/simplified-runtime.md).
+- Real converter subprocess execution with actual progress/diagnostics, upload bounds, private UUID paths, one active conversion, cancellation/process-tree supervision, interrupted-state handling and retention cleanup. Existing conversion/security/content gates remain intact.
+- Pure converter admission/configuration/artifact audit modules remove API/ORM import dependencies. Existing API admission becomes a retired adapter. Download requests still independently validate evidence and captured ZIP bytes.
+- Minimal runtime/dev requirements and clean-environment lock. User .env, prior database/artifacts and all source fixtures preserved. Old services/workers/tests are explicitly historical, retained for recovery and later cleanup.
+- Transitional UI auto-connects to same-origin handlers and keeps real upload progress, diagnostics and PDF review. Final minimal page and optional mode checkbox remain Stage 8 work.
 
-Useful components include supported revision acceptance, bounded native rendering/process controls, detailed PDF extraction, manual-derived SEC checks, graphics decoding, comparison metrics and real archive audit. Plan to adapt these while retiring public FastAPI, queues/broker/database orchestration and connection/dashboard UI after working replacements exist. No runtime code or service was removed in Stage 1.
+## Files Changed
 
-Created [audit and staged migration plan](docs/refactor-audit.md), corrected contradictory mode extensions in AGENTS.md and updated recovery instructions. Preserved prior records byte-for-byte in [historical status](docs/history/pre-refactor-status.txt) and [historical checkpoint](docs/history/pre-refactor-checkpoint.json). Original nine implementation stages and live startup/reference tests are history, not completion of the revised refactor stages. Root checkpoint schema 2 identifies the new workflow explicitly.
+Core: dev.py, requirements*.txt, pyproject.toml, packages/converter/{admission,runtime_config,runtime,artifacts,cli}.py and package metadata. Web: internal app/api routes, lib/server/runtime.mjs, token-free API/hook/components, Next config, browser setup/tests and Node runtime tests. Verification: active converter integration tests and pure admission/runtime cases; original service-specific cases preserved in tests/legacy. Documentation: README, AGENTS, environment examples, simplified-runtime, historical setup banners, decisions, test history, redacted Stage 2 evidence and progress records. Retired service/worker README files identify inactive code.
 
-## Files Changed in This Stage
+## Testing
 
-AGENTS.md, README.md, PROJECT_STATUS.md, .agent-checkpoint.json, docs/refactor-audit.md, docs/history/pre-refactor-status.txt, docs/history/pre-refactor-checkpoint.json, docs/decisions.md, docs/test-history.md and tools/verify_stage1.py. The verification helper now distinguishes existing-project audit from the original empty-project stage. All pre-existing modified/untracked application/startup files were preserved; no application refactor or Git write.
+Clean Python active suite: 270 passed, 0 failed, 83% parent-process coverage, 322.86 seconds. Subsequently added 18 pure admission cases; focused runtime suite: 25 passed, 0 failed. These are separate runs, not a claimed 288-test full-suite result. Node: 11 passed. Production-build browser tests: 4 passed, including real native conversion reaching the existing missing-reference block and actual PDF preview. No mocked conversion service. Format, targeted Ruff, pip, fixture/context/archive hashes and read-only diff checks passed; details in [test history](docs/test-history.md) and [Stage 2 evidence](docs/stage2-runtime-regression.json).
 
-## Tests Executed
+## Known Limitations and Pending Tasks
 
-Focused existing converter unit suite: 216 passed, 0 failed, one existing Starlette/httpx warning, 9.70 seconds. Covers revisions, PDF analysis, legacy HTM, SEC/assets and packaging mechanics. Node helper tests: 3 passed. Frontend format check and pip check passed. Initial historical fixture/context checker: 7 passed / 1 failed because revised AGENTS.md removed its recovery phrase; restored compatible onboarding and made the scope check workflow-aware. Final fixture/context checks passed 8/8; archived SHA-256, active documentation links and read-only diff checks passed.
+This architecture stage intentionally retains DOCX-only admission and the legacy strict reference/SEC pipeline. A DOCX without operator-provided reference blocks with PDF_REFERENCE_REQUIRED. The historical 23-page Word regression failed all pages; that evidence is unchanged. Styled SEC permissions/character ambiguities remain unresolved. No successful qualified whole-chain ZIP or high-level download path is demonstrated. No Standard renderer, direct PDF upload, new dual-mode packaging or scanned-PDF OCR exists yet. Do not describe application startup as successful document conversion.
 
-No full suite, new conversion, native Word-reference rerun, browser UI suite, production build or deployment was run for this audit. Passing existing tests does not qualify the revised input/mode combinations.
+Stage 3 must adopt the revised generated/uploaded-PDF visual authority contract and both input types while keeping Word-reference comparison as honest regression evidence. Stages 4-8 implement shared layout, distinct Standard/EDGAR renderers, mode-specific ZIP and the minimal page; Stage 9 tests all four input/mode paths; Stage 10 final cleanup. Single Node instance only; public access/rate controls, OS isolation, broader platforms/fonts/layouts remain unqualified. Bounded temporary state uses product budgets documented in the runtime guide.
 
-## Known Bugs and Limitations
+## Progress Tracking and Resume
 
-Legacy runtime still requires a separate reference before production PDF analysis. Prior actual fixture test failed all 23 Word-reference PDF pages. Current generated styling fails unresolved SEC permissions/character interpretation. No working Standard HTML5 renderer or scanned-PDF OCR. Existing .htm-only/JPG-GIF-only ZIP checks cannot support the revised Standard path unchanged. Complex layouts/font permission, Windows long paths, wider browsers and deployment isolation remain unqualified. Fixtures and user artifacts remain unchanged.
-
-## Decisions and Pending Tasks
-
-See ADR-033 onward in [decisions](docs/decisions.md). Next Stage 2 replaces infrastructure with minimal internal Next handlers and bounded Python processes, separates admission/config from app imports and preserves existing security/content behavior. Later stages add unified inputs, shared layout, mode-specific renderers/ZIP and the minimal UI. Do not relabel diagnostic or self-comparison evidence as old strict qualification. The generated/uploaded PDF becomes the runtime visual authority under an explicit revised contract; Word fixture matching remains regression evidence.
+Status, checkpoint, decisions and test history synchronized. Stage 2 completed; awaiting user review/manual commit/push and explicit Stage 3 authorization. Read AGENTS, these records, audit/runtime docs and relevant source; inspect read-only Git state and preserve all existing uncommitted work. No automatic advance or Git writes.
 
 ## Suggested Commit Message
 
-refactor: audit existing converter and plan simplified dual-mode architecture
-
-## Resume Instructions
-
-Read AGENTS.md, this file, checkpoint, audit, decisions and relevant test history. Inspect actual source and read-only Git state; preserve all uncommitted prior work. Stage 1 is complete and awaits manual review/commit/push. Begin Stage 2 only after explicit authorization. No automatic continuation or Git writes.
+refactor: consolidate conversion runtime inside Next.js

@@ -1,3 +1,5 @@
+> Historical architecture reference: the revised Stage 2 runtime uses one Next.js server and internal Python processes. Service/token/queue setup below describes the retired architecture. Use [current runtime and setup](simplified-runtime.md) for active instructions.
+
 # One-command local development
 
 From the repository root:

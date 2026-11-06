@@ -4,6 +4,8 @@
 
 Current workflow: the simplification refactor in this file replaces the earlier SEC-only development plan. See [Stage 1 audit](docs/refactor-audit.md), [decisions](docs/decisions.md) and [test history](docs/test-history.md). Root progress records track the revised stages; [historical status](docs/history/pre-refactor-status.txt) and [historical checkpoint](docs/history/pre-refactor-checkpoint.json) preserve the prior implementation. On resume, follow the current checkpoint and approval gate; the initial "Begin Stage 1" directives below do not authorize repeating a completed audit or starting Stage 2. Standard mode generates `.html`; EDGAR mode generates `.htm`.
 
+Active runtime after revised Stage 2: one Next.js server invokes bounded Python processes internally. Start with `python dev.py` in the configured environment; see [current runtime and setup](docs/simplified-runtime.md). No API token, separate FastAPI server, Redis, Celery or database is required. Legacy service source is retained for recovery only. Stage 2 preserves existing DOCX/reference/SEC behavior; later-stage input/mode features remain pending. Follow the checkpoint approval gate before Stage 3.
+
 # Refactor the Existing Application into a Simple, High-Fidelity DOCX/PDF-to-HTM Web Converter
 
 ## 0. ROLE AND OBJECTIVE

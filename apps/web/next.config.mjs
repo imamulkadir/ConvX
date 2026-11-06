@@ -1,26 +1,13 @@
-const api = new URL(process.env.CONVX_API_URL || "http://127.0.0.1:8000");
-if (
-  !["http:", "https:"].includes(api.protocol) ||
-  api.username ||
-  api.password ||
-  api.pathname !== "/" ||
-  api.search ||
-  api.hash
-) {
-  throw new Error(
-    "CONVX_API_URL must be a trusted HTTP(S) origin without credentials or a path",
-  );
-}
-
+const devPort = process.env.CONVX_DEV_PORT || "default";
+if (!/^(?:default|[0-9]{4,5})$/.test(devPort))
+  throw new Error("Invalid development port directory");
 export default {
   agentRules: false,
-  distDir: process.env.CONVX_LOCAL_LAUNCHER === "1" ? ".next-local" : ".next",
+  distDir:
+    process.env.CONVX_LOCAL_LAUNCHER === "1"
+      ? `.next-local-${devPort}`
+      : ".next",
   poweredByHeader: false,
-  async rewrites() {
-    return [
-      { source: "/api/v1/:path*", destination: `${api.origin}/api/v1/:path*` },
-    ];
-  },
   async headers() {
     return [
       {

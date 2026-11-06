@@ -6,9 +6,6 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
-from app.core.config import Settings
-from app.main import create_app
-from fastapi.testclient import TestClient
 
 ROOT = Path(__file__).resolve().parents[1]
 TOKEN_A = "a" * 40
@@ -36,6 +33,8 @@ def docx_bytes(extra: dict[str, bytes] | None = None) -> bytes:
 
 @pytest.fixture
 def settings(tmp_path):
+    from app.core.config import Settings
+
     return Settings(
         _env_file=None,
         api_tokens={"alice": TOKEN_A, "bob": TOKEN_B},
@@ -48,6 +47,9 @@ def settings(tmp_path):
 
 @pytest.fixture
 def client(settings):
+    from app.main import create_app
+    from fastapi.testclient import TestClient
+
     with TestClient(create_app(settings), raise_server_exceptions=False) as connection:
         connection.headers["Authorization"] = f"Bearer {TOKEN_A}"
         yield connection

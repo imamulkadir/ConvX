@@ -1,0 +1,51 @@
+{
+  "stage": 2,
+  "date": "2026-11-06",
+  "status": "completed",
+  "architecture": "single Next Node server with bounded local Python subprocesses",
+  "python_full_suite": {
+    "passed": 270,
+    "failed": 0,
+    "parent_coverage_percent": 83,
+    "seconds": 322.86
+  },
+  "later_focused_runtime_suite": {
+    "passed": 25,
+    "failed": 0,
+    "includes_added_admission_cases": 18
+  },
+  "node_tests": {
+    "passed": 11,
+    "failed": 0
+  },
+  "production_browser_tests": {
+    "passed": 4,
+    "failed": 0,
+    "real_native_outcome": "PDF_REFERENCE_REQUIRED",
+    "real_pdf_preview": true,
+    "mocked_conversion": false
+  },
+  "clean_environment_absent_packages": [
+    "fastapi",
+    "celery",
+    "redis",
+    "sqlalchemy",
+    "psycopg"
+  ],
+  "successful_full_chain_zip_qualified": false,
+  "stage3_started": false,
+  "git_writes": false,
+  "qa_launcher_stopped": true,
+  "final_checks": {
+    "fixture_context_checks_passed": 8,
+    "historical_record_hashes": "unchanged",
+    "active_documentation_links": "passed",
+    "ruff": "passed",
+    "pip_check": "passed",
+    "web_format": "passed",
+    "read_only_git_diff_check": "passed; LF/CRLF notices only",
+    "launcher_root_and_session_http_status": 200,
+    "inherited_invalid_node_preload_excluded": true,
+    "owned_final_launcher_stopped": true
+  }
+}

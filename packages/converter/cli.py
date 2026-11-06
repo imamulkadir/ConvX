@@ -31,11 +31,10 @@ def main() -> None:
         else None
     )
     # Complete application admission is kept at the orchestration boundary, not imported by modules.
-    from app.core.config import Settings
-    from app.services.admission import validate_docx
+    from converter.admission import validate_docx
+    from converter.runtime_config import Limits
 
-    settings = Settings(auth_mode="local", _env_file=None)
-    validate_docx(args.source, settings)
+    validate_docx(args.source, Limits())
     result = process_docx(
         args.source,
         args.workspace,
