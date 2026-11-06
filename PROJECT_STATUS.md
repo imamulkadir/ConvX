@@ -1,43 +1,43 @@
 # ConvX - Simplification Refactor Status
 
-Current Stage: 9 - Full Integration Testing
+Current Stage: 10 - Final Cleanup and Optimization
 
 Stage Status: completed
 
-Last Completed Stage: 9
+Last Completed Stage: 10
 
-Next Stage: 10 - Final Cleanup and Optimization (not authorized)
+Next Stage: None - ten-stage refactor complete within documented supported local cases
 
 Last Updated: 2026-11-06 (Asia/Dhaka)
 
 ## Completed Work
 
-Revised stages1-9 complete within documented supported cases. One Next server invokes bounded local Python. Start `.\.venv\Scripts\python dev.py` and use its printed URL; restart after app updates. Minimal DOCX/PDF form, default-off EDGAR checkbox, real progress/ZIP download and optional comparison remain available. No token, separate backend, broker/database, premium license or external conversion service. See [interface](docs/simple-interface.md), [integration verification](docs/integration-testing.md), [safe evidence](docs/stage9-integration-regression.json) and [current recovery](docs/stage9-resume.md).
+Revised stages1-10 complete. Start `.\.venv\Scripts\python dev.py` and open its printed URL. One Next server invokes bounded local Python; choose DOCX/PDF, optional default-off EDGAR checkbox, Convert to HTM, Download ZIP. No API token, separate backend, Redis/Celery/database, premium conversion license or external document service. See [current runtime](docs/simplified-runtime.md), [final review](docs/stage10-review.md), [safe evidence](docs/stage10-final-regression.json) and [current recovery](docs/stage10-resume.md).
 
-## Stage9 Implemented
+## Stage10 Implemented
 
-Added independent verification of actual saved HTTP ZIPs against fresh production download proof and authoritative PDF text. QA rereads CRC/exact root document/assets/byte hashes and archived HTML; Standard requires exact ordered per-page native character equality, EDGAR per-page character counts and a document word multiset in addition to production flow/word-position checks. Optimized Python is explicitly rejected by this assertion-based QA utility. No new service or production gate.
+Bounded fresh download verification to one native audit at a time; overlapping requests return retryable429 DOWNLOAD_BUSY and the slot is released in finally after success/failure. Every allowed request still revalidates source/attempt/mode/generated files/assets/browser captures and actual ZIP; no proof cache or weaker gate. HTTP response buffers remain governed by transport consumption, not a total server-memory guarantee.
 
-New four-path bounded-runtime subprocess matrix exercises both inputs/modes. Independent DOCX contains bold/italic text and accepted deleted/inserted financial figures; independent PDF contains a ruled table and genuine JPEG. Source hashes, tracked-change acceptance, actual browser verification, source-basename archives, correct internal extension/assets and corrupted saved-ZIP rejection are checked. Supplied Standard cases now check archived source text; supplied EDGAR failures check recursively that no ZIP exists. Browser tests audit actual saved responses, not mocked completion.
+Reserved device filenames already rejected by packaging now fail at upload before expensive conversion. Preview capture lookup uses a Set, keeping all source/hash checks and avoiding repeated list scans. Removed unused dashboard stages/resumable/stageIndex exports and its obsolete test; session metadata reports one file and omits obsolete auth/aggregate batch fields. No converter/rendering/proof/dependency change. All current runtime dependencies have demonstrated use and remain; clean imports exclude retired service/premium packages.
 
-The new DOCX exposed a native Calibri-Italic zero-width ligature continuation with0.022003pt backward advance. Current EDGAR renderer narrowly accepts only same-span/baseline nonsynthetic zero-width glyph-free continuations up to0.05pt, retaining source text/order/coordinates and warning the user. Ordinary/larger/cross-run reversals remain rejected. Legacy Builder default remains strict and is verified against the actual exported layout. All browser/text/word/pixel gates remain mandatory.
+Rewrote architecture/interfaces/pipeline/backend/frontend/deployment/limitations/SEC guides for the active single-server runtime, with8byte-exact historical copies and hashes. Removed stale transitional setup/gate guidance from main runtime docs. Terminal checkpoint/recovery verification supports completed stages1-10 with no invented Stage11. All known limits remain explicit.
 
 ## Files Changed
 
-New tools/verify_download.py and tests/integration/test_conversion_matrix.py; updated active pytest paths, generator/EDGAR renderer, warning copy, generator guards, supplied input/EDGAR regressions and real UI download tests. Updated AGENTS/README/runtime/interface, decisions/test history/integration/recovery/evidence and root progress records. No dependency, fixture, user .env/data or Git metadata changes; no Git writes.
+apps/web/lib/server/runtime.mjs, lib/jobs.mjs, runtime/jobs tests; tools/verify_stage1.py; eight core docs and archived originals; current runtime/interface/README/AGENTS; final review/evidence/recovery; decisions/test history and root progress records. No source fixture, user.env/data or Git metadata changes, no Git write operations and no package/lock changes. Retained legacy proof/recovery material remains offline, not an active service.
 
-## Actual Verification
+## Actual Final Verification
 
-Full active Python suite435passed,0failed,729.04sec. It began before the narrow ligature patch; final affected paths were explicitly rerun: generator guards plus four actual runtime paths45passed73.25sec; current EDGAR browser cases7passed37.92sec (3supplied cases separately covered by full run). Node16passed99.46sec. Production Next/Chromium browser11passed4.7min, with6 actual saved ZIPs independently verified, including both inputs/modes,23-page reference PDF and network recovery. No mocked conversion/download or fabricated reference evidence.
+Full active Python442passed0failed664.90sec on final app logic. Node15passed0failed90.85sec; decrease from16 is the obsolete dead-helper test removal. Node tests use actual concurrent/repeated ZIP downloads and verify busy/error/success release, source/ZIP/origin/security/mode/Unicode and Windows reader-lock completion. Production build/Next/Chromium browser11passed0failed3.7min, including both inputs/modes,6independently verified saved HTTP ZIPs,23-page reference PDF/actual comparison, honest EDGAR failure, cancel/reload/reset/network/drag-drop/accessibility/themes. No mocked conversion/download.
 
-Initial new matrix3passed1failed57.48sec exposed the real ligature defect; second4passed113sec and final45-case run passed after the fix. Full history retains the failure. All3supplied Standard inputs produce23-page archives with exact authoritative text: each DOCX84,555characters, direct PDF85,798characters. DOCX-to-PDF authority is LibreOffice output; Microsoft Word equivalence is not claimed. All3supplied EDGAR inputs fail EDGAR_CLIPPING_UNSUPPORTED page1 without ZIP. Reference PDF raw screen max MAE9.370503/255 and print0.945788 remain nonzero.
+All4independent runtime paths pass. All3supplied Standard archives have23pages and exact authoritative text/CRC (two DOCX84,555characters each; direct PDF85,798). All3supplied EDGAR cases fail EDGAR_CLIPPING_UNSUPPORTED page1 without ZIP. DOCX authority is free LibreOffice export, not verified Microsoft Word equivalence. Raw pixel differences remain nonzero.
 
-Changed Python Ruff/check+format, web Prettier and clean-environment pip check passed; initial formatting findings corrected. Optimized-Python QA CLI returned the expected safe rejection. Final fixture/context/history checks are recorded in test history. No exact-pixel or SEC acceptance claim. All test sessions finished; QA-owned servers stopped automatically.
+npm production audit0reported vulnerabilities, clean pip consistency/import/excluded-package checks passed; scoped checks are not universal security proof. Ruff/check+format and web Prettier passed; old context-verifier import order corrected. Synthetic preview membership only:6000names/2000stress pages296.1231ms before vs3.2154ms after, identical6000matches; not conversion timing or admitted capacity (default PDF admission500pages). Final fixture/context/history/hash/link checks are in test history. All named sessions finished and QA-owned servers stopped automatically.
 
-## Known Limits and Next Steps
+## Remaining Limitations and Closure
 
-Complex EDGAR clipping, unsupported geometry/mixed EDGAR print/OCR/platform, local fonts/LibreOffice compatibility and single Node limits remain. Stage9 verifies supported cases and honest unsupported failures, not every possible document. Current runtime report.stage remains7 intentionally, reflecting the implemented packaging capability rather than development stage.
+Complex EDGAR clipping/unsupported geometry/mixed EDGAR print, OCR absence, local fonts/pixel differences, LibreOffice compatibility and platform limits remain. Local EDGAR interpretation never grants legacy strict proof or SEC acceptance; no test/live submission occurred. Native resource monitoring is application-level, not a complete hostile-document OS sandbox. Public/multi-user/non-Windows hosting is not qualified. See [limitations](docs/limitations.md) and [deployment](docs/deployment.md).
 
-Stage10 cleanup/optimization is the only remaining stage and requires explicit user authorization. Review, commit and push manually. Do not advance automatically. All durable records and current recovery/evidence are saved.
+No further implementation stage is scheduled. Review/commit/push manually. Future fixes or broader qualification require a new user request; do not restart completed stages or invent Stage11.
 
-Suggested Commit Message: test: verify conversion matrix and saved ZIP integrity
+Suggested Commit Message: refactor: finalize local converter cleanup and resource bounds

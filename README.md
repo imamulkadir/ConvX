@@ -1,6 +1,6 @@
 # ConvX - document conversion
 
-**Simplification Stage 9:** one Next.js application invokes Python internally. Open its focused single-document form, choose DOCX/PDF, optionally enable SEC EDGAR Compliance, then convert and download ZIP. No API connection, token, Redis, Celery or database setup is required. Supported outputs have real browser and package checks; known fidelity/EDGAR limits remain. Full integration is verified within documented supported cases; final cleanup is Stage10 and requires authorization. See [integration results](docs/integration-testing.md).
+**Simplification Stage 10:** one Next.js application invokes Python internally. Open its focused single-document form, choose DOCX/PDF, optionally enable SEC EDGAR Compliance, then convert and download ZIP. No API connection, token, Redis, Celery or database setup is required. Supported outputs have real browser and package checks; known fidelity/EDGAR limits remain. All ten stages are complete within documented supported local cases. See [final review and limits](docs/stage10-review.md), [integration results](docs/integration-testing.md) and [current recovery](docs/stage10-resume.md).
 
 ## Run locally
 

@@ -1,16 +1,3 @@
-export const stages = [
-  ["uploaded", "Uploaded"],
-  ["validating", "Validating"],
-  ["accepting_revisions", "Accepting revisions"],
-  ["generating_pdf", "Generating PDF"],
-  ["analyzing_pdf", "Analyzing PDF"],
-  ["generating_htm", "Generating HTM"],
-  ["preparing_assets", "Preparing assets"],
-  ["validating_sec", "SEC validation"],
-  ["comparing_formatting", "Comparing formatting"],
-  ["packaging_zip", "Packaging ZIP"],
-  ["completed", "Completed"],
-];
 export const terminal = new Set([
   "completed",
   "failed",
@@ -18,27 +5,6 @@ export const terminal = new Set([
   "expired",
   "cancelled",
 ]);
-export const resumable = new Set([
-  "PIPELINE_NOT_AVAILABLE",
-  "PDF_RENDERER_UNAVAILABLE",
-  "PDF_REFERENCE_REQUIRED",
-  "LAYOUT_ENGINE_NOT_AVAILABLE",
-  "HTML_ENGINE_NOT_AVAILABLE",
-  "SEC_ENGINE_NOT_AVAILABLE",
-  "VISUAL_ENGINE_NOT_AVAILABLE",
-  "VISUAL_BROWSER_UNAVAILABLE",
-  "PACKAGING_ENGINE_NOT_AVAILABLE",
-]);
-export function stageIndex(job) {
-  if (job.state === "completed") return stages.length - 1;
-  const aliases = {
-    queued: "uploaded",
-    validating_docx: "validating",
-    validating_pdf: "analyzing_pdf",
-    normalizing_assets: "preparing_assets",
-  };
-  return stages.findIndex(([key]) => key === (aliases[job.stage] || job.stage));
-}
 export function progressMessage(job) {
   if (job.state === "queued") return "Waiting to convert";
   const messages = {

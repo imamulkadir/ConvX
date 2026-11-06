@@ -1,11 +1,12 @@
 """Fixture/recovery checks across original and refactor workflows; no conversion certification."""
+
 from __future__ import annotations
 
 import hashlib
 import json
-from pathlib import Path
 import re
 import unittest
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -68,10 +69,20 @@ class StageOneChecks(unittest.TestCase):
             self.assertIn(rule["status"], {"confirmed_manual", "project_policy", "unresolved"})
 
     def test_required_docs_and_local_links(self):
-        required = ["README.md", "AGENTS.md", "PROJECT_STATUS.md", "docs/architecture.md",
-                    "docs/interfaces.md", "docs/conversion-pipeline.md", "docs/sec-compliance.md",
-                    "docs/deployment.md", "docs/limitations.md", "docs/decisions.md",
-                    "docs/test-history.md", "docs/reference-findings.md"]
+        required = [
+            "README.md",
+            "AGENTS.md",
+            "PROJECT_STATUS.md",
+            "docs/architecture.md",
+            "docs/interfaces.md",
+            "docs/conversion-pipeline.md",
+            "docs/sec-compliance.md",
+            "docs/deployment.md",
+            "docs/limitations.md",
+            "docs/decisions.md",
+            "docs/test-history.md",
+            "docs/reference-findings.md",
+        ]
         for name in required:
             path = ROOT / name
             text = path.read_text(encoding="utf-8")
@@ -85,12 +96,25 @@ class StageOneChecks(unittest.TestCase):
         checkpoint = read_json(".agent-checkpoint.json")
         status = (ROOT / "PROJECT_STATUS.md").read_text(encoding="utf-8")
         self.assertGreaterEqual(checkpoint["current_stage"], 1)
-        self.assertEqual(checkpoint["next_stage"], checkpoint["current_stage"] + 1)
+        if checkpoint.get("workflow_complete"):
+            self.assertEqual(checkpoint["workflow"], "simplification-refactor")
+            self.assertEqual(checkpoint["current_stage"], 10)
+            self.assertEqual(checkpoint["last_completed_stage"], 10)
+            self.assertEqual(checkpoint["stage_status"], "completed")
+            self.assertEqual(checkpoint["completed_stages"], list(range(1, 11)))
+            self.assertIsNone(checkpoint["next_stage"])
+            self.assertFalse(checkpoint["awaiting_user_approval"])
+            self.assertFalse(checkpoint["authorization_required"])
+        else:
+            self.assertEqual(checkpoint["next_stage"], checkpoint["current_stage"] + 1)
+            self.assertTrue(checkpoint["authorization_required"])
         self.assertIn(f"Stage Status: {checkpoint['stage_status']}", status)
         self.assertIn(f"Last Completed Stage: {checkpoint['last_completed_stage']}", status)
         self.assertFalse(checkpoint["git_operations_performed"])
-        self.assertTrue(checkpoint["authorization_required"])
-        self.assertIn("Before implementing any changes, every AI agent must read", (ROOT / "AGENTS.md").read_text(encoding="utf-8"))
+        self.assertIn(
+            "Before implementing any changes, every AI agent must read",
+            (ROOT / "AGENTS.md").read_text(encoding="utf-8"),
+        )
 
     def test_stage_scope(self):
         checkpoint = read_json(".agent-checkpoint.json")

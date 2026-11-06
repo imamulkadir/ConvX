@@ -2,7 +2,6 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   validateSelection,
-  stageIndex,
   downloadName,
   progressMessage,
   failureMessage,
@@ -25,11 +24,6 @@ test("batch selection retains valid files and explains each rejection", () => {
     ["one.docx", "two.DOCX"],
   );
   assert.equal(result.errors.length, 4);
-});
-test("unknown or failed stage never implies completed progress", () => {
-  assert.equal(stageIndex({ state: "failed", stage: "processing_failed" }), -1);
-  assert.equal(stageIndex({ state: "running", stage: "validating_pdf" }), 4);
-  assert.equal(stageIndex({ state: "completed", stage: "completed" }), 10);
 });
 test("download response names support Unicode and reject path separators", () => {
   assert.equal(

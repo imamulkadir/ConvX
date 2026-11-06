@@ -1,0 +1,34 @@
+# SEC compliance specification
+
+Authority: supplied EDGAR Filer Manual, Volume II, version 78, September 14, 2026, now in `tests/fixtures/edgarfm-vol2-v78.pdf`. SHA-256 and page inventory are in [fixture inventory](fixture-inventory.json). The original local copy was located in Downloads. [Official publication](https://www.sec.gov/files/edgar/filermanual/edgarfm-vol2-v78.pdf) was checked for volume, version and date. Volume I v43 is not a substitute for Chapter 5.
+
+[Registry v78.1](compliance/efm-v78.rules.json) is a versioned design registry, not an executable validator. Stage 6 implements validation. `confirmed_manual` identifies explicit text; `project_policy` identifies stricter product constraints; `unresolved` blocks approval of a strict profile until researched. A registry version is immutable once released with production output; later interpretation changes require a new version and regression evidence.
+
+## Extracted requirements
+
+| Topic | Source (printed page; PDF page) | Interpretation |
+| --- | --- | --- |
+| Filenames | 5.1.1 (5-10; 144), 5.2.2.1 (5-24; 158) | At most 32 characters including extension; initial ASCII alphanumeric; letters/numbers, period, hyphen, underscore; no spaces. Upper/lower case allowed. Product uses `.htm`, `.jpg`, `.gif` only internally. |
+| HTML scope | 5.2.2.1–.4 (5-23–28; 157–162) | Specified HTML 3.2/4.0 subset, no active content, no nested TABLE. SPAN, TBODY, THEAD, TFOOT, SCRIPT, IFRAME, SVG and unlisted body elements are unavailable. Explicit table contains prohibited DOCTYPE declarations despite earlier overview mention; omit DOCTYPE conservatively and record tension. |
+| Attributes | 5.2.2.2–.5 (5-24–29; 158–163) | Tag-specific restrictions override general wording. BODY background, META http-equiv, A target, IMG dynsrc/loop/loopdelay/start/controls are prohibited. All event handlers prohibited. Registry records the explicit table, not modern browser acceptance. |
+| CSS | 5.2.2.5 (5-29; 163) | `style` is listed for MANY elements. No exhaustive CSS property/value allowlist was identified in these sections. Do not assert all CSS is forbidden or arbitrary positioning is permitted. Strict profile awaits justified safe property/value rules. External sheets/fonts and active/remote URL values are excluded by references/active-content policy. |
+| Links | 5.2.2.1, .3 (5-23–25; 157–159) | Local resolvable submission references, internal bookmarks, and specified SEC Archives references. No arbitrary internet, mailto, ftp or target attribute. Inline XBRL viewer example has special context; ordinary HTM profile does not enable it. Private-document exception exists but product cannot include correspondence under its ZIP contract. |
+| Graphics | 5.2.2.1, .3, .10 (5-23–26,34; 157–160,168) | Local JPG/GIF only, resolve every reference exactly. Decode files to verify formats; prohibit remote/data URIs and SVG. Root-only and no-unused-assets are product packaging rules. |
+| Character encoding | 5.2.2.6 (5-30–31; 164–165) | Extended characters represented using references rather than raw extended bytes. Conservative output is ASCII with approved entities/references. Table mixes Latin-1 wording and legacy Windows character values: do not blindly emit legacy numeric references that browsers reinterpret. Additional characters require verified mappings; never silently transliterate disclosure. |
+| Submission limits | 5.2.2.10 (5-34; 168), 7.3.2 | 200 MB general submission, 600 MB specified ABS-EE/NPORT forms, 800 MB combined 10-D/ABS-EE; special 25 MB per HTML in ABS-15G variants. Includes encoded submission documents. ZIP size is not full submission size. Require form/submission context for applicable-limit certification. |
+| PDF restrictions | 5.2.3.2 (5-36; 170) | Submitted unofficial PDFs: no active content, external references, passwords/security controls. Product PDF is internal and not a filing attachment; distinguish internal safety policy from submitted-PDF compliance. No claim of official-PDF eligibility. |
+| Validation | 5.2.2.1, .10 (5-24,34; 158,168) | Browser review plus EDGARLink Online Doc Validation or authorized TEST submission. Local validation cannot establish SEC acceptance. |
+
+## Uncertainties and conservative handling
+
+The attribute table references LINK while the permitted document/body tag tables omit it; do not permit LINK by inference. IMG width/height and FONT face are common browser capabilities but not clearly included for those parents in the table; leave unresolved rather than invent an allowance. TR width appears in a body-tag note but is omitted from the attribute table: record it separately. The MANY designation needs an approved per-tag expansion. Handle named bookmarks and URL parsing without assuming browser URL normalization makes a URL safe: reject traversal, credentials, misleading hostnames, network-path references, encoded scheme tricks and unresolved fragments.
+
+No production strict rules profile is approved yet. Confirmed rule entries can drive Stage 5 design, but Stage 6 must resolve required unknowns, validate source bytes before parser repair (notably auto-inserted TBODY), inspect actual files, and produce rule-specific diagnostics. Do not classify all valid historical manual constructs as generic HTML failures. Product security restrictions must be labeled separately.
+
+## Diagnostic contract and authorized SEC checks
+
+Each failure contains stable code, description, affected file/element, rule ID/manual section where applicable and suggested remediation. Report local validation as local only. Human filing operators may use EDGARLink Online Doc Validation and an authorized TEST submission under their filing account and applicable form workflow, inspect the actual SEC response, and reconcile it with local diagnostics. This project does not transmit filings or obtain credentials. No test or live submission was made in Stage 1.
+
+Stage 5 adds a [proposed generator profile](compliance/efm-v78.stage5-candidate.json) with manual-listed tags and candidate style vocabulary. This does not release or amend the v78.1 design registry and does not approve CSS/MANY/Unicode interpretation. No executable SEC validator was implemented early. All candidate compliance flags remain false pending Stage 6 actual-file validation.
+
+Stage 6 implementation: [v78.2 executable local registry](compliance/efm-v78.2.rules.json) and [engine behavior/research](sec-validation-engine.md). The historical v78.1 design profile is unchanged. Confirmed-rule checks, strict product restrictions and unresolved applicable permissions are separately identified. Style/MANY uncertainty is not waived; current styled candidates fail. PAGE/R exceptions and supplementary SEC formatting guidance are recorded explicitly. Real graphic decoding, source-bound normalization and whole encoded submission context checks are implemented. No authorized EDGAR submission or SEC acceptance occurred.

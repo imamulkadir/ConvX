@@ -163,7 +163,17 @@ test("stream and declared byte limits reject uploads and roll back private files
   );
 });
 test("filenames and mutating origins cannot escape the internal application", () => {
-  for (const name of ["../x.docx", "a.exe", ".docx", "x.docx\n", "C:\\x.docx"])
+  for (const name of [
+    "../x.docx",
+    "a.exe",
+    ".docx",
+    "x.docx\n",
+    "C:\\x.docx",
+    "CON.pdf",
+    "aux.report.docx",
+    "COM1.pdf",
+    "lpt9.docx",
+  ])
     assert.throws(() => safeName(name));
   assert.equal(safeName("Résumé.docx"), "Résumé.docx");
   assert.throws(
@@ -300,7 +310,13 @@ test("real Standard ZIP download preserves Unicode and apostrophes in its filena
     "completed",
     JSON.stringify(await service.validation(job.id)),
   );
-  const response = await service.download(job.id);
+  await assert.rejects(service.download("not-an-id"), (e) => e.status === 404);
+  const pending = service.download(job.id);
+  await assert.rejects(
+    service.download(job.id),
+    (e) => e.status === 429 && e.code === "DOWNLOAD_BUSY",
+  );
+  const response = await pending;
   assert.equal(
     response.headers.get("Content-Disposition"),
     "attachment; filename*=utf-8''R%C3%A9sum%C3%A9%20report%27s.zip",
@@ -308,6 +324,11 @@ test("real Standard ZIP download preserves Unicode and apostrophes in its filena
   assert.equal(
     Buffer.from(await response.arrayBuffer()).readUInt32LE(0),
     0x04034b50,
+  );
+  // The slot is released after success; every later request still reruns the audit.
+  assert.equal(
+    (await service.download(job.id)).headers.get("Content-Type"),
+    "application/zip",
   );
 });
 

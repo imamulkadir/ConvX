@@ -46,7 +46,8 @@ export function safeName(value) {
     Buffer.byteLength(value, "utf8") > 240 ||
     value.startsWith(".") ||
     /[\x00-\x1f\x7f/\\:<>"|?*]/.test(value) ||
-    /[ .]$/.test(value)
+    /[ .]$/.test(value) ||
+    /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(value)
   )
     fail(422, "INVALID_FILENAME", "Use a safe plain document filename");
   if (!/^.+\.(docx|pdf)$/i.test(value))
@@ -97,6 +98,7 @@ export function createRuntime(options = {}) {
   let initialized,
     stopping = false,
     uploads = 0,
+    downloads = 0,
     cleanupTimer;
 
   async function init() {
@@ -656,10 +658,11 @@ export function createRuntime(options = {}) {
       const currentCaptures =
         result.standard_visual_validation || result.edgar_visual_validation;
       const captures = currentCaptures || result.visual_validation;
+      const captureNames = new Set(captures?.artifacts || []);
       for (const option of Object.keys(suffix))
         for (let n = 1; n <= pages; n++)
           if (
-            captures?.artifacts?.includes(
+            captureNames.has(
               `page${String(n).padStart(4, "0")}.${suffix[option]}.png`,
             )
           )
@@ -814,6 +817,21 @@ export function createRuntime(options = {}) {
     return { id, state: "queued" };
   }
   async function download(id) {
+    // Bound archive verification work and its independent native audit process.
+    if (downloads)
+      fail(
+        429,
+        "DOWNLOAD_BUSY",
+        "Another download is being verified. Try again shortly.",
+      );
+    downloads++;
+    try {
+      return await verifiedDownload(id);
+    } finally {
+      downloads--;
+    }
+  }
+  async function verifiedDownload(id) {
     const record = await meta(id),
       dir = await owned(id),
       value = await report(id);
@@ -930,9 +948,7 @@ export function createRuntime(options = {}) {
     project,
     limits: {
       max_upload_bytes: maxBytes,
-      max_request_bytes: maxBytes * 10,
-      max_batch_files: 10,
-      auth_mode: "internal",
+      max_batch_files: 1,
     },
   };
 }
