@@ -11,6 +11,65 @@ async function ready(page) {
   ).toHaveCount(0);
 }
 
+test("real EDGAR request renders in the running Next instance", async ({
+  page,
+}) => {
+  test.setTimeout(240000);
+  await ready(page);
+  const response = await page.request.post("/api/v1/conversions", {
+    headers: {
+      origin: "http://127.0.0.1:3400",
+      "content-type": "application/octet-stream",
+      "x-convx-filename": "independent.docx",
+      "x-convx-mode": "edgar",
+    },
+    data: readFileSync(fixture),
+  });
+  expect(response.status()).toBe(202);
+  const id = (await response.json()).jobs[0].id;
+  await expect
+    .poll(
+      async () => {
+        const record = await (
+          await page.request.get(`/api/v1/conversions/${id}`)
+        ).json();
+        return ["blocked", "failed"].includes(record.state);
+      },
+      { timeout: 180000, intervals: [250, 500, 1000] },
+    )
+    .toBe(true);
+  const details = await (
+    await page.request.get(`/api/v1/conversions/${id}/validation`)
+  ).json();
+  expect(
+    details.diagnostics.at(-1).code,
+    JSON.stringify(details.diagnostics),
+  ).toBe("PACKAGING_ENGINE_PENDING");
+  expect(details.document_processing.sec_validation.passed).toBe(true);
+  expect(
+    details.document_processing.sec_validation.sec_acceptance_confirmed,
+  ).toBe(false);
+  expect(
+    details.document_processing.edgar_visual_validation.checks_complete,
+  ).toBe(true);
+  await page.evaluate(
+    (id) => sessionStorage.setItem("convx-jobs", JSON.stringify([id])),
+    id,
+  );
+  await page.reload();
+  await expect(
+    page.getByText("PACKAGING_ENGINE_PENDING", { exact: true }).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Download ZIP" }),
+  ).toBeDisabled();
+  await page.getByRole("tab", { name: "Preview & compare" }).click();
+  await page.getByRole("button", { name: "Side by side", exact: true }).click();
+  await expect(
+    page.getByText("This capture has not been generated.", { exact: false }),
+  ).toHaveCount(0);
+});
+
 test("automatic internal service, real uploads, tab recovery and deletion", async ({
   page,
 }) => {
@@ -43,13 +102,13 @@ test("automatic internal service, real uploads, tab recovery and deletion", asyn
 test("real native DOCX reaches authoritative analysis and PDF review", async ({
   page,
 }) => {
-  test.setTimeout(120000);
+  test.setTimeout(240000);
   await ready(page);
   await page.getByLabel("Choose DOCX or PDF files").setInputFiles(fixture);
   await page.getByRole("button", { name: "Start conversion" }).click();
   await expect(
-    page.getByText("MODE_RENDERER_PENDING", { exact: true }).first(),
-  ).toBeVisible({ timeout: 90000 });
+    page.getByText("PACKAGING_ENGINE_PENDING", { exact: true }).first(),
+  ).toBeVisible({ timeout: 180000 });
   await expect(
     page.getByRole("button", { name: "Download ZIP" }),
   ).toBeDisabled();
@@ -77,7 +136,7 @@ test("real native DOCX reaches authoritative analysis and PDF review", async ({
   await page.getByRole("button", { name: "Side by side", exact: true }).click();
   await expect(
     page.getByText("This capture has not been generated.", { exact: false }),
-  ).toBeVisible();
+  ).toHaveCount(0);
 });
 
 test("invalid document is rejected by the real Python process", async ({
@@ -101,7 +160,7 @@ test("invalid document is rejected by the real Python process", async ({
 test("direct PDF selection reaches shared analysis without Word export", async ({
   page,
 }) => {
-  test.setTimeout(90000);
+  test.setTimeout(240000);
   await ready(page);
   await page
     .getByLabel("Choose DOCX or PDF files")
@@ -110,10 +169,43 @@ test("direct PDF selection reaches shared analysis without Word export", async (
         "../../tests/fixtures/06749LWD4_prelim_prospectus_automated.pdf",
       ),
     );
+  const admitted = page.waitForResponse(
+    (response) =>
+      response.request().method() === "POST" &&
+      response.url().endsWith("/api/v1/conversions"),
+  );
   await page.getByRole("button", { name: "Start conversion" }).click();
-  await expect(
-    page.getByText("MODE_RENDERER_PENDING", { exact: true }).first(),
-  ).toBeVisible({ timeout: 60000 });
+  expect((await admitted).status()).toBe(202);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => JSON.parse(sessionStorage.getItem("convx-jobs") || "[]")[0],
+      ),
+    )
+    .toMatch(/^[a-f0-9-]{36}$/);
+  const id = await page.evaluate(
+    () => JSON.parse(sessionStorage.getItem("convx-jobs"))[0],
+  );
+  await expect
+    .poll(
+      async () => {
+        const record = await (
+          await page.request.get(`/api/v1/conversions/${id}`)
+        ).json();
+        return ["blocked", "failed"].includes(record.state);
+      },
+      { timeout: 180000, intervals: [250, 500, 1000] },
+    )
+    .toBe(true);
+  const status = await (
+    await page.request.get(`/api/v1/conversions/${id}`)
+  ).json();
+  const details = await (
+    await page.request.get(`/api/v1/conversions/${id}/validation`)
+  ).json();
+  expect(status.diagnostic_code, JSON.stringify(details.diagnostics)).toBe(
+    "PACKAGING_ENGINE_PENDING",
+  );
   await expect(
     page.getByRole("button", { name: "Download ZIP" }),
   ).toBeDisabled();

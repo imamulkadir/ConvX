@@ -1,3 +1,5 @@
+> Stage 5 update: authoritative analysis now retains clipped source paint text (explicit policy), and Standard rendering/native SVG plus real browser comparisons are implemented. New jobs stop at PACKAGING_ENGINE_PENDING. Legacy inspection defaults remain unchanged. See [Standard renderer](standard-renderer.md); historical Stage 4 scope below is preserved.
+
 # Shared PDF layout analysis - revised Stage 4
 
 The generated accepted-DOCX PDF or exact uploaded PDF is the common visual source. Both paths call analyze_authoritative_pdf and use the same DocumentLayout, verifier and private image-resource extractor. No mode-specific PDF parser, paid service or page screenshot is introduced. Actual HTML rendering is Stage 5/6; current prepared jobs still stop at MODE_RENDERER_PENDING.

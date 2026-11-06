@@ -1,49 +1,45 @@
 # ConvX - Simplification Refactor Status
 
-## Overall Status
-
-Workflow: simplification-refactor (revised AGENTS.md; existing repository)
-
-Current Stage: 4 - PDF Layout Analysis
+Current Stage: 6 - SEC EDGAR Renderer
 
 Stage Status: completed
 
-Last Completed Stage: 4
+Last Completed Stage: 6
 
-Next Stage: 5 - Standard HTM Renderer (explicit authorization required)
+Next Stage: 7 - ZIP Packaging (explicit authorization required)
 
 Last Updated: 2026-11-06 (Asia/Dhaka)
 
-## Completed Stages
+## Completed Work
 
-Stage 1 audited the existing project; Stage 2 consolidated the runtime into one Next server with bounded internal Python processes; Stage 3 added DOCX/PDF preparation and generated/uploaded-PDF authority. Stage 4 now extends and verifies the common layout and retains real private image resources. See [audit](docs/refactor-audit.md), [runtime](docs/simplified-runtime.md) and [shared layout contract](docs/shared-layout.md). Earlier implementation status/checkpoint remain archived under docs/history.
+Revised stages 1-6 are complete within their documented supported cases. One Next.js server invokes bounded local Python processes. No token, public Python API, Redis/Celery/database, paid license or external conversion service. Run `.\.venv\Scripts\python dev.py`. Read [Stage 6 recovery](docs/stage6-resume.md) and [EDGAR renderer](docs/edgar-renderer.md) on resume; do not repeat completed stages or start Stage 7 without authorization.
 
-## Stage 4 Implemented Features
+## Stage 6 Implemented
 
-- Current-source provenance checks before authoritative analysis; no fabricated Word-reference pass or promotion of inspection. One extraction model serves both future output modes.
-- Independent native verification of exact text/count/order, glyph origins/bounds, font resource membership and span typography, image resource association/dimensions/transforms, page geometry/rotation and image/vector counts. Typed source/page verification survives serialization; mismatches fail with explicit diagnostics.
-- Bounded real native image payloads and separate soft masks in private per-attempt resources, with deterministic safe basenames, sizes and SHA-256. Repeated placements share assets and JPEG bytes are retained without recompression. No unlicensed font embedding or page screenshots.
-- Existing tables/merged-cell ledgers, paragraph/line relationships, rotation/crop matrices, vectors/paint order, header/footer/page-number candidates and reading orders remain shared. Summary reports add verification and font/image/vector/table/resource counts.
-- Explicit inline-image association and shading limitations; no invented resources or silently omitted unsupported paint.
+Separate authoritative EDGAR normal-flow HTM renderer reuses verified shared PDF layout and existing typography/merged-table/graphic primitives, with fresh source consistency checks. Deterministic SEC-compatible <=32-character .htm names, local JPG/GIF normalization, exact native JPEG preservation when possible, selectable text, source-bound local validation and actual isolated browser DOM/print/pixel verification. Internal standard/edgar mode persists through eligible retries and safe hash-bound PNG previews. Standard remains the default, independent HTML5 renderer.
 
-## Files Changed
+The new CSS2/HTML4 formatting profile is an explicit local interpretation of EFM78, backed by the supplied manual and W3C scopes/mappings, separately hashed and reported. Default legacy strict uncertainty behavior remains intact. New-profile strict_passed and SEC acceptance stay false; whole-submission checks are separate. No legacy Word proof is forged. No page raster fallback for ordinary text. Actual missing words or major print displacement fail; all pixel differences remain measured.
 
-New pdf_analysis/verification.py and resources.py, additive typed fields in layout/models.py, policy resource limits, authoritative extraction/provenance checks and summaries, and input_pipeline integration. New tests/unit/test_shared_layout.py; Node test diagnostics improved. Updated README, AGENTS, runtime/shared-layout docs, decisions/test history, Stage 4 evidence and progress records. No new dependencies, paid licenses or Git writes; original fixtures/user data unchanged.
+Final review fixed potential CSS-looking disclosure rewriting by editing attributes only, with exact-body-text checks and regression coverage. A bounded rectangle-only exception handles actual LibreOffice page-edge rounding; nontrivial clipping still fails.
 
-## Testing
+## Files Changed in Stage 6
 
-293 unit/runtime/regression Python tests passed (228.73 seconds), including real supplied DOCX variants/PDF and preserved legacy checks. New shared-layout suite: 20 passed. Final Node suite: 12 passed; initial isolated PDF case failed once, then focused/full reruns passed, root cause not established. Production-build browser suite: 5 passed (2.0 minutes). Real direct PDF output: 23 verified pages, 85,798 characters, 13 fonts, 5 placements, 4 extracted resources/123,008 bytes, 4,847 vectors and 8 table candidates; unchanged source. These are extraction checks, not HTML visual fidelity. See [test history](docs/test-history.md) and [evidence](docs/stage4-layout-regression.json).
+New edgar_html.py, sec_validation/flow_profile.py, new EDGAR unit/integration tests, EDGAR/recovery/evidence docs; updated input/runtime/mode transport, validator opt-in policy/result hashes, shared browser checks, preview/UI check labels, Node/production UI tests and active test configuration. Updated AGENTS/README/runtime docs, decisions/test history and progress records. Previous Stage 5 changes remain preserved. No source fixture, user .env/data or Git metadata/history was changed.
 
-## Known Limitations and Pending Work
+## Tests and Evidence
 
-Jobs still stop at MODE_RENDERER_PENDING. Standard/EDGAR rendering, mode selection, mode-specific ZIP and final minimal UI remain later stages; no final conversion/download success is claimed. Semantic tables/headers/footnotes, arbitrary clipping/annotations, bidirectional order, inline payloads, shading and font licensing remain explicit uncertainty. Native consistency does not prove every vector parameter or pixel-perfect HTML. OCR remains unavailable. Historical Word comparison failed 23 pages and is unchanged. The Node test's isolated initial failure is recorded without an invented explanation.
+Full active pytest: 380 passed, 548.20 seconds. Final focused renderer/SEC/actual Standard browser suite: 111 passed, 19.30 seconds. Focused renderer/SEC/independent EDGAR native/image/table suite: 103 passed, 9 reference-named cases deselected, 37.17 seconds. New actual major-displacement/mixed-print negative cases: 2 passed, 8 deselected, 6.51 seconds. These focused scopes overlap; they are not additional unique full-suite totals. Full collection preceded final CSS-looking-text regression and two final negative cases; focused runs verify those additions.
 
-Single Node instance only; stronger OS isolation, public access/rate controls and broader platform/font/browser coverage remain unqualified. Partial private assets from failed attempts are retained only until normal cleanup, never packaged as successful output.
+Final Node: 13 passed, 62.35 seconds. Production Next/Chromium browser: 6 passed, 2.8 minutes, including genuine EDGAR DOCX processing/preview, Standard DOCX/PDF, upload/recovery/deletion and responsive light/dark keyboard/axe behavior. Final small serialization/label/error changes were checked by focused Python/browser tests and format/lint checks. No mock conversion or successful ZIP. Earlier failures and fixes are retained in [test history](docs/test-history.md).
 
-## Startup and Resume
+Actual production EDGAR smoke: one page, 15 source characters, zero assets, 613-byte HTM, local profile passed, strict false, zero missing printed words, maximum word-origin difference 1.6689 points. Screen channel MAE 0.06231/255, print 0.05753/255, exact pixels false. This small independent document is not evidence of complex-fixture success. See [actual evidence](docs/stage6-edgar-regression.json).
 
-Run `.\.venv\Scripts\python dev.py`, open its printed URL and upload DOCX/PDF. No token or separate backend. Status/checkpoint/decisions/test history synchronized. Await manual review/commit/push and explicit Stage 5 authorization; do not advance automatically. Stage 5 implements Standard HTML5, Stage 6 EDGAR, Stage 7 packaging, Stage 8 minimal UI, Stage 9 integration and Stage 10 cleanup.
+## Known Limitations
 
-## Suggested Commit Message
+**Both supplied DOCX files and the supplied 23-page PDF fail EDGAR_CLIPPING_UNSUPPORTED on page 1.** Their genuine preparation, failure diagnostics and unchanged sources are verified. Successful EDGAR conversion for those fixtures is not claimed; Standard behavior remains available. Unsupported clipping, rotations/vertical text, annotations, overlap/unresolved table/vector/link cases fail explicitly. Mixed EDGAR print dimensions are unsupported; end-user paper settings can affect print. Local font/pixel differences, OCR and broader platform support remain limitations. No SEC acceptance or universal fidelity claim.
 
-refactor: verify shared PDF layout and retain image resources
+## Next Steps and Approval Gate
+
+Successful current jobs stop at PACKAGING_ENGINE_PENDING; download stays disabled. ZIP packaging is Stage 7, final checkbox/minimal UI Stage 8, genuine four-path package integration Stage 9 and cleanup Stage 10. Status/checkpoint/decisions/test history are saved. All named test sessions have finished. Review, commit and push manually, then explicitly authorize Stage 7. Agents must perform no Git write operations.
+
+Suggested Commit Message: refactor: add manual-constrained EDGAR flow rendering

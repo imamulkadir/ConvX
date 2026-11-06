@@ -386,6 +386,9 @@ export function createRuntime(options = {}) {
       if (error instanceof Failure) throw error;
       fail(422, "INVALID_FILENAME", "Invalid document name");
     }
+    const mode = request.headers.get("x-convx-mode") || "standard";
+    if (!["standard", "edgar"].includes(mode))
+      fail(422, "INVALID_MODE", "Choose Standard or EDGAR mode");
     const declared = Number(request.headers.get("content-length"));
     if (declared > maxBytes)
       fail(413, "FILE_TOO_LARGE", "Document exceeds the upload limit");
@@ -454,6 +457,7 @@ export function createRuntime(options = {}) {
         instance,
         original_filename: name,
         source_sha256: hash.digest("hex"),
+        mode,
         source_bytes: count,
         state: "queued",
         stage: "uploaded",
@@ -468,6 +472,7 @@ export function createRuntime(options = {}) {
       await write(path.join(/* turbopackIgnore: true */ dir, "request.json"), {
         original_filename: name,
         limits: { max_upload_bytes: maxBytes },
+        mode,
         attempt: 1,
       });
       await write(
@@ -618,10 +623,14 @@ export function createRuntime(options = {}) {
         overlay: "overlay",
         difference: "print-diff",
       };
+      const currentMode = result.mode === "edgar" ? "edgar" : "standard";
+      const currentCaptures =
+        result.standard_visual_validation || result.edgar_visual_validation;
+      const captures = currentCaptures || result.visual_validation;
       for (const option of Object.keys(suffix))
         for (let n = 1; n <= pages; n++)
           if (
-            result.visual_validation?.artifacts?.includes(
+            captures?.artifacts?.includes(
               `page${String(n).padStart(4, "0")}.${suffix[option]}.png`,
             )
           )
@@ -631,7 +640,7 @@ export function createRuntime(options = {}) {
           pages,
           pdf_available: true,
           available_pages,
-          capture_dpi: result.visual_validation?.policy?.dpi || 96,
+          capture_dpi: captures?.policy?.dpi || 96,
           diagnostic_only: true,
           conversion_eligible: false,
         };
@@ -643,13 +652,49 @@ export function createRuntime(options = {}) {
         });
       if (!suffix[kind] || !available_pages[kind].includes(page))
         throw new Error("Capture unavailable");
+      if (currentCaptures) {
+        if (
+          captures.html_sha256 !== result.html_generation?.sha256 ||
+          captures.source_pdf_sha256 !== proof.candidate_sha256
+        )
+          throw new Error("Capture proof changed");
+        const generated = await read(
+          await artifactPath(
+            dir,
+            `${result.workspace}/${currentMode}/${result.html_generation.filename}`,
+          ),
+          32 * 1024 * 1024,
+        );
+        if (digest(generated) !== captures.html_sha256)
+          throw new Error("HTML changed");
+        for (const [name, asset] of Object.entries(
+          result.html_generation.assets,
+        )) {
+          const bytes = await read(
+            await artifactPath(
+              dir,
+              `${result.workspace}/${currentMode}/${name}`,
+            ),
+            32 * 1024 * 1024,
+          );
+          if (digest(bytes) !== asset.sha256) throw new Error("Image changed");
+        }
+      }
       const image = await read(
         await artifactPath(
           dir,
-          `${result.workspace}/visual/page${String(page).padStart(4, "0")}.${suffix[kind]}.png`,
+          `${result.workspace}/${currentCaptures ? currentMode + "-visual" : "visual"}/page${String(page).padStart(4, "0")}.${suffix[kind]}.png`,
         ),
         64 * 1024 * 1024,
       );
+      if (
+        currentCaptures &&
+        digest(image) !==
+          captures.artifact_sha256?.[
+            `page${String(page).padStart(4, "0")}.${suffix[kind]}.png`
+          ]
+      )
+        throw new Error("Capture changed");
       if (
         !image
           .subarray(0, 8)
@@ -707,6 +752,8 @@ export function createRuntime(options = {}) {
         "PDF_REFERENCE_REQUIRED",
         "PDF_RENDERER_UNAVAILABLE",
         "VISUAL_BROWSER_UNAVAILABLE",
+        "STANDARD_BROWSER_UNAVAILABLE",
+        "EDGAR_BROWSER_UNAVAILABLE",
       ].includes(record.diagnostic_code)
     )
       fail(409, "JOB_NOT_RESUMABLE", "This document cannot be retried");
@@ -720,6 +767,7 @@ export function createRuntime(options = {}) {
       .catch(() => {});
     await write(path.join(/* turbopackIgnore: true */ dir, "request.json"), {
       original_filename: record.original_filename,
+      mode: record.mode || "standard",
       limits: { max_upload_bytes: maxBytes },
       attempt: record.attempts + 1,
     });

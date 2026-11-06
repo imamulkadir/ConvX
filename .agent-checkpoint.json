@@ -2,12 +2,12 @@
   "project": "convx",
   "schema_version": 2,
   "workflow": "simplification-refactor",
-  "current_stage": 4,
-  "current_stage_name": "PDF Layout Analysis",
+  "current_stage": 6,
+  "current_stage_name": "SEC EDGAR Renderer",
   "stage_status": "completed",
-  "last_completed_stage": 4,
-  "next_stage": 5,
-  "next_stage_name": "Standard HTM Renderer",
+  "last_completed_stage": 6,
+  "next_stage": 7,
+  "next_stage_name": "ZIP Packaging",
   "authorization_required": true,
   "awaiting_user_approval": true,
   "last_updated": "2026-11-06",
@@ -15,7 +15,9 @@
     1,
     2,
     3,
-    4
+    4,
+    5,
+    6
   ],
   "implemented_components": [
     "existing-project audit and requirement gap matrix",
@@ -36,65 +38,70 @@
     "source-bound authoritative provenance and independent native layout consistency verification",
     "typed page verification and bounded private image/mask resource records",
     "safe deterministic native image extraction with source hashes and byte-exact JPEG preservation",
-    "20 independent shared-layout regressions including inline/shading limitation diagnostics"
+    "20 independent shared-layout regressions including inline/shading limitation diagnostics",
+    "Standard HTML5 renderer with source-checked selectable SVG paint and local assets",
+    "actual isolated Standard browser text/geometry/screen/print verification and bound PNG previews",
+    "source synthetic-space and clipped-paint handling without legacy gate promotion",
+    "separate bounded browser control channel, memory release and Windows atomic-report retry",
+    "Separate authoritative EDGAR flow rendering with deterministic .htm names and local JPG/GIF",
+    "Separately hashed local EFM78 CSS2/HTML4 interpretation without legacy strict promotion",
+    "Real EDGAR DOM/print/pixel/word-origin checks and mode-bound retry/preview transport"
   ],
   "pending_tasks": [
-    "User review/manual commit/push and explicit Stage 5 authorization",
-    "Stage 5 Standard HTML5 renderer consuming verified shared layout/resources",
-    "Stages 6-8 EDGAR renderer, mode-specific ZIP and minimal final UI",
-    "Stage 9 genuine four-path integration and Stage 10 cleanup"
+    "User review/manual commit/push and explicit Stage 7 authorization",
+    "Stage 7 mode-specific ZIP packaging and validation",
+    "Stage 8 minimal UI/EDGAR checkbox",
+    "Stage 9 genuine four-path package integration; Stage 10 cleanup"
   ],
   "known_issues": [
-    "No revised HTML renderers/ZIP output yet; MODE_RENDERER_PENDING is expected",
-    "Native consistency does not prove semantic tables, every vector parameter or HTML visual equality",
-    "Inline image payloads, shading, clipping, annotations, bidi order and font permissions remain constrained",
-    "OCR unavailable; historical Word comparison failed all 23 pages",
-    "Initial Node PDF test failed once; focused/full reruns passed, root cause unestablished",
-    "Single Node instance; public access/rate controls and stronger OS isolation unqualified"
+    "All supplied conversion fixtures fail EDGAR_CLIPPING_UNSUPPORTED page 1; no successful EDGAR conversion for them claimed",
+    "Local formatting profile is an interpretation; legacy strict and SEC acceptance remain false",
+    "No final ZIP or final minimal checkbox/UI yet; successful jobs stop PACKAGING_ENGINE_PENDING",
+    "EDGAR complex clipping/rotation/annotations/overlap/unresolved table/vector/link and mixed print sizes unsupported",
+    "Local fonts/pixels differ; OCR and broader platform qualification unavailable"
   ],
   "last_test_results": [
     {
-      "command": "pytest tests/unit tests/runtime tests/regression -q --tb=short",
-      "passed": 293,
+      "command": "full active pytest (before three final added regressions)",
+      "passed": 380,
       "failed": 0,
-      "seconds": 228.73
+      "seconds": 548.2
     },
     {
-      "command": "pytest tests/unit/test_shared_layout.py -q",
-      "passed": 20,
+      "command": "final renderer/SEC/actual Standard browser focused suite",
+      "passed": 111,
       "failed": 0,
-      "seconds": 1.84
+      "seconds": 19.3
     },
     {
-      "command": "initial npm test",
-      "passed": 11,
-      "failed": 1,
-      "note": "isolated PDF failure; detailed output truncated; no root cause claimed"
-    },
-    {
-      "command": "focused Node PDF rerun",
-      "passed": 1,
-      "failed": 0
-    },
-    {
-      "command": "final npm test",
-      "passed": 12,
+      "command": "focused renderer/SEC/independent EDGAR native/image/table",
+      "passed": 103,
       "failed": 0,
-      "seconds": 47.9
+      "deselected": 9,
+      "seconds": 37.17
     },
     {
-      "command": "production-build browser suite with clean Python",
-      "passed": 5,
+      "command": "actual displacement and mixed EDGAR print negative cases",
+      "passed": 2,
       "failed": 0,
-      "minutes": 2.0
+      "deselected": 8,
+      "seconds": 6.51
     },
     {
-      "command": "Ruff and clean pip check",
-      "result": "passed"
+      "command": "final Node suite",
+      "passed": 13,
+      "failed": 0,
+      "seconds": 62.35
     },
     {
-      "command": "fixture/context/hash/link/format/read-only whitespace checks",
-      "result": "8/8 fixture-context checks; fixtures/history unchanged; links/checkpoint/Prettier/diff passed"
+      "command": "production Next/Chromium browser",
+      "passed": 6,
+      "failed": 0,
+      "minutes": 2.8
+    },
+    {
+      "command": "final fixture/context/history/hash/link/format/lint/pip/read-only diff",
+      "result": "8/8 passed (0.374 sec); hashes unchanged; all other checks passed"
     }
   ],
   "historical_progress": {
@@ -125,14 +132,17 @@
     },
     "zip": "input-basename.zip; one document and exactly referenced local assets at root"
   },
-  "suggested_commit_message": "refactor: verify shared PDF layout and retain image resources",
+  "suggested_commit_message": "refactor: add manual-constrained EDGAR flow rendering",
   "git_operations_performed": false,
   "notes": [
-    "Stage 4 explicitly authorized by proceed; no Stage 5 implementation or Git write.",
-    "Shared source verification and private resources do not establish HTML visual fidelity or legacy Word gate success.",
-    "Prepared documents remain blocked at MODE_RENDERER_PENDING until mode renderers/packaging are implemented.",
-    "Await explicit Stage 5 authorization."
+    "User explicitly authorized Stage 6 by asking continue from last completed Stage 5.",
+    "Stage 6 completed within documented supported cases; no Git writes or Stage 7 work.",
+    "Supplied complex EDGAR fixtures fail meaningfully; local profile success is never SEC acceptance.",
+    "All named test sessions finished; final fixture/history/hash/link/lint/format/diff checks passed.",
+    "Await explicit Stage 7 authorization."
   ],
   "runtime_document": "docs/simplified-runtime.md",
-  "layout_document": "docs/shared-layout.md"
+  "layout_document": "docs/shared-layout.md",
+  "recovery_document": "docs/stage6-resume.md",
+  "edgar_document": "docs/edgar-renderer.md"
 }

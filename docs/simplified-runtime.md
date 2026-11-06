@@ -1,10 +1,10 @@
-# Simplification Stage 4 — active runtime
+# Simplification Stage 6 — active runtime
 
 The active application is one self-hosted Next.js Node server. Internal handlers directly start the existing Python converter in a bounded child process. FastAPI, Redis, Celery, SQLAlchemy/PostgreSQL, an account system and separate workers are not runtime dependencies. Their original source and user data are retained for recovery; they are not started or installed by current setup.
 
 Stage 3 adds both input types to the internal runtime. DOCX validation accepts tracked changes in a separate copy, then free LibreOffice exports PDF; renderer identity/font-environment hashes and its Microsoft Word compatibility warning remain explicit. Uploaded PDFs go directly to bounded structural admission and shared extraction, with no DOCX conversion and no renderer call. Each source remains unchanged and is verified by SHA-256.
 
-The generated or uploaded PDF is the visual authority; there is no operator-provided reference requirement. This is a new explicit provenance contract, not a passing legacy Word-reference gate or promotion of inspection evidence. Original strict comparison/regression helpers remain unchanged. Revised Standard/EDGAR renderers and ZIP packaging are not implemented by Stage 3: prepared jobs stop at MODE_RENDERER_PENDING, with a real PDF preview and no download.
+The generated/uploaded PDF is the visual authority, without a second reference upload. Standard HTML5 uses embedded CSS, selectable SVG/text/clipping and local assets. The separate EDGAR path uses permitted normal-flow tags/JPG/GIF under a documented local formatting interpretation. Both have real isolated Chromium checks and hash-bound diagnostic PNG previews. Jobs stop at PACKAGING_ENGINE_PENDING until Stage 7 ZIP packaging. See [Standard fidelity limits](standard-renderer.md) and [EDGAR profile/limits](edgar-renderer.md). The supplied complex fixtures fail EDGAR clipping checks; exact pixels and SEC acceptance are not claimed. Legacy strict Word-reference evidence stays separate. Mode defaults to Standard; internal x-convx-mode plumbing is ready for the Stage 8 checkbox.
 
 ## Setup and startup
 
@@ -13,6 +13,7 @@ From D:\Tools\ConvX, with Python 3.12 and Node 22.19 or later:
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python -m pip install -r requirements.txt
+.\.venv\Scripts\python -m playwright install chromium
 cd apps/web
 npm.cmd ci
 cd ../..
@@ -55,8 +56,8 @@ The active pytest suite now targets converter unit/runtime/native/visual/regress
 
 Node tests run real Python admission and cover byte budgets/rollback, origin/filename/path guards, cancellation, interruption and expiry. Browser tests start only a production Next server and use the clean Python environment for real native DOCX processing, honest renderer-pending boundaries, direct PDF input and PDF canvas review, invalid-input rejection and accessible light/dark views. No mocked conversion engine, external processing API or fabricated success is used. See [test history](test-history.md) and [current status](../PROJECT_STATUS.md).
 
-Stage 5 is the next approval-gated step: implement the Standard HTML5 renderer using the verified shared model and resources. Word-reference mismatch remains regression evidence; do not treat the authoritative PDF model as passing that historical comparison. Mode renderers, validation, ZIP and the final minimal UI remain later stages.
+Stage 6 is the next approval-gated step: implement the EDGAR renderer while leaving Standard HTML unrestricted by SEC rules. Word-reference mismatch remains regression evidence; do not treat the authoritative PDF model as passing that historical comparison. Mode renderers, validation, ZIP and the final minimal UI remain later stages.
 
 ## Stage 4 source-verified shared analysis
 
-The authoritative analyzer now validates provenance against current bytes and independently checks native text/glyph positions/typography/font resources, page geometry, image associations/transforms and resource counts. Each private attempt also retains source image payloads and separate soft masks with deterministic names and SHA-256; resource budgets are 32 MiB each/128 MiB total. The layout summary includes verification and font/image/vector/table/resource counts. See [shared layout contract](shared-layout.md). Inline payload and shading limitations are explicit; no fonts are silently embedded and no page is replaced by a screenshot. Rendering and ZIP remain pending. Stage 5 is the next approval-gated step.
+The authoritative analyzer now validates provenance against current bytes and independently checks native text/glyph positions/typography/font resources, page geometry, image associations/transforms and resource counts. Each private attempt also retains source image payloads and separate soft masks with deterministic names and SHA-256; resource budgets are 32 MiB each/128 MiB total. The layout summary includes verification and font/image/vector/table/resource counts. See [shared layout contract](shared-layout.md). Inline payload and shading limitations are explicit; no fonts are silently embedded and no page is replaced by a screenshot. Rendering and ZIP remain pending. Stage 6 is the next approval-gated step.

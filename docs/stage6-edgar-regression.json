@@ -1,0 +1,93 @@
+{
+  "stage": 6,
+  "date": "2026-11-06",
+  "scope": "actual production Next EDGAR DOCX test; local profile only",
+  "private_processing_record": "var/t2ui/2ea960fe-311e-415f-a470-fae88a3433fb/attempt001/processing.json",
+  "source_unchanged": true,
+  "pages": 1,
+  "characters": 15,
+  "assets": 0,
+  "htm_bytes": 613,
+  "filename": "independent.htm",
+  "source_pdf_sha256": "1ec72973fd986b432299add7df4434576050d0686a90b25c2c045ff8ed9d9932",
+  "html_sha256": "9a0e3555b10ca197899eac4a7eddc42e0394a72483b4633e2c049fe0c476a787",
+  "formatting_profile_sha256": "b38550e80083bbe9d29ae6f141da0dee672be16d01a7c324d2d5c0bcb0ceaea9",
+  "local_profile_passed": true,
+  "legacy_strict_passed": false,
+  "sec_acceptance_confirmed": false,
+  "visual": {
+    "method": "chromium-edgar-flow-screen-print-v1",
+    "browser_version": "156.0.8078.4",
+    "pixel_equivalence_verified": false,
+    "pages": [
+      {
+        "page": 1,
+        "screen": {
+          "dimensions_match": true,
+          "pixel_identical": false,
+          "changed_pixels": 580,
+          "mean_absolute_channel_error": 0.062314319667260844,
+          "max_channel_error": 255
+        },
+        "print": {
+          "dimensions_match": true,
+          "pixel_identical": false,
+          "changed_pixels": 518,
+          "mean_absolute_channel_error": 0.05752608808674985,
+          "max_channel_error": 255
+        },
+        "word_geometry": {
+          "missing_words": 0,
+          "max_origin_error_pt": 1.66888427734375,
+          "matched_words": 2
+        }
+      }
+    ]
+  },
+  "reference_results": {
+    "supplied_pdf": "EDGAR_CLIPPING_UNSUPPORTED page 1",
+    "supplied_original_docx": "EDGAR_CLIPPING_UNSUPPORTED page 1",
+    "supplied_accepted_docx": "EDGAR_CLIPPING_UNSUPPORTED page 1"
+  },
+  "stage_status": "completed",
+  "tests": [
+    {
+      "command": "full active pytest (before three final added regressions)",
+      "passed": 380,
+      "failed": 0,
+      "seconds": 548.2
+    },
+    {
+      "command": "final renderer/SEC/actual Standard browser focused suite",
+      "passed": 111,
+      "failed": 0,
+      "seconds": 19.3
+    },
+    {
+      "command": "focused renderer/SEC/independent EDGAR native/image/table",
+      "passed": 103,
+      "failed": 0,
+      "deselected": 9,
+      "seconds": 37.17
+    },
+    {
+      "command": "actual displacement and mixed EDGAR print negative cases",
+      "passed": 2,
+      "failed": 0,
+      "deselected": 8,
+      "seconds": 6.51
+    },
+    {
+      "command": "final Node suite",
+      "passed": 13,
+      "failed": 0,
+      "seconds": 62.35
+    },
+    {
+      "command": "production Next/Chromium browser",
+      "passed": 6,
+      "failed": 0,
+      "minutes": 2.8
+    }
+  ]
+}

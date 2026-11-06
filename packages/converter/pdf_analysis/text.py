@@ -23,6 +23,11 @@ def normalized_font(name):
     return re.sub(r"^[A-Z]{6}\+", "", name).replace(" ", "").casefold()
 
 
+def extraction_flags(policy):
+    flags = pymupdf.TEXTFLAGS_RAWDICT & ~pymupdf.TEXT_PRESERVE_IMAGES
+    return flags & ~pymupdf.TEXT_MEDIABOX_CLIP if policy.preserve_clipped_text else flags
+
+
 def register_fonts(page, registry):
     lookup = defaultdict(list)
     for xref, ext, font_type, base, resource, encoding, referrer in page.get_fonts(full=True):
@@ -87,7 +92,7 @@ def _underline(span, direction, paths):
 
 
 def extract_text(page, prefix, policy, guard, font_registry, vector_paths, bounds, diagnostic):
-    flags = pymupdf.TEXTFLAGS_RAWDICT & ~pymupdf.TEXT_PRESERVE_IMAGES
+    flags = extraction_flags(policy)
     raw = page.get_text("rawdict", sort=False, flags=flags, clip=pymupdf.INFINITE_RECT())
     raw_blocks = [b for b in raw["blocks"] if b["type"] == 0]
     if len(raw_blocks) > policy.max_blocks_per_page:

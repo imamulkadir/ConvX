@@ -1,0 +1,51 @@
+{
+  "stage": 5,
+  "date": "2026-11-06",
+  "status": "completed",
+  "full_active_python": {
+    "passed": 340,
+    "failed": 0,
+    "seconds": 415.66,
+    "note": "Before final Windows sharing retry; final focused/UI verify that change"
+  },
+  "final_focused_python_with_real_windows_locks": {
+    "passed": 31,
+    "failed": 0,
+    "seconds": 22.37
+  },
+  "node": {
+    "passed": 12,
+    "failed": 0
+  },
+  "final_production_browser": {
+    "passed": 5,
+    "failed": 0,
+    "minutes": 1.8
+  },
+  "actual_reference": {
+    "pages": 23,
+    "characters": 85798,
+    "assets": 4,
+    "html_bytes": 2188398,
+    "max_page_screen_channel_mae": 9.370502667607447,
+    "max_page_print_channel_mae": 0.9457879190186176,
+    "pixel_equivalence_verified": false
+  },
+  "paid_dependencies_added": false,
+  "whole_page_raster_replacement": false,
+  "final_zip_qualified": false,
+  "stage6_started": false,
+  "git_writes": false,
+  "recovery_document": "docs/stage5-resume.md",
+  "final_checks": {
+    "fixture_context_passed": 8,
+    "fixture_hashes": "unchanged",
+    "historical_hashes": "unchanged",
+    "active_links": "passed",
+    "checkpoint_approval_gate": "consistent",
+    "ruff": "passed",
+    "pip_check": "passed",
+    "prettier": "passed",
+    "read_only_diff": "passed; LF/CRLF notices only"
+  }
+}

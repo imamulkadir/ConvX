@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from dataclasses import asdict
 from pathlib import Path
 
@@ -34,7 +35,21 @@ def write_report(path: Path, report: dict) -> None:
         output.write((json.dumps(report, indent=2, ensure_ascii=True) + "\n").encode())
         output.flush()
         os.fsync(output.fileno())
-    temporary.replace(path)
+    deadline = time.monotonic() + 1.0
+    while True:
+        try:
+            temporary.replace(path)
+            break
+        except PermissionError as exc:
+            # Windows readers/virus scanners can briefly deny delete-sharing.
+            # Keep the old complete JSON until atomic replacement succeeds.
+            if (
+                os.name != "nt"
+                or getattr(exc, "winerror", None) not in {5, 32, 33}
+                or time.monotonic() >= deadline
+            ):
+                raise
+            time.sleep(0.02)
 
 
 def process_docx(

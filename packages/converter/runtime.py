@@ -7,10 +7,12 @@ import os
 import signal
 import sys
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from converter.context import ProcessingContext
+from converter.errors import ConversionFailure
 from converter.input_pipeline import process_input
 from converter.pdf_export.libreoffice import LibreOfficeProvider
 from converter.pdf_export.process import run_process
@@ -24,6 +26,7 @@ class Request(BaseModel):
     original_filename: str = Field(min_length=5, max_length=240)
     limits: Limits = Field(default_factory=Limits)
     attempt: int = Field(default=1, ge=1, le=3)
+    mode: Literal["standard", "edgar"] = "standard"
 
 
 def stop_children(*_):
@@ -68,6 +71,7 @@ def execute(path):
         LibreOfficeProvider(executable),
         limits=request.limits,
         context=context,
+        mode=request.mode,
     )
     report["workspace"] = workspace.name
     write_report(root / "result.json", report)
@@ -77,6 +81,10 @@ def execute(path):
 def supervise(path):
     """Monitor the actual converter child plus descendants; emit no disclosure or traceback."""
     root = Path(path).resolve().parent
+    from converter.visual_validation.browser import browser_cache
+
+    # Resolve the host cache before the existing process sandbox changes HOME.
+    os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", str(browser_cache().resolve()))
     signal.signal(signal.SIGTERM, stop_children)
     signal.signal(signal.SIGINT, stop_children)
     marker = root / "cancelled"
@@ -92,7 +100,7 @@ def supervise(path):
             root,
             512 * 1024 * 1024,
         )
-    except Exception:
+    except Exception as exc:
         if not (root / "result.json").is_file():
             write_report(
                 root / "result.json",
@@ -101,9 +109,13 @@ def supervise(path):
                     "final_conversion_complete": False,
                     "diagnostics": [
                         {
-                            "code": "CONVERSION_PROCESS_FAILED",
+                            "code": "CONVERSION_" + exc.diagnostic.code
+                            if isinstance(exc, ConversionFailure)
+                            else "CONVERSION_PROCESS_FAILED",
                             "stage": "processing",
-                            "description": "Conversion failed, was cancelled or exceeded its resource budget",
+                            "description": exc.diagnostic.description
+                            if isinstance(exc, ConversionFailure)
+                            else "Conversion failed, was cancelled or exceeded its resource budget",
                             "remediation": "Review the document and local renderer configuration",
                         }
                     ],

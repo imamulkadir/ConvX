@@ -8,6 +8,7 @@ from converter.layout.models import Digest, Record
 
 
 class ValidationPolicy(Record):
+    html_profile: Literal["legacy_strict", "edgar_flow_v1"] = "legacy_strict"
     max_html_bytes: int = Field(default=25 * 1024 * 1024, ge=1)
     max_asset_bytes: int = Field(default=20 * 1024 * 1024, ge=1)
     max_total_bytes: int = Field(default=100 * 1024 * 1024, ge=1)
@@ -49,6 +50,8 @@ class FileEvidence(Record):
 
 
 class ComplianceResult(Record):
+    html_profile: Literal["legacy_strict", "edgar_flow_v1"] = "legacy_strict"
+    formatting_profile_sha256: Digest | None = None
     schema_version: Literal[1] = 1
     registry_version: Literal["efm-volume-ii-v78.2-local"] = "efm-volume-ii-v78.2-local"
     registry_sha256: Digest

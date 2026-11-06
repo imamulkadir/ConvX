@@ -12,6 +12,7 @@ from lxml import etree, html
 from PIL import Image, UnidentifiedImageError
 
 from converter.context import ProcessingContext
+from converter.sec_validation.flow_profile import flow_profile_digest, flow_style_allowed, flow_style_problems
 from converter.sec_validation.models import (
     ComplianceDiagnostic,
     ComplianceResult,
@@ -196,7 +197,14 @@ class Checks:
                     basis="unresolved",
                 )
                 continue
-            if not (code in (9, 10, 13) or 32 <= code <= 126 or 160 <= code <= 255 or code in explicit):
+            verified_html4 = self.policy.html_profile == "edgar_flow_v1" and code in name2codepoint.values()
+            if not (
+                code in (9, 10, 13)
+                or 32 <= code <= 126
+                or 160 <= code <= 255
+                or code in explicit
+                or verified_html4
+            ):
                 self.diagnostic(
                     "ENTITY_MAPPING_UNVERIFIED",
                     "Character reference has no approved mapping in this conservative profile",
@@ -275,7 +283,11 @@ class Checks:
                         section="5.2.2.5",
                         basis="unresolved" if name in {"face", "width", "height"} else "confirmed_manual",
                     )
-                elif "MANY" in parents:
+                elif "MANY" in parents and not (
+                    self.policy.html_profile == "edgar_flow_v1"
+                    and name == "style"
+                    and flow_style_allowed(node.tag)
+                ):
                     self.diagnostic(
                         "ATTRIBUTE_SCOPE_UNVERIFIED",
                         "MANY does not enumerate this attribute's complete per-tag scope",
@@ -285,7 +297,10 @@ class Checks:
                         basis="unresolved",
                     )
                 if name == "style":
-                    for code in style_problems(value or "", profile):
+                    flow = self.policy.html_profile == "edgar_flow_v1"
+                    for code in (
+                        flow_style_problems(value or "") if flow else style_problems(value or "", profile)
+                    ):
                         self.diagnostic(
                             code,
                             "Inline formatting is outside the safe literal grammar",
@@ -294,14 +309,15 @@ class Checks:
                             section="5.2.2.5; project security policy",
                             basis="project_policy",
                         )
-                    self.diagnostic(
-                        "CSS_PERMISSION_UNVERIFIED",
-                        "Safe CSS syntax alone does not establish permitted EDGAR property/value scope",
-                        "Resolve the manual's CSS scope before strict validation",
-                        node,
-                        section="5.2.2.5",
-                        basis="unresolved",
-                    )
+                    if not flow:
+                        self.diagnostic(
+                            "CSS_PERMISSION_UNVERIFIED",
+                            "Safe CSS syntax alone does not establish permitted EDGAR property/value scope",
+                            "Resolve the manual's CSS scope before strict validation",
+                            node,
+                            section="5.2.2.5",
+                            basis="unresolved",
+                        )
                 if name in {"rowspan", "colspan", "border", "cellpadding", "cellspacing", "size"} and (
                     value is None
                     or re.fullmatch(r"[0-9]{1,6}", value) is None
@@ -511,6 +527,15 @@ def validate_files(
     context = context or ProcessingContext()
     context.check()
     checks = Checks(htm, policy, context)
+    if policy.html_profile == "edgar_flow_v1":
+        checks.diagnostic(
+            "LOCAL_FORMATTING_PROFILE",
+            "Formatting and HTML4 character mappings use the documented local EFM78 interpretation; this is not an SEC validation result",
+            "Review browser differences and perform authorized EDGAR document/test validation before filing",
+            section="5.2.2.5; 5.2.2.6; 5.2.2.10",
+            basis="project_policy",
+            severity="warning",
+        )
     limits_checked = False
     try:
         manifest = {}
@@ -690,10 +715,12 @@ def validate_files(
         )
     passed = checks.complete and not any(d.severity == "error" for d in checks.diagnostics)
     return ComplianceResult(
+        html_profile=policy.html_profile,
+        formatting_profile_sha256=flow_profile_digest() if policy.html_profile == "edgar_flow_v1" else None,
         registry_sha256=checks.registry_hash,
         manual_sha256=checks.profile["manual"]["sha256"],
         passed=passed,
-        strict_passed=passed and limits_checked,
+        strict_passed=passed and limits_checked and policy.html_profile == "legacy_strict",
         checks_complete=checks.complete,
         submission_limits_checked=limits_checked,
         files=tuple(checks.evidence),

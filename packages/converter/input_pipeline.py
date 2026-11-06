@@ -1,10 +1,12 @@
 """Unified DOCX/PDF preparation and authoritative analysis for the revised workflow."""
 
+import gc
 from dataclasses import asdict
 from pathlib import Path
 
 from converter.admission import validate_docx
 from converter.context import ProcessingContext
+from converter.edgar_html import render_edgar
 from converter.errors import ConversionFailure, fail
 from converter.ooxml import sha256
 from converter.pdf_admission import admit_pdf
@@ -15,6 +17,8 @@ from converter.pdf_export.provider import PDFProvider
 from converter.pipeline import write_report
 from converter.revisions.accept import accept_revisions
 from converter.runtime_config import AdmissionError, Limits
+from converter.standard_html import render_standard
+from converter.standard_visual import verify_standard
 
 
 def process_input(
@@ -24,6 +28,7 @@ def process_input(
     provider: PDFProvider | None = None,
     limits: Limits | None = None,
     context: ProcessingContext | None = None,
+    mode: str = "standard",
 ) -> dict:
     context, limits = context or ProcessingContext(), limits or Limits()
     workspace.mkdir(mode=0o700, parents=True, exist_ok=False)
@@ -31,7 +36,8 @@ def process_input(
     report = {
         "schema_version": 2,
         "workflow": "simplification-refactor",
-        "stage": 4,
+        "mode": mode,
+        "stage": 6,
         "original_filename": original_filename,
         "input_type": kind.lstrip("."),
         "source_sha256": None,
@@ -47,6 +53,8 @@ def process_input(
     }
     try:
         context.stage("validating")
+        if mode not in {"standard", "edgar"}:
+            raise AdmissionError(422, "INVALID_MODE", "Choose Standard or EDGAR mode")
         if kind not in {".docx", ".pdf"}:
             raise AdmissionError(415, "UNSUPPORTED_FILE_TYPE", "Choose a DOCX or PDF document")
         if source.is_symlink() or not source.is_file() or source.stat().st_size > limits.max_upload_bytes:
@@ -122,12 +130,30 @@ def process_input(
                 }
             )
         report["status"] = "blocked"
+        context.stage("generating_htm")
+        if mode == "edgar":
+            generation = render_edgar(pdf, layout, workspace / "edgar", original_filename, context)
+            report["sec_validation"] = generation["sec_validation"]
+        else:
+            generation = render_standard(
+                pdf, layout, workspace / "resources", workspace / "standard", original_filename, context
+            )
+        report["html_generation"] = generation
+        report["diagnostics"].extend(generation["diagnostics"])
+        # The source-bound model is persisted; Chromium does not need its glyph
+        # objects. Release them before starting another bounded native process.
+        del layout
+        gc.collect()
+        context.stage("comparing_formatting")
+        visual = verify_standard(pdf, workspace / mode, generation, workspace / (mode + "-visual"), context)
+        report[mode + "_visual_validation"] = visual
+        report["diagnostics"].extend(visual["diagnostics"])
         report["diagnostics"].append(
             {
-                "code": "MODE_RENDERER_PENDING",
-                "stage": "generating_htm",
+                "code": "PACKAGING_ENGINE_PENDING",
+                "stage": "packaging_zip",
                 "severity": "error",
-                "description": "Input PDF analysis completed; the revised HTML renderers and ZIP output are pending later stages",
+                "description": "HTML and browser checks completed; downloadable ZIP packaging is pending Stage 7",
             }
         )
     except AdmissionError as exc:
@@ -136,7 +162,11 @@ def process_input(
             {"code": exc.code, "stage": "validating", "severity": "error", "description": exc.message}
         )
     except ConversionFailure as exc:
-        report["status"] = "blocked" if exc.diagnostic.code == "PDF_RENDERER_UNAVAILABLE" else "failed"
+        report["status"] = (
+            "blocked"
+            if exc.diagnostic.code in {"PDF_RENDERER_UNAVAILABLE", "STANDARD_BROWSER_UNAVAILABLE", "EDGAR_BROWSER_UNAVAILABLE"}
+            else "failed"
+        )
         report["diagnostics"].append({**exc.diagnostic.to_dict(), "severity": "error"})
     except Exception:
         report["status"] = "failed"
@@ -145,7 +175,7 @@ def process_input(
                 "code": "DOCUMENT_PROCESSING_FAILED",
                 "stage": "processing",
                 "severity": "error",
-                "description": "Document could not be safely prepared or analyzed",
+                "description": "Document could not be safely prepared, analyzed or rendered",
             }
         )
     finally:

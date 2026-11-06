@@ -6,6 +6,7 @@ from converter.layout.models import Record
 
 
 class AnalysisPolicy(Record):
+    preserve_clipped_text: bool = False
     max_pages: int = Field(default=500, ge=1, le=2000)
     max_pdf_bytes: int = Field(default=64 * 1024 * 1024, ge=1)
     max_characters_per_page: int = Field(default=100000, ge=1)

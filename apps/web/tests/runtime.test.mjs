@@ -52,13 +52,15 @@ async function isolated(t, options = {}) {
   return service;
 }
 async function terminal(service, id) {
-  for (let n = 0; n < 1200; n++) {
+  for (let n = 0; n < 7000; n++) {
     const record = await service.status(id);
     if (["failed", "blocked", "completed"].includes(record.state))
       return record;
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
-  throw new Error("Real Python process did not finish");
+  throw new Error(
+    `Real Python process exceeded runtime deadline: ${JSON.stringify(await service.status(id))}`,
+  );
 }
 
 test("real PDF upload reaches shared analysis and exposes only its verified PDF preview", async (t) => {
@@ -76,7 +78,7 @@ test("real PDF upload reaches shared analysis and exposes only its verified PDF 
     "blocked",
     JSON.stringify(await service.validation(job.id)),
   );
-  assert.equal(job.diagnostic_code, "MODE_RENDERER_PENDING");
+  assert.equal(job.diagnostic_code, "PACKAGING_ENGINE_PENDING");
   const result = (await service.validation(job.id)).document_processing;
   assert.equal(result.input_preparation_complete, true);
   assert.equal(result.visual_reference.method, "direct_uploaded_pdf");
@@ -84,6 +86,20 @@ test("real PDF upload reaches shared analysis and exposes only its verified PDF 
   const preview = await service.preview(job.id, "pdf");
   assert.deepEqual(Buffer.from(await preview.arrayBuffer()), input);
   assert.equal((await service.preview(job.id)).pages, 23);
+  assert.equal((await service.preview(job.id)).available_pages.htm.length, 23);
+  const screen = await service.preview(job.id, "htm");
+  assert.equal(screen.headers.get("Content-Type"), "image/png");
+  const generatedPath = path.join(
+    service.root,
+    job.id,
+    result.workspace,
+    "standard",
+    result.html_generation.filename,
+  );
+  const originalHtml = await fs.readFile(generatedPath);
+  await fs.appendFile(generatedPath, "changed");
+  await assert.rejects(service.preview(job.id, "htm"));
+  await fs.writeFile(generatedPath, originalHtml);
   await assert.rejects(service.download(job.id));
   await fs.appendFile(path.join(service.root, job.id, "source.pdf"), "changed");
   await assert.rejects(service.preview(job.id, "pdf"));
@@ -182,4 +198,93 @@ test("expired captures and invalid proof flags never grant downloads", async (t)
   await assert.rejects(service.download(job.id), (e) => e.status === 410);
   await service.cleanup();
   await assert.rejects(service.status(job.id), (e) => e.status === 404);
+});
+
+function independentPdf() {
+  const content =
+    "BT /F1 12 Tf 40 500 Td (Independent EDGAR disclosure 123.45) Tj ET";
+  const objects = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 400 600] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    `<< /Length ${content.length} >>\nstream\n${content}\nendstream`,
+  ];
+  let pdf = "%PDF-1.4\n";
+  const offsets = [0];
+  for (const [i, value] of objects.entries()) {
+    offsets.push(Buffer.byteLength(pdf));
+    pdf += `${i + 1} 0 obj\n${value}\nendobj\n`;
+  }
+  const start = Buffer.byteLength(pdf);
+  pdf += `xref\n0 6\n0000000000 65535 f \n${offsets
+    .slice(1)
+    .map((n) => String(n).padStart(10, "0") + " 00000 n \n")
+    .join("")}trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${start}\n%%EOF\n`;
+  return Buffer.from(pdf);
+}
+
+test("real EDGAR mode stays bound through retry and verified previews", async (t) => {
+  const service = await isolated(t);
+  const previousCache = process.env.PLAYWRIGHT_BROWSERS_PATH;
+  const restoreCache = () => {
+    if (previousCache === undefined)
+      delete process.env.PLAYWRIGHT_BROWSERS_PATH;
+    else process.env.PLAYWRIGHT_BROWSERS_PATH = previousCache;
+  };
+  t.after(restoreCache);
+  process.env.PLAYWRIGHT_BROWSERS_PATH = path.join(
+    service.root,
+    "missing-browser",
+  );
+  await assert.rejects(
+    service.create(
+      upload(independentPdf(), "test.pdf", { "x-convx-mode": "unsafe" }),
+    ),
+    (e) => e.code === "INVALID_MODE",
+  );
+  const created = (
+    await service.create(
+      upload(independentPdf(), "financial report.pdf", {
+        "x-convx-mode": "edgar",
+      }),
+    )
+  ).jobs[0];
+  assert.equal(created.mode, "edgar");
+  assert.equal(
+    (await terminal(service, created.id)).diagnostic_code,
+    "EDGAR_BROWSER_UNAVAILABLE",
+  );
+  restoreCache();
+  await service.resume(created.id);
+  const job = await terminal(service, created.id);
+  const report = (await service.validation(job.id)).document_processing;
+  assert.equal(
+    job.diagnostic_code,
+    "PACKAGING_ENGINE_PENDING",
+    JSON.stringify(report),
+  );
+  assert.equal(report.mode, "edgar");
+  assert.equal(report.sec_validation.passed, true);
+  assert.equal(report.sec_validation.strict_passed, false);
+  assert.equal(report.sec_validation.sec_acceptance_confirmed, false);
+  assert.equal((await service.preview(job.id)).available_pages.htm.length, 1);
+  const screen = await service.preview(job.id, "htm");
+  assert.equal(screen.headers.get("Content-Type"), "image/png");
+  const file = path.join(
+    service.root,
+    job.id,
+    report.workspace,
+    "edgar",
+    report.html_generation.filename,
+  );
+  const original = await fs.readFile(file);
+  await fs.appendFile(file, "changed");
+  await assert.rejects(service.preview(job.id, "htm"));
+  await fs.writeFile(file, original);
+  await assert.rejects(service.download(job.id));
+  await assert.rejects(
+    service.resume(job.id),
+    (e) => e.code === "JOB_NOT_RESUMABLE",
+  );
 });

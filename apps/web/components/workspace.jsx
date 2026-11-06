@@ -101,19 +101,29 @@ function JobDetail({ job, action, download }) {
       processing?.pdf_input || processing?.pdf_validation,
     ],
     [
-      "Local SEC validation",
-      processing?.sec_validation?.strict_passed,
+      processing?.sec_validation?.html_profile === "edgar_flow_v1"
+        ? "Local EDGAR profile"
+        : "Local SEC validation",
+      processing?.sec_validation?.html_profile === "edgar_flow_v1"
+        ? processing?.sec_validation?.passed
+        : processing?.sec_validation?.strict_passed,
       processing?.sec_validation,
     ],
     [
-      "Visual comparison",
-      processing?.visual_validation?.strict_passed,
-      processing?.visual_validation,
+      "Browser rendering",
+      processing?.standard_visual_validation?.checks_complete ||
+        processing?.edgar_visual_validation?.checks_complete ||
+        processing?.visual_validation?.strict_passed,
+      processing?.standard_visual_validation ||
+        processing?.edgar_visual_validation ||
+        processing?.visual_validation,
     ],
     ["Final package", report?.complete, processing?.packaging],
   ].filter(
     ([label]) =>
-      !/\.pdf$/i.test(job.original_filename) || label !== "Accepted revisions",
+      (!/\.pdf$/i.test(job.original_filename) ||
+        label !== "Accepted revisions") &&
+      (processing?.mode !== "standard" || label !== "Local SEC validation"),
   );
   const diagnostics = [
     ...(report?.diagnostics || []),
@@ -830,9 +840,9 @@ export default function Workspace() {
             <h2 id="help-title">A check at every step.</h2>
             <p>
               ConvX accepts DOCX tracked revisions, exports the accepted
-              document to PDF, or analyzes an uploaded PDF directly. Later
-              stages add HTM output and checks for its content, SEC markup and
-              visual appearance.
+              document to PDF, or analyzes an uploaded PDF directly. Standard
+              HTML previews preserve selectable text and local assets. Browser
+              checks report actual screen and print differences.
             </p>
             <p>
               A ZIP becomes downloadable only after every required check passes.
@@ -845,8 +855,9 @@ export default function Workspace() {
               expire automatically.
             </p>
             <p>
-              Input analysis is available; revised HTML rendering and ZIP output
-              are pending. No premium renderer or paid service is used.
+              Standard HTML previews are available; ZIP packaging is pending.
+              EDGAR rendering is a later stage. No premium renderer or paid
+              service is used.
             </p>
             <button className="btn btn-primary" onClick={() => setHelp(false)}>
               Back to workspace

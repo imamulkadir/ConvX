@@ -1,5 +1,13 @@
 # Development decision log
 
+## 2026-11-06 - ADR-045: separate authoritative EDGAR flow entry point
+
+Decision: reuse existing bounded flow/typography/table and graphic normalization primitives through `edgar_html.render_edgar`, consuming and independently re-verifying the Stage 4 authoritative layout. Never forge the legacy generated-PDF/Word proof or serialize Standard SVG into EDGAR. Standard remains unrestricted/default. Unsupported clipping, rotation, annotations, uncertain grids/overlaps or links fail with source-page diagnostics instead of rasterizing disclosure. A narrowly bounded single-rectangle page-edge clip exception handles actual LibreOffice rounding only when text remains inside it. See [EDGAR renderer](edgar-renderer.md).
+
+## 2026-11-06 - ADR-046: explicit local formatting interpretation and evidence
+
+Decision: opt-in `edgar_flow_v1` uses EFM78 5.2.2.5 STYLE permission with W3C HTML4 element scopes, a literal CSS2 subset and W3C HTML4 character mappings. This is a documented product interpretation, not an SEC-approved exhaustive CSS list. Preserve the default legacy validator's unresolved strict behavior. Bind new results to a separate implementation/grammar/profile digest, always keep legacy strict_passed false for this profile, report whole-submission limits separately and never claim SEC acceptance. Actual isolated DOM/print/pixel checks share the Standard browser process but use EDGAR-specific selectors and missing-word/major-origin-error checks. Mode travels through the existing internal request and survives eligible retries; no new service or dependency. ZIP and final UI remain Stages 7/8, requiring later authorization.
+
 ## 2026-11-05 — ADR-001: PDF-first independent services
 
 Decision: separate JSX Next.js, FastAPI, Celery and converter modules; generated accepted-DOCX PDF is the layout authority. Context: confidentiality and long-running conversions. Alternatives: Next.js conversion routes or generic DOCX-to-HTML. Reasoning: mandatory workflow and isolation. Consequences: independent deployment, persistent state, versioned layout and explicit gates. See architecture/interfaces.
@@ -169,3 +177,11 @@ Decision: bind explicit authoritative provenance to the current PDF, then indepe
 ## 2026-11-06 - ADR-042: Retain private native image payloads and separate masks
 
 Decision: extract each placed xref asset to new bounded private files with deterministic basenames, hashes, formats and dimensions; preserve JPEG bytes and separate soft masks. Context: earlier layout records retained image metadata only; premature SEC normalization would restrict Standard output. Alternatives: recompress all graphics, flatten transparency, embed unlicensed fonts or rasterize pages. Reasoning: share source assets without imposing either renderer's restrictions. Consequences: 32 MiB per payload/128 MiB total; raw formats may need later web/SEC normalization. Inline images without verified association and unsupported shading paint produce explicit diagnostics. Private resources never become ZIP contents automatically; mode normalization and final-reference packaging remain their stages.
+
+## 2026-11-06 - ADR-043: Standard native SVG paint with shared source verification
+
+Decision: render Standard HTML5 using the verified common model and MuPDF's native selectable SVG serialization for exact paint/clip scopes. Native clipping metadata alone could not associate thousands of scopes reliably. Validate serialization text/page geometry, scope fragment IDs, externalize bounded image payloads and retain local font aliases without redistributing unlicensed fonts. Authoritative extraction includes clipped source paint; only model-marked synthetic word-gap spaces are restored at source-derived coordinates. Alternatives: manual incomplete clip reconstruction, page screenshots, promoted inspection evidence or applying SEC constraints to Standard. Consequences: genuine selectable Standard HTML/local assets, no whole-page raster fallback; legacy strict defaults remain unchanged. Font/rasterization, annotations, exotic mappings and clickable navigation remain limitations, not universal support claims.
+
+## 2026-11-06 - ADR-044: Actual isolated Standard rendering and robust local progress
+
+Decision: use the existing bounded process mechanism with pinned Chromium for DOM text/page checks and unmodified screen/print pixel metrics; separate bounded control files from terminal stdout, release glyph objects before Chromium, and hash-bind real preview captures. Windows report publication retries only transient sharing-denied atomic replacement for one second, preserving old complete JSON. Context: actual tests exposed color-notice JSON contamination and a progress.part sharing failure. Alternatives: trust process exit, fake matching screenshots, increase budgets indefinitely or discard source checks. Consequences: no exact pixel claim for measured differences, actual free one-time Chromium dependency, no new service/database, and real Windows lock regressions. Standard jobs remain honestly blocked at packaging until Stage 7.

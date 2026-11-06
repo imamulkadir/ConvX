@@ -7,6 +7,7 @@ import pymupdf
 from converter.errors import fail
 from converter.layout.models import DocumentLayout, LayoutVerification, PageVerification
 from converter.ooxml import sha256
+from converter.pdf_analysis.text import extraction_flags
 from converter.pdf_export.validation import PDFValidationPolicy, _open
 
 
@@ -50,7 +51,7 @@ def verify_layout(path, layout, policy, context):
                 )
             raw = native.get_text(
                 "rawdict",
-                flags=pymupdf.TEXTFLAGS_RAWDICT & ~pymupdf.TEXT_PRESERVE_IMAGES,
+                flags=extraction_flags(policy),
                 clip=pymupdf.INFINITE_RECT(),
                 sort=False,
             )

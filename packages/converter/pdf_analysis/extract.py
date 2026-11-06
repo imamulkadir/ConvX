@@ -379,7 +379,7 @@ def analyze_authoritative_pdf(
     The generated/uploaded PDF is the visual authority. Legacy reconstruction
     eligibility remains false; later mode renderers must validate their own output.
     """
-    policy, context = policy or AnalysisPolicy(), context or ProcessingContext()
+    policy, context = policy or AnalysisPolicy(preserve_clipped_text=True), context or ProcessingContext()
     source_digest = sha256(path)
     method = provenance.get("method")
     digests = [provenance.get("source_sha256"), provenance.get("pdf_sha256")]
