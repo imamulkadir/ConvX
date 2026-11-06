@@ -22,14 +22,14 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_actual_edgar_browser_dom_print_and_raw_pixels(tmp_path, factory):
     source = factory(tmp_path / "source.pdf")
     report = process_input(source, tmp_path / "attempt", "financial report.pdf", mode="edgar")
-    assert report["status"] == "blocked", report["diagnostics"]
-    assert report["diagnostics"][-1]["code"] == "PACKAGING_ENGINE_PENDING"
+    assert report["status"] == "packaged", report["diagnostics"]
+    assert report["packaging"]["validated"]
     assert report["sec_validation"]["passed"] and not report["sec_validation"]["strict_passed"]
     visual = report["edgar_visual_validation"]
     assert visual["checks_complete"] and visual["text_verified"] and visual["page_geometry_verified"]
     assert visual["method"] == "chromium-edgar-flow-screen-print-v1"
     assert visual["network_requests_denied"] == 0
-    assert report["source_unchanged"] and not report["final_conversion_complete"]
+    assert report["source_unchanged"] and report["final_conversion_complete"]
     for page in visual["pages"]:
         assert page["word_geometry"]["missing_words"] == 0
         assert page["word_geometry"]["max_origin_error_pt"] < 6
@@ -50,7 +50,7 @@ def test_actual_graphics_normalized_to_local_jpg_or_gif(tmp_path, format):
         page.insert_image(pymupdf.Rect(200, 200, 280, 260), stream=image.getvalue())
         doc.save(source)
     report = process_input(source, tmp_path / "attempt", "image.pdf", mode="edgar")
-    assert report["diagnostics"][-1]["code"] == "PACKAGING_ENGINE_PENDING", report["diagnostics"]
+    assert report["packaging"]["validated"], report["diagnostics"]
     generation = report["html_generation"]
     assert len(generation["assets"]) == 1
     assert {p.name for p in (tmp_path / "attempt/edgar").iterdir()} == {
@@ -108,7 +108,7 @@ def test_real_docx_acceptance_export_and_edgar_flow(tmp_path):
         )
     provider = LibreOfficeProvider(ROOT / ".tools/libreoffice/program/soffice.com")
     report = process_input(source, tmp_path / "attempt", "source.docx", provider, mode="edgar")
-    assert report["diagnostics"][-1]["code"] == "PACKAGING_ENGINE_PENDING", report["diagnostics"]
+    assert report["packaging"]["validated"], report["diagnostics"]
     assert report["revision_acceptance"]["after"]["total"] == 0 and report["source_unchanged"]
     assert report["visual_reference"]["method"] == "accepted_docx_local_export"
 

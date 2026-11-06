@@ -61,8 +61,8 @@ def test_pdf_uses_unchanged_bytes_and_shared_analysis_without_docx(tmp_path):
     assert layout["validation_report_sha256"] is None
     assert len(layout["pages"]) == 2 and layout["fonts"]
     assert result["pdf_input"]["pages"][1]["rotation"] == 90
-    assert not result["final_conversion_complete"] and result["status"] == "blocked"
-    assert result["diagnostics"][-1]["code"] == "PACKAGING_ENGINE_PENDING"
+    assert result["final_conversion_complete"] and result["status"] == "packaged"
+    assert result["packaging"]["validated"]
 
 
 @pytest.mark.parametrize("options", [{"encrypted": True}, {"active": True}, {"attachment": True}])
@@ -132,7 +132,7 @@ def test_real_reference_inputs_reach_shared_analysis_without_word_gate(tmp_path,
     assert result["source_unchanged"] and result["pdf_input"]["page_count"] == 23
     assert result["layout_analysis"]["pages"] == 23 and result["layout_analysis"]["characters"] > 10000
     assert not result["pdf_input"]["word_equivalence_verified"]
-    assert result["diagnostics"][-1]["code"] == "PACKAGING_ENGINE_PENDING"
+    assert result["packaging"]["validated"]
     if name.endswith(".docx"):
         assert result["revision_acceptance"]["after"]["total"] == 0
         accepted = ROOT / "tests/fixtures/06749LWD4_prelim_prospectus_automated (1).docx"

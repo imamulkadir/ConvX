@@ -1,5 +1,13 @@
 # Development decision log
 
+## 2026-11-06 - ADR-047: source-verified two-mode archive contract
+
+Decision: implement typed source-verified-mode-zip-v1 packaging and audit alongside the unchanged historical strict Word/SEC gate. Reuse deterministic stored-ZIP mechanics, independently audit actual headers/CRC/hashes/root members and archived references, revalidate EDGAR bytes under its explicit local profile, and bind current source/render/browser evidence. Source-basename ZIP and mode-specific internal names change only ZIP entry names, preserving qualified document bytes. Rationale: the revised authoritative-PDF/Standard contract allows measured rendering differences and requires Standard assets; weakening a legacy strict gate would misrepresent old proof. Consequences: current downloadable output explicitly remains non-SEC-accepted and non-pixel-perfect; unsupported EDGAR sources still fail. See [ZIP contract](zip-packaging.md).
+
+## 2026-11-06 - ADR-048: fresh bounded download audit
+
+Decision: every current download checks current request/mode/attempt/source/PDF, exact HTML/assets, persisted actual browser report/captures and archive contents before Next serves buffered bytes. Retain capability/retention/cancellation/state-version guards and RFC5987 UTF8 names. Rationale: a prior successful flag or ZIP hash alone cannot establish unchanged output. Consequences: edited/missing evidence rejects download, audit adds a small local-process cost, no account/database/service or new dependency. ZIP uses stored members to retain simple bounded canonical mechanics; larger archives are an explicit tradeoff.
+
 ## 2026-11-06 - ADR-045: separate authoritative EDGAR flow entry point
 
 Decision: reuse existing bounded flow/typography/table and graphic normalization primitives through `edgar_html.render_edgar`, consuming and independently re-verifying the Stage 4 authoritative layout. Never forge the legacy generated-PDF/Word proof or serialize Standard SVG into EDGAR. Standard remains unrestricted/default. Unsupported clipping, rotation, annotations, uncertain grids/overlaps or links fail with source-page diagnostics instead of rasterizing disclosure. A narrowly bounded single-rectangle page-edge clip exception handles actual LibreOffice rounding only when text remains inside it. See [EDGAR renderer](edgar-renderer.md).

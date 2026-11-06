@@ -11,6 +11,17 @@ async function ready(page) {
   ).toHaveCount(0);
 }
 
+async function downloadZip(page, expectedFilename) {
+  const event = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download ZIP", exact: true }).click();
+  const download = await event;
+  expect(download.suggestedFilename()).toBe(expectedFilename);
+  expect(await download.failure()).toBeNull();
+  const data = readFileSync(await download.path());
+  expect(data.readUInt32LE(0)).toBe(0x04034b50);
+  return data;
+}
+
 test("real EDGAR request renders in the running Next instance", async ({
   page,
 }) => {
@@ -33,7 +44,7 @@ test("real EDGAR request renders in the running Next instance", async ({
         const record = await (
           await page.request.get(`/api/v1/conversions/${id}`)
         ).json();
-        return ["blocked", "failed"].includes(record.state);
+        return ["completed", "blocked", "failed"].includes(record.state);
       },
       { timeout: 180000, intervals: [250, 500, 1000] },
     )
@@ -41,10 +52,7 @@ test("real EDGAR request renders in the running Next instance", async ({
   const details = await (
     await page.request.get(`/api/v1/conversions/${id}/validation`)
   ).json();
-  expect(
-    details.diagnostics.at(-1).code,
-    JSON.stringify(details.diagnostics),
-  ).toBe("PACKAGING_ENGINE_PENDING");
+  expect(details.complete, JSON.stringify(details.diagnostics)).toBe(true);
   expect(details.document_processing.sec_validation.passed).toBe(true);
   expect(
     details.document_processing.sec_validation.sec_acceptance_confirmed,
@@ -58,11 +66,9 @@ test("real EDGAR request renders in the running Next instance", async ({
   );
   await page.reload();
   await expect(
-    page.getByText("PACKAGING_ENGINE_PENDING", { exact: true }).first(),
-  ).toBeVisible();
-  await expect(
     page.getByRole("button", { name: "Download ZIP" }),
-  ).toBeDisabled();
+  ).toBeEnabled();
+  await downloadZip(page, "independent.zip");
   await page.getByRole("tab", { name: "Preview & compare" }).click();
   await page.getByRole("button", { name: "Side by side", exact: true }).click();
   await expect(
@@ -106,12 +112,10 @@ test("real native DOCX reaches authoritative analysis and PDF review", async ({
   await ready(page);
   await page.getByLabel("Choose DOCX or PDF files").setInputFiles(fixture);
   await page.getByRole("button", { name: "Start conversion" }).click();
-  await expect(
-    page.getByText("PACKAGING_ENGINE_PENDING", { exact: true }).first(),
-  ).toBeVisible({ timeout: 180000 });
-  await expect(
-    page.getByRole("button", { name: "Download ZIP" }),
-  ).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Download ZIP" })).toBeEnabled({
+    timeout: 180000,
+  });
+  await downloadZip(page, "t2ui-source.zip");
   await page.getByRole("tab", { name: "Status & checks" }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(
@@ -192,7 +196,7 @@ test("direct PDF selection reaches shared analysis without Word export", async (
         const record = await (
           await page.request.get(`/api/v1/conversions/${id}`)
         ).json();
-        return ["blocked", "failed"].includes(record.state);
+        return ["completed", "blocked", "failed"].includes(record.state);
       },
       { timeout: 180000, intervals: [250, 500, 1000] },
     )
@@ -203,12 +207,11 @@ test("direct PDF selection reaches shared analysis without Word export", async (
   const details = await (
     await page.request.get(`/api/v1/conversions/${id}/validation`)
   ).json();
-  expect(status.diagnostic_code, JSON.stringify(details.diagnostics)).toBe(
-    "PACKAGING_ENGINE_PENDING",
-  );
+  expect(status.state, JSON.stringify(details.diagnostics)).toBe("completed");
   await expect(
     page.getByRole("button", { name: "Download ZIP" }),
-  ).toBeDisabled();
+  ).toBeEnabled();
+  await downloadZip(page, "06749LWD4_prelim_prospectus_automated.zip");
   await expect(
     page.getByText("Accepted revisions", { exact: true }),
   ).toHaveCount(0);

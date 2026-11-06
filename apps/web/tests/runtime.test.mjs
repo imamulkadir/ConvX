@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { spawn } from "node:child_process";
 import {
   createRuntime,
   safeName,
@@ -75,10 +76,10 @@ test("real PDF upload reaches shared analysis and exposes only its verified PDF 
   const job = await terminal(service, jobs[0].id);
   assert.equal(
     job.state,
-    "blocked",
+    "completed",
     JSON.stringify(await service.validation(job.id)),
   );
-  assert.equal(job.diagnostic_code, "PACKAGING_ENGINE_PENDING");
+  assert.equal(job.diagnostic_code, null);
   const result = (await service.validation(job.id)).document_processing;
   assert.equal(result.input_preparation_complete, true);
   assert.equal(result.visual_reference.method, "direct_uploaded_pdf");
@@ -97,12 +98,33 @@ test("real PDF upload reaches shared analysis and exposes only its verified PDF 
     result.html_generation.filename,
   );
   const originalHtml = await fs.readFile(generatedPath);
+  const download = await service.download(job.id);
+  assert.equal(download.headers.get("Content-Type"), "application/zip");
+  assert.match(
+    download.headers.get("Content-Disposition"),
+    /independent-name\.zip$/,
+  );
+  const zip = Buffer.from(await download.arrayBuffer());
+  assert.equal(zip.readUInt32LE(0), 0x04034b50);
+  const archivePath = path.join(
+    service.root,
+    job.id,
+    result.workspace,
+    "package/result.zip",
+  );
+  await fs.unlink(archivePath);
+  await assert.rejects(
+    service.download(job.id),
+    (e) => e.code === "PACKAGE_VALIDATION_FAILED",
+  );
+  await fs.writeFile(archivePath, zip);
   await fs.appendFile(generatedPath, "changed");
   await assert.rejects(service.preview(job.id, "htm"));
-  await fs.writeFile(generatedPath, originalHtml);
   await assert.rejects(service.download(job.id));
+  await fs.writeFile(generatedPath, originalHtml);
   await fs.appendFile(path.join(service.root, job.id, "source.pdf"), "changed");
   await assert.rejects(service.preview(job.id, "pdf"));
+  await assert.rejects(service.download(job.id));
 });
 test("real Python admission fails unsafe content without a broker or database", async (t) => {
   const service = await isolated(t);
@@ -259,12 +281,9 @@ test("real EDGAR mode stays bound through retry and verified previews", async (t
   await service.resume(created.id);
   const job = await terminal(service, created.id);
   const report = (await service.validation(job.id)).document_processing;
-  assert.equal(
-    job.diagnostic_code,
-    "PACKAGING_ENGINE_PENDING",
-    JSON.stringify(report),
-  );
+  assert.equal(job.diagnostic_code, null, JSON.stringify(report));
   assert.equal(report.mode, "edgar");
+  assert.equal(job.state, "completed");
   assert.equal(report.sec_validation.passed, true);
   assert.equal(report.sec_validation.strict_passed, false);
   assert.equal(report.sec_validation.sec_acceptance_confirmed, false);
@@ -279,12 +298,107 @@ test("real EDGAR mode stays bound through retry and verified previews", async (t
     report.html_generation.filename,
   );
   const original = await fs.readFile(file);
+  assert.equal(
+    (await service.download(job.id)).headers.get("Content-Type"),
+    "application/zip",
+  );
   await fs.appendFile(file, "changed");
   await assert.rejects(service.preview(job.id, "htm"));
-  await fs.writeFile(file, original);
   await assert.rejects(service.download(job.id));
+  await fs.writeFile(file, original);
   await assert.rejects(
     service.resume(job.id),
     (e) => e.code === "JOB_NOT_RESUMABLE",
   );
 });
+
+test("real Standard ZIP download preserves Unicode and apostrophes in its filename", async (t) => {
+  const service = await isolated(t);
+  const created = (
+    await service.create(upload(independentPdf(), "Résumé report's.PDF"))
+  ).jobs[0];
+  const job = await terminal(service, created.id);
+  assert.equal(
+    job.state,
+    "completed",
+    JSON.stringify(await service.validation(job.id)),
+  );
+  const response = await service.download(job.id);
+  assert.equal(
+    response.headers.get("Content-Disposition"),
+    "attachment; filename*=utf-8''R%C3%A9sum%C3%A9%20report%27s.zip",
+  );
+  assert.equal(
+    Buffer.from(await response.arrayBuffer()).readUInt32LE(0),
+    0x04034b50,
+  );
+});
+
+test(
+  "Windows reader lock cannot strand real job completion",
+  { skip: process.platform !== "win32" },
+  async (t) => {
+    const service = await isolated(t);
+    const created = (
+      await service.create(upload(independentPdf(), "locked.pdf"))
+    ).jobs[0];
+    for (let i = 0; i < 200; i++) {
+      if ((await service.status(created.id)).state === "running") break;
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+    const dir = path.join(service.root, created.id);
+    const ready = path.join(dir, "reader-ready");
+    const script = `import ctypes,sys,time
+from pathlib import Path
+k=ctypes.WinDLL('kernel32',use_last_error=True)
+k.CreateFileW.argtypes=[ctypes.c_wchar_p,ctypes.c_uint32,ctypes.c_uint32,ctypes.c_void_p,ctypes.c_uint32,ctypes.c_uint32,ctypes.c_void_p]
+k.CreateFileW.restype=ctypes.c_void_p
+k.CloseHandle.argtypes=[ctypes.c_void_p]
+h=k.CreateFileW(sys.argv[1],0x80000000,3,None,3,0,None)
+if h==ctypes.c_void_p(-1).value:sys.exit(2)
+Path(sys.argv[2]).write_text('locked')
+deadline=time.monotonic()+20
+while not Path(sys.argv[3]).exists() and time.monotonic()<deadline:time.sleep(.01)
+time.sleep(.3)
+k.CloseHandle(h)
+`;
+    const helper = spawn(
+      path.join(project, ".venv/Scripts/python.exe"),
+      [
+        "-c",
+        script,
+        path.join(dir, "meta.json"),
+        ready,
+        path.join(dir, "result.json"),
+      ],
+      { windowsHide: true, stdio: "ignore" },
+    );
+    const exited = new Promise((resolve, reject) => {
+      helper.once("error", reject);
+      helper.once("exit", resolve);
+    });
+    t.after(() => helper.kill());
+    for (let i = 0; i < 300; i++) {
+      if (
+        await fs.access(ready).then(
+          () => true,
+          () => false,
+        )
+      )
+        break;
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+    await fs.access(ready);
+    const job = await terminal(service, created.id);
+    assert.equal(await exited, 0);
+    assert.equal(
+      job.state,
+      "completed",
+      JSON.stringify(await service.validation(job.id)),
+    );
+    assert.equal(
+      (await service.download(job.id)).headers.get("Content-Type"),
+      "application/zip",
+    );
+  },
+);

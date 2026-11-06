@@ -9,6 +9,7 @@ from converter.context import ProcessingContext
 from converter.edgar_html import render_edgar
 from converter.errors import ConversionFailure, fail
 from converter.ooxml import sha256
+from converter.packaging.current import package_current
 from converter.pdf_admission import admit_pdf
 from converter.pdf_analysis.extract import analyze_authoritative_pdf, write_layout
 from converter.pdf_analysis.policy import AnalysisPolicy
@@ -37,7 +38,7 @@ def process_input(
         "schema_version": 2,
         "workflow": "simplification-refactor",
         "mode": mode,
-        "stage": 6,
+        "stage": 7,
         "original_filename": original_filename,
         "input_type": kind.lstrip("."),
         "source_sha256": None,
@@ -148,14 +149,13 @@ def process_input(
         visual = verify_standard(pdf, workspace / mode, generation, workspace / (mode + "-visual"), context)
         report[mode + "_visual_validation"] = visual
         report["diagnostics"].extend(visual["diagnostics"])
-        report["diagnostics"].append(
-            {
-                "code": "PACKAGING_ENGINE_PENDING",
-                "stage": "packaging_zip",
-                "severity": "error",
-                "description": "HTML and browser checks completed; downloadable ZIP packaging is pending Stage 7",
-            }
+        context.stage("packaging_zip")
+        report["packaging"] = package_current(
+            pdf, workspace / mode, generation, visual, original_filename, mode, workspace / "package", context
         )
+        context.check()
+        report["status"] = "packaged"
+        report["final_conversion_complete"] = True
     except AdmissionError as exc:
         report["status"] = "failed"
         report["diagnostics"].append(
@@ -164,7 +164,8 @@ def process_input(
     except ConversionFailure as exc:
         report["status"] = (
             "blocked"
-            if exc.diagnostic.code in {"PDF_RENDERER_UNAVAILABLE", "STANDARD_BROWSER_UNAVAILABLE", "EDGAR_BROWSER_UNAVAILABLE"}
+            if exc.diagnostic.code
+            in {"PDF_RENDERER_UNAVAILABLE", "STANDARD_BROWSER_UNAVAILABLE", "EDGAR_BROWSER_UNAVAILABLE"}
             else "failed"
         )
         report["diagnostics"].append({**exc.diagnostic.to_dict(), "severity": "error"})
@@ -196,5 +197,7 @@ def process_input(
                     "description": "Original input integrity could not be verified",
                 }
             )
+        if report["status"] != "packaged":
+            report["final_conversion_complete"] = False
         write_report(workspace / "processing.json", report)
     return report

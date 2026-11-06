@@ -1,40 +1,37 @@
-# Stage 8 ZIP packaging and download eligibility
+# ZIP packaging - revised Stage 7
 
-`converter.packaging` (converter 0.8.0) implements bounded ZIP creation and independent byte validation. This stage does not qualify the Word fixture, unresolved SEC permissions or current screen differences. No full-chain successful filing/download has been demonstrated. Archive-mechanics success is explicitly `conversion_eligible=false`.
+The current pipeline packages real Standard and EDGAR output after authoritative PDF analysis and actual browser verification. It uses the same local Next/Python runtime and no new dependency or service. Final stage status and approval gates are recorded in [project status](../PROJECT_STATUS.md) and [checkpoint](../.agent-checkpoint.json).
 
-## Names and immutable filing bytes
+## Output contract
 
-The downloaded ZIP retains the admitted DOCX basename, including Unicode and case, with `.zip` replacing `.docx`. Its server path is the current private attempt's `package/result.zip`; client names are never used as server paths. The response uses RFC 5987 UTF-8 Content-Disposition encoding.
+For `financial-report.pdf` or `.docx`, download `financial-report.zip`. Standard contains `financial-report.html`; EDGAR contains a deterministic SEC-compatible `.htm` name, shortened/sanitized with a source-name hash when needed. The ZIP download name preserves the original basename, including Unicode, spaces and apostrophes. Reserved/unsafe input basenames fail rather than creating dangerous archive paths.
 
-The internal HTM is lowercase ASCII within the manual-derived 32-character limit. A compliant short stem is retained. Otherwise the name is the first 15 sanitized stem characters, `-`, the first 12 hexadecimal SHA-256 characters of the exact original UTF-8 filename, then `.htm`. Empty/Windows-reserved stems get a document prefix. Unsafe original basenames fail. This is deterministic and separate from the outer ZIP name.
+Each archive contains exactly one mode-correct HTML document and its referenced local image assets, all at its root. No PDF, DOCX, JSON, CSS, JavaScript, log, report, screenshot, directory or unused asset is included. Standard's SVG is inside the HTML; current standalone image assets are JPG/PNG/GIF/WebP. EDGAR has only JPG/GIF assets. CSS stays embedded/inline.
 
-`prepare_filing_name` runs on the new normalized filing directory **before SEC and visual validation**. It updates supported literal generated self-links, checks disclosure text and fails unsupported references/collisions. Qualified HTM and references are never renamed or rewritten afterward. Earlier private candidate/normalization metadata retains its historical filename/hash; `prepared_htm_filename` and actual SEC/visual/package evidence identify final bytes.
+The qualified private document keeps its existing name. Only its ZIP entry name changes, with **identical document bytes**. The archive validator checks all references under the final name before publication; an unresolved self-reference fails rather than rewriting disclosure. Actual offline opening of the renamed Unicode Standard document and the EDGAR document, text and image pixels are tested.
 
-## Publication and independent audit
+The writer reuses existing deterministic archive mechanics: HTM/HTML first, assets sorted, fixed timestamps/permissions, stored members, no encryption/ZIP64/extras/comments. UTF-8 member names are supported for Standard. Stored members deliberately avoid decompression-ratio hazards and simplify bounded byte/CRC checks; archives may be larger than a deflated ZIP. Limits: 128 MiB archive, 100 MiB combined payload, 64 MiB member, 1,001 members; current renderer limits may be lower.
 
-`create_package` rechecks strict PDF evidence, freshly validates actual HTM/assets against stored SEC evidence, verifies production visual measurements and source/file/gate hashes, and checks current dependency/font fingerprints. Summary flags alone cannot approve a package. Inspection, failed, truncated or stale evidence fails before output creation.
+## Current evidence contract
 
-The filing root must contain exactly its HTM and declared regular same-root JPG/GIF files. No symlinks, unused files or subdirectories are accepted. Captured bytes must match the freshly validated manifest. The writer creates `result.part` exclusively, fixes member timestamps to 1980-01-01, uses fixed permissions and stores members without compression. HTM comes first, followed by lexicographically sorted assets. ZIP_STORED removes zlib-version variability; larger archive size is the tradeoff. Exclusive publication as `result.zip` follows audit and final input/cancellation checks.
+`packages/converter/packaging/current.py` has a separate typed `source-verified-mode-zip-v1` result. It binds source-PDF, generated HTML/assets and actual all-page browser evidence hashes, with mode and original/download/internal names. Page coverage, dimensions, text/geometry flags, raw measurements and EDGAR word-origin checks must be complete. Nonzero raw pixel differences remain visible warnings; no exact visual equivalence is inferred from a valid archive.
 
-`audit_archive_bytes` independently reopens captured bytes and checks:
+Actual archived bytes are reopened and every member CRC is read. The validator checks envelope/central-directory/local-header agreement, sizes, unique portable root names, member order, exact expected hashes and resolved references. It rejects appended data, duplicates/case collisions, unsafe paths, links/directories, compression/encryption and extra/unused members. Actual archived EDGAR bytes and JPG/GIF are revalidated under the documented [local EDGAR profile](edgar-renderer.md). Standard never invokes SEC validation.
 
-- Root-only names, exactly one HTM, duplicates/case collisions and deterministic order.
-- Every member's CRC, local/central headers, contiguous offsets and bounded lengths.
-- No extras, comments, encryption, links, directories, ZIP64, split archive or leading/trailing payload.
-- Exact manifest hashes/sizes, permitted decoded graphics, references and actual archived SEC validation.
+This current contract does not satisfy or weaken the retired strict Word-reference/SEC package gates in `packaging/engine.py`. Those remain independently tested. A current EDGAR package can be downloadable while `strict_passed=false` and `sec_acceptance_confirmed=false`; download means that this converter's local output/package checks passed, not SEC filing acceptance or whole-submission qualification.
 
-Names are checked before writing member bytes to a private temporary directory; `extractall` is never used. Temporary contents are removed afterward. No DOCX, PDF, report, screenshot or script enters the final ZIP. Mechanics helpers cannot mark conversions completed.
+## Publication and download
 
-## Job lifecycle and downloads
+Successful processing now ends as `packaged`, with `final_conversion_complete=true`; the internal Python process exits successfully and Next shows `completed` with download available. Existing warning diagnostics remain. Failure/cancellation/source-integrity checks prevent completion. Windows atomic-state publication retries transient sharing failures for at most one second; a launch/publication exception produces an explicit failed state instead of silently leaving a job running. Each request/attempt uses its own private directory; no archive can overwrite another job.
 
-The worker receives the original uploaded name separately from private `source.docx`. It reports `packaged` only after packaging; the repository moves the current live leased attempt to `completed` only when revision/source/content/PDF/SEC/visual/package proof is consistent. Invalid completion evidence fails with `PACKAGE_COMPLETION_INVALID`. Earlier awaiting_packaging jobs support explicit owned resume.
+Every download runs a fresh bounded Python audit through the existing internal handler. It checks the request's mode/name/attempt against the report, current original source and authoritative PDF, current HTML/assets, persisted browser comparison and capture hashes, exact archive payloads and CRCs. Tampered/missing evidence or archives fail closed. Cancellation, expiration, deletion and changed job state/version prevent delivery. Next serves the already-buffered bytes only when their SHA and length match the fresh audit. Missing/unsafe/oversize archives return an understandable validation error.
 
-Polling exposes `download_available` as an eligibility hint. GET download additionally verifies ownership, retention, original source, current attempt, complete report, actual PDF/HTM/images and current rendering environment. It captures bounded ZIP bytes, checks recorded hash/length and independently audits the captured archive. Serving uses captured bytes rather than a mutable FileResponse path. State is checked before headers and periodically during streaming; expiry is checked on every chunk. Cancellation revokes access and can terminate a stream. Preview remains Stage 9 work.
+Downloads use `application/zip`, no-store/nosniff headers and RFC5987 UTF-8 Content-Disposition with reserved punctuation escaped. Browser tests click Download ZIP and observe actual saved filenames and ZIP bytes through the production Next instance; no response is mocked.
 
-Invalid/changed artifacts return 409; other owners receive 404; expired jobs receive 410. Responses retain private/no-store headers. Errors exclude disclosure text. Reports/intermediates remain in the authorized private workflow.
+## Limits retained
 
-## Resource settings and verification
+All three supplied complex fixtures continue to fail EDGAR clipping checks on page 1 and receive no successful EDGAR ZIP. Their Standard path is packageable. Independent real PDF and native DOCX cases exercise the supported EDGAR path. The local CSS/character interpretation, font/rasterization differences, OCR/platform limits and unsupported geometry remain as documented in the renderers. Packaging does not waive renderer failures.
 
-Worker settings in `.env.example`: `CONVX_PACKAGE_MAX_ARCHIVE_BYTES` (128 MiB), `CONVX_PACKAGE_MAX_UNCOMPRESSED_BYTES` (100 MiB), `CONVX_PACKAGE_MAX_MEMBER_BYTES` (64 MiB), `CONVX_PACKAGE_MAX_MEMBERS` (1001). These are product budgets, not SEC limits. The report records actual policies for revalidation. Capturing source/ZIP bytes uses bounded memory; OS storage/memory/network enforcement remains Stage 11 work.
+The final single-file interface and EDGAR checkbox are Stage 8. Broader four-path integration qualification is Stage 9; final optimization/cleanup is Stage 10. Do not advance without explicit authorization. See [test history](test-history.md) and [decisions](decisions.md) for measured results and recovery details.
 
-Run `.venv/Scripts/python -m pytest tests/unit/test_packaging.py tests/integration/test_packaging_gates.py -q`. Tests write/read actual archives and use genuine PDF/SEC/Chromium failure evidence. Adversarial flag changes are rejection tests, never successful conversions. The all-page Word regression must still fail at its actual PDF gate with no package. Optional live Redis/PostgreSQL and Linux qualification remain outstanding. See [test history](test-history.md), [limitations](limitations.md) and [visual validation](visual-validation.md).
+Previously retained PACKAGING_ENGINE_PENDING jobs are not automatically promoted; re-upload to run the new pipeline and create a qualified archive. Restart the local development server after updating runtime code.

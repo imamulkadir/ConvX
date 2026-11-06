@@ -1,6 +1,6 @@
 # ConvX - document conversion
 
-**Simplification Stage 6:** one Next.js application invokes Python internally. No API connection, token, Redis, Celery or database setup is required. DOCX and PDF share source-verified PDF analysis. Standard HTML5 and a separate restricted EDGAR flow path have real browser checks and measured differences. ZIP packaging and the final minimal UI remain pending. The application is not yet a qualified end-to-end converter.
+**Simplification Stage 7:** one Next.js application invokes Python internally. No API connection, token, Redis, Celery or database setup is required. DOCX/PDF share source-verified analysis and separate Standard/EDGAR renderers. Supported conversions now produce validated downloadable ZIPs after actual browser checks. The final minimal UI and broader integration/cleanup remain later stages; known fidelity/EDGAR limits still apply.
 
 ## Run locally
 
@@ -20,7 +20,7 @@ Use an existing configured .venv when available. Open the URL printed by dev.py.
 
 ## Current scope
 
-DOCX is validated, tracked changes are accepted in a copy and free LibreOffice generates its visual-reference PDF. Uploaded PDFs are validated and analyzed directly, without DOCX conversion. Neither path requires an extra Word-exported reference. Standard .html uses embedded CSS/selectable SVG/local assets; the EDGAR .htm path uses restricted normal-flow markup and JPG/GIF. Successful jobs stop at PACKAGING_ENGINE_PENDING after actual browser verification. The supplied complex fixtures currently fail EDGAR clipping checks explicitly. Final ZIP and checkbox/interface are Stages 7/8 and require later authorization.
+DOCX is validated, tracked changes are accepted in a copy and free LibreOffice generates its visual-reference PDF. Uploaded PDFs are analyzed directly, without DOCX conversion or an extra reference upload. Standard .html uses embedded CSS/selectable SVG/local assets; EDGAR .htm uses restricted normal-flow markup and JPG/GIF. Successful jobs show Download ZIP; each source-basename archive contains only one document and its required assets at the root, with fresh download-time checks. The supplied complex fixtures still fail EDGAR clipping checks explicitly and receive no EDGAR ZIP. The final checkbox/minimal interface is Stage 8 and requires later authorization.
 
 See [Standard renderer and limits](docs/standard-renderer.md), [shared layout contract](docs/shared-layout.md), [runtime/setup and limits](docs/simplified-runtime.md), [audit and staged plan](docs/refactor-audit.md), [project status](PROJECT_STATUS.md), [checkpoint](.agent-checkpoint.json), [agent instructions](AGENTS.md), [decisions](docs/decisions.md) and [test history](docs/test-history.md). Retired service source and existing user data remain preserved; do not start the old API/worker commands for the active application.
 
@@ -36,4 +36,4 @@ npm.cmd run test:ui
 ```
 
 Tests use real local processes and regression fixtures, never simulated conversion success. No SEC acceptance or universal pixel-perfect fidelity is claimed. Git initialization/staging/committing/pushing and all other Git writes are prohibited for agents; review and Git changes belong to the user.
-See [EDGAR manual interpretation and limitations](docs/edgar-renderer.md), including the distinction between local profile checks and SEC acceptance. Standard remains default; the final EDGAR checkbox is pending Stage 8.
+See [ZIP contract and download checks](docs/zip-packaging.md) and [EDGAR manual interpretation and limitations](docs/edgar-renderer.md). Standard remains default; the final EDGAR checkbox is pending Stage 8.

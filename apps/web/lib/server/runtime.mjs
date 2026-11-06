@@ -163,7 +163,21 @@ export function createRuntime(options = {}) {
         flag: "wx",
         mode: 0o600,
       });
-      await fs.rename(part, file);
+      const deadline = Date.now() + 1000;
+      for (;;) {
+        try {
+          await fs.rename(part, file);
+          break;
+        } catch (error) {
+          if (
+            process.platform !== "win32" ||
+            !["EACCES", "EPERM", "EBUSY"].includes(error.code) ||
+            Date.now() >= deadline
+          )
+            throw error;
+          await new Promise((resolve) => setTimeout(resolve, 20));
+        }
+      }
     } finally {
       await fs.unlink(part).catch(() => {});
     }
@@ -250,7 +264,22 @@ export function createRuntime(options = {}) {
     if (stopping || active.size >= concurrency || !queue.length) return;
     const id = queue.shift();
     const promise = launch(id)
-      .catch(() => {})
+      .catch(async () => {
+        // Never silently abandon a finished child with a running UI record.
+        await locked(id, async () => {
+          const record = await meta(id);
+          if (END.has(record.state)) return;
+          await write(path.join(directory(id), "meta.json"), {
+            ...record,
+            state: "failed",
+            stage: "processing",
+            download_available: false,
+            diagnostic_code: "JOB_STATE_PUBLICATION_FAILED",
+            version: Date.now(),
+            updated_at: new Date().toISOString(),
+          });
+        }).catch(() => {});
+      })
       .finally(() => {
         active.delete(id);
         pump();
@@ -796,10 +825,19 @@ export function createRuntime(options = {}) {
       !value?.workspace
     )
       fail(409, "ARTIFACT_NOT_AVAILABLE", "No qualified archive is available");
-    const data = await read(
-      await artifactPath(dir, `${value.workspace}/package/result.zip`),
-      128 * 1024 * 1024,
-    );
+    let data;
+    try {
+      data = await read(
+        await artifactPath(dir, `${value.workspace}/package/result.zip`),
+        128 * 1024 * 1024,
+      );
+    } catch {
+      fail(
+        409,
+        "PACKAGE_VALIDATION_FAILED",
+        "Archive is missing, unsafe or exceeds its size limit",
+      );
+    }
     const audit = await new Promise((resolve, reject) => {
       const child = spawn(
         /* turbopackIgnore: true */
@@ -871,7 +909,7 @@ export function createRuntime(options = {}) {
         ...noStore,
         "Content-Type": "application/zip",
         "Content-Length": String(data.length),
-        "Content-Disposition": `attachment; filename*=utf-8''${encodeURIComponent(audit.filename)}`,
+        "Content-Disposition": `attachment; filename*=utf-8''${encodeURIComponent(audit.filename).replace(/[!'()*]/g, (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase())}`,
       },
     });
   }

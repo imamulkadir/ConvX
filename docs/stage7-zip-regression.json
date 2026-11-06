@@ -1,0 +1,119 @@
+{
+  "stage": 7,
+  "date": "2026-11-06",
+  "stage_status": "completed",
+  "scope": "actual production Next browser conversions with real downloads; source and ZIP bytes audited",
+  "production_browser_cases": [
+    {
+      "mode": "standard",
+      "input_type": "docx",
+      "pages": 1,
+      "characters": 15,
+      "source_unchanged": true,
+      "download_filename": "t2ui-source.zip",
+      "zip_sha256": "4b13fbd0f365ddae8f9e80ea4f30f59727ad448ac39c6a9c6b5d7fd3696d1877",
+      "zip_bytes": 1889,
+      "members": [
+        "t2ui-source.html"
+      ],
+      "member_bytes": {
+        "t2ui-source.html": 1759
+      },
+      "private_processing_record": "var/t2ui/9204d668-b05c-4335-a248-b0639d766c4f/attempt001/processing.json",
+      "sec_acceptance_confirmed": false
+    },
+    {
+      "mode": "standard",
+      "input_type": "pdf",
+      "pages": 23,
+      "characters": 85798,
+      "source_unchanged": true,
+      "download_filename": "06749LWD4_prelim_prospectus_automated.zip",
+      "zip_sha256": "13d784fbc1717ac7afa838546fc4bed314c0b0fa467845e200c23b6366e06e9f",
+      "zip_bytes": 2311996,
+      "members": [
+        "06749LWD4_prelim_prospectus_automated.html",
+        "image0001.jpg",
+        "image0002.png",
+        "image0003.png",
+        "image0004.png"
+      ],
+      "member_bytes": {
+        "06749LWD4_prelim_prospectus_automated.html": 2188398,
+        "image0001.jpg": 6928,
+        "image0002.png": 41398,
+        "image0003.png": 35259,
+        "image0004.png": 39423
+      },
+      "private_processing_record": "var/t2ui/9a93fb56-edec-4e95-9f78-61de404156b7/attempt001/processing.json",
+      "sec_acceptance_confirmed": false
+    },
+    {
+      "mode": "edgar",
+      "input_type": "docx",
+      "pages": 1,
+      "characters": 15,
+      "source_unchanged": true,
+      "download_filename": "independent.zip",
+      "zip_sha256": "38d68ad99b2257dda393e1fc565ec23b9541e567eb639f84650c8468572e672b",
+      "zip_bytes": 741,
+      "members": [
+        "independent.htm"
+      ],
+      "member_bytes": {
+        "independent.htm": 613
+      },
+      "private_processing_record": "var/t2ui/c33706ac-e60d-4e8d-8fc7-12f52d535c31/attempt001/processing.json",
+      "sec_acceptance_confirmed": false
+    }
+  ],
+  "tests": [
+    {
+      "command": "full active Python before final Node-only publication change",
+      "passed": 431,
+      "failed": 0,
+      "seconds": 559.47
+    },
+    {
+      "command": "current plus legacy package/gates targeted",
+      "passed": 101,
+      "failed": 0,
+      "seconds": 21.32
+    },
+    {
+      "command": "current packaging/offline/tamper suite",
+      "passed": 48,
+      "failed": 0,
+      "seconds": 9.21
+    },
+    {
+      "command": "pre-fix Node14 (failure retained)",
+      "passed": 13,
+      "failed": 1,
+      "seconds": 494.28
+    },
+    {
+      "command": "real Windows lock and cancellation focused",
+      "passed": 2,
+      "failed": 0,
+      "seconds": 6.93
+    },
+    {
+      "command": "final Node15 after publication fix",
+      "passed": 15,
+      "failed": 0,
+      "seconds": 80.12
+    },
+    {
+      "command": "final production Next/Chromium with real ZIP downloads",
+      "passed": 6,
+      "failed": 0,
+      "minutes": 2.4
+    },
+    {
+      "command": "final fixture/context/history/hash/link/format/lint/pip/read-only diff",
+      "result": "8/8 passed (0.459sec); fixtures/history unchanged; all checks passed"
+    }
+  ],
+  "known_limit": "supplied complex fixtures still fail EDGAR_CLIPPING_UNSUPPORTED page 1; Standard packages do not imply exact pixels"
+}

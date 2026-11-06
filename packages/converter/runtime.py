@@ -75,7 +75,7 @@ def execute(path):
     )
     report["workspace"] = workspace.name
     write_report(root / "result.json", report)
-    return 2
+    return 0 if report["status"] == "packaged" and report["final_conversion_complete"] else 2
 
 
 def supervise(path):

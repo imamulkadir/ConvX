@@ -1,45 +1,45 @@
 # ConvX - Simplification Refactor Status
 
-Current Stage: 6 - SEC EDGAR Renderer
+Current Stage: 7 - ZIP Packaging
 
 Stage Status: completed
 
-Last Completed Stage: 6
+Last Completed Stage: 7
 
-Next Stage: 7 - ZIP Packaging (explicit authorization required)
+Next Stage: 8 - Simplify Frontend (explicit authorization required)
 
 Last Updated: 2026-11-06 (Asia/Dhaka)
 
 ## Completed Work
 
-Revised stages 1-6 are complete within their documented supported cases. One Next.js server invokes bounded local Python processes. No token, public Python API, Redis/Celery/database, paid license or external conversion service. Run `.\.venv\Scripts\python dev.py`. Read [Stage 6 recovery](docs/stage6-resume.md) and [EDGAR renderer](docs/edgar-renderer.md) on resume; do not repeat completed stages or start Stage 7 without authorization.
+Revised stages 1-7 complete within documented supported cases. One Next.js server invokes bounded local Python. Start `.\.venv\Scripts\python dev.py`; no token, separate API, broker/database, paid license or hosted conversion service. Supported DOCX/PDF conversions now produce actual downloadable ZIPs. Read [Stage 7 recovery](docs/stage7-resume.md) and [ZIP contract](docs/zip-packaging.md) on resume. Do not repeat completed work or start Stage 8 automatically.
 
-## Stage 6 Implemented
+## Stage 7 Implemented
 
-Separate authoritative EDGAR normal-flow HTM renderer reuses verified shared PDF layout and existing typography/merged-table/graphic primitives, with fresh source consistency checks. Deterministic SEC-compatible <=32-character .htm names, local JPG/GIF normalization, exact native JPEG preservation when possible, selectable text, source-bound local validation and actual isolated browser DOM/print/pixel verification. Internal standard/edgar mode persists through eligible retries and safe hash-bound PNG previews. Standard remains the default, independent HTML5 renderer.
+Added separate typed source-verified-mode-zip-v1 packaging alongside unchanged legacy strict Word/SEC gates. Standard ZIP contains source-basename .html and exactly referenced local assets; EDGAR contains a deterministic SEC-compatible .htm and JPG/GIF. External ZIP retains source basename, including Unicode/spaces/apostrophes. All members root-only, exact source-qualified HTML bytes retained, no PDF/DOCX/JSON/CSS/JavaScript/reports/captures/unused files. Canonical deterministic stored ZIPs support UTF8 entries with byte/count limits and full header/CRC/payload/reference validation.
 
-The new CSS2/HTML4 formatting profile is an explicit local interpretation of EFM78, backed by the supplied manual and W3C scopes/mappings, separately hashed and reported. Default legacy strict uncertainty behavior remains intact. New-profile strict_passed and SEC acceptance stay false; whole-submission checks are separate. No legacy Word proof is forged. No page raster fallback for ordinary text. Actual missing words or major print displacement fail; all pixel differences remain measured.
+Every download freshly checks request/mode/attempt/source/PDF, HTML/assets, actual browser comparison/captures and archive contents. Existing capability, expiration, cancellation and state/version guards remain. Successful processing reports packaged and exits0; Next exposes completed/download. Missing/unsafe archives fail409; RFC5987 filenames escape punctuation correctly. Source-integrity/failure prevents final completion. No legacy strict or SEC acceptance is granted by a current package.
 
-Final review fixed potential CSS-looking disclosure rewriting by editing attributes only, with exact-body-text checks and regression coverage. A bounded rectangle-only exception handles actual LibreOffice page-edge rounding; nontrivial clipping still fails.
+Robustness: a real Node run exposed a finished failed-input result stranded as running after a swallowed publication exception. The original OS error was not captured. Added bounded Windows rename retries and explicit terminal publication-failure fallback; actual CreateFileW reader-lock, cancellation and final production tests pass. No original error code was invented.
 
-## Files Changed in Stage 6
+## Files Changed
 
-New edgar_html.py, sec_validation/flow_profile.py, new EDGAR unit/integration tests, EDGAR/recovery/evidence docs; updated input/runtime/mode transport, validator opt-in policy/result hashes, shared browser checks, preview/UI check labels, Node/production UI tests and active test configuration. Updated AGENTS/README/runtime docs, decisions/test history and progress records. Previous Stage 5 changes remain preserved. No source fixture, user .env/data or Git metadata/history was changed.
+New packaging/current.py and real current archive/offline/tamper tests; updated artifact dispatch/audit, input pipeline/runtime completion, Node secure download/publication handling, Node/production UI tests and input/EDGAR integration expectations. Updated AGENTS/README/runtime/renderer/ZIP docs, decisions/test history, archive evidence/recovery and progress records. Existing fixtures, user .env/data and Git metadata/history preserved; no Git writes.
 
 ## Tests and Evidence
 
-Full active pytest: 380 passed, 548.20 seconds. Final focused renderer/SEC/actual Standard browser suite: 111 passed, 19.30 seconds. Focused renderer/SEC/independent EDGAR native/image/table suite: 103 passed, 9 reference-named cases deselected, 37.17 seconds. New actual major-displacement/mixed-print negative cases: 2 passed, 8 deselected, 6.51 seconds. These focused scopes overlap; they are not additional unique full-suite totals. Full collection preceded final CSS-looking-text regression and two final negative cases; focused runs verify those additions.
+Full active Python: 431 passed,0 failed,559.47seconds. Targeted current+legacy package/gates:101 passed,21.32seconds. New current packaging/offline suite:48 passed,9.21seconds. Focused scopes overlap. Full Python precedes the final Node-only publication fix; final Node/browser runs verify that fix.
 
-Final Node: 13 passed, 62.35 seconds. Production Next/Chromium browser: 6 passed, 2.8 minutes, including genuine EDGAR DOCX processing/preview, Standard DOCX/PDF, upload/recovery/deletion and responsive light/dark keyboard/axe behavior. Final small serialization/label/error changes were checked by focused Python/browser tests and format/lint checks. No mock conversion or successful ZIP. Earlier failures and fixes are retained in [test history](docs/test-history.md).
+Final Node:15 passed,0 failed,80.12seconds, including actual ZIP downloads, tamper/missing-file rejection, Unicode/apostrophe names, EDGAR retry and real Windows reader lock. Final production Next/Chromium UI after the fix:6 passed,0 failed,2.4minutes; genuine EDGAR DOCX/Standard DOCX/PDF ZIP saves, source review, recovery/deletion, invalid input and responsive light/dark keyboard/axe. Earlier pre-fix Node14 run13passed/1failed (stranded state), retained in test history; first production UI6passed in3.5minutes. No mocked conversion/download.
 
-Actual production EDGAR smoke: one page, 15 source characters, zero assets, 613-byte HTM, local profile passed, strict false, zero missing printed words, maximum word-origin difference 1.6689 points. Screen channel MAE 0.06231/255, print 0.05753/255, exact pixels false. This small independent document is not evidence of complex-fixture success. See [actual evidence](docs/stage6-edgar-regression.json).
+Actual supplied PDF Standard ZIP:2,311,996bytes, exactly one2,188,398-byte .html and four images;23pages and85,798characters. Independent EDGAR DOCX ZIP741bytes contains independent.htm613bytes. Actual root names, CRCs and SHA verified. Extracted renamed Standard/EDGAR documents open offline with selectable source text and expected image pixels. See [evidence](docs/stage7-zip-regression.json).
 
-## Known Limitations
+## Limitations
 
-**Both supplied DOCX files and the supplied 23-page PDF fail EDGAR_CLIPPING_UNSUPPORTED on page 1.** Their genuine preparation, failure diagnostics and unchanged sources are verified. Successful EDGAR conversion for those fixtures is not claimed; Standard behavior remains available. Unsupported clipping, rotations/vertical text, annotations, overlap/unresolved table/vector/link cases fail explicitly. Mixed EDGAR print dimensions are unsupported; end-user paper settings can affect print. Local font/pixel differences, OCR and broader platform support remain limitations. No SEC acceptance or universal fidelity claim.
+All three supplied complex fixtures still fail EDGAR_CLIPPING_UNSUPPORTED page1 and receive no successful EDGAR ZIP; their Standard conversions package successfully. Local EDGAR CSS/character interpretation is not filing acceptance; strict_passed and sec_acceptance_confirmed stay false. Existing font/pixel differences, unsupported geometry, mixed EDGAR print sizes, OCR and platform qualification limits remain. Stored archives trade larger size for simple bounded mechanics; fresh audit adds local processing time. Single Node instance and public deployment isolation remain unqualified.
 
-## Next Steps and Approval Gate
+## Next Steps
 
-Successful current jobs stop at PACKAGING_ENGINE_PENDING; download stays disabled. ZIP packaging is Stage 7, final checkbox/minimal UI Stage 8, genuine four-path package integration Stage 9 and cleanup Stage 10. Status/checkpoint/decisions/test history are saved. All named test sessions have finished. Review, commit and push manually, then explicitly authorize Stage 7. Agents must perform no Git write operations.
+Stage 8: final minimal upload/EDGAR-checkbox interface. Stage 9: broader four-path integration after that interface. Stage 10: cleanup/optimization. Status/checkpoint/decisions/test history are saved; all named test sessions finished. Final fixture/hash/link/format checks follow in test history. Review, commit and push manually, then explicitly authorize Stage 8. Agents must perform no Git write operations.
 
-Suggested Commit Message: refactor: add manual-constrained EDGAR flow rendering
+Suggested Commit Message: refactor: package verified Standard and EDGAR ZIP downloads
