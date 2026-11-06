@@ -303,7 +303,7 @@ class DocumentLayout(Record):
     units: Literal["pdf_points"] = "pdf_points"
     coordinates: Literal["unrotated_crop_top_left"] = "unrotated_crop_top_left"
     source_pdf_sha256: Digest
-    mode: Literal["validated_generated_pdf", "inspection_only"]
+    mode: Literal["validated_generated_pdf", "inspection_only", "authoritative_pdf"]
     validation_report_sha256: Digest | None
     source_metadata: dict[str, str | None]
     rendering_provenance: dict[str, JsonValue]

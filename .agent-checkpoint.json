@@ -2,18 +2,19 @@
   "project": "convx",
   "schema_version": 2,
   "workflow": "simplification-refactor",
-  "current_stage": 2,
-  "current_stage_name": "Simplify Architecture",
+  "current_stage": 3,
+  "current_stage_name": "DOCX and PDF Input Support",
   "stage_status": "completed",
-  "last_completed_stage": 2,
-  "next_stage": 3,
-  "next_stage_name": "DOCX and PDF Input Support",
+  "last_completed_stage": 3,
+  "next_stage": 4,
+  "next_stage_name": "PDF Layout Analysis",
   "authorization_required": true,
   "awaiting_user_approval": true,
   "last_updated": "2026-11-06",
   "completed_stages": [
     1,
-    2
+    2,
+    3
   ],
   "implemented_components": [
     "existing-project audit and requirement gap matrix",
@@ -25,54 +26,65 @@
     "pure converter admission/config/artifact audit without service imports",
     "automatic local UI and one-command launcher without tokens or external API",
     "private local manifests, bounded scheduling, cancellation, restart failure and cleanup",
-    "clean runtime/development requirements and real Node/browser/converter tests"
+    "clean runtime/development requirements and real Node/browser/converter tests",
+    "secure DOCX/PDF uploads with unified authoritative PDF preparation/analysis",
+    "free DOCX tracked-change acceptance/export with explicit renderer compatibility warning",
+    "direct PDF admission without DOCX conversion; verified preview for both inputs",
+    "distinct authoritative layout provenance without legacy gate promotion",
+    "image-only/OCR limitation reporting and real input/security/Node/browser regressions"
   ],
   "pending_tasks": [
-    "User review/manual commit/push and explicit Stage 3 authorization",
-    "Stage 3 safe DOCX/PDF admission and generated/uploaded PDF authority",
-    "Stages 4-8 shared layout, separate renderers, mode-specific ZIP and minimal UI",
-    "Stage 9 genuine four-path conversion qualification and Stage 10 cleanup"
+    "User review/manual commit/push and explicit Stage 4 authorization",
+    "Stage 4 qualify and extend shared layout for authoritative PDF inputs",
+    "Stages 5-8 Standard/EDGAR renderers, validation, mode-specific ZIP and minimal UI",
+    "Stage 9 genuine four-path conversion integration and Stage 10 cleanup"
   ],
   "known_issues": [
-    "Legacy DOCX-only reference/SEC behavior retained; missing reference blocks honestly",
-    "No qualified successful whole-chain ZIP/high-level download; branch remains unqualified",
-    "Historical Word fixture failed all 23 pages; SEC styling/character ambiguities remain",
-    "Standard renderer, direct PDF upload, mode selection/packaging and OCR pending later stages",
-    "Single Node instance only; public access/rate controls and stronger OS isolation unqualified",
-    "Broad layout/font/OS/browser compatibility not demonstrated"
+    "Prepared inputs stop at MODE_RENDERER_PENDING; revised renderers and ZIP not implemented",
+    "No Standard/EDGAR mode selection or qualified successful whole-chain download",
+    "OCR unavailable; image-only pages reported without invented text",
+    "Historical Word comparison failed 23 pages; LibreOffice/Word equivalence unverified",
+    "SEC styling/character ambiguities and complex layout/font issues remain",
+    "Single Node instance only; public access/rate controls and stronger OS isolation unqualified"
   ],
   "last_test_results": [
     {
-      "command": "clean Python pytest --cov=converter --cov-report=term",
-      "passed": 270,
+      "command": "pytest tests/runtime tests/unit/test_pdf_analysis.py tests/unit/test_revisions.py -k not_real_reference",
+      "passed": 83,
+      "deselected": 3,
       "failed": 0,
-      "seconds": 322.86,
-      "parent_coverage_percent": 83
+      "seconds": 10.71
     },
     {
-      "command": "clean Python pytest tests/runtime -q after 18 added admission cases",
-      "passed": 25,
+      "command": "real supplied input regression reruns",
+      "native_docx_passed": 2,
+      "direct_pdf_passed": 1,
+      "direct_pdf_final_seconds": 28.24,
+      "note": "Separate runs; PDF outline false rejection corrected before final direct PDF rerun"
+    },
+    {
+      "command": "legacy HTML renderer/packaging/gate compatibility",
+      "passed": 89,
       "failed": 0,
-      "seconds": 4.43
+      "seconds": 8.11
     },
     {
       "command": "npm.cmd test",
-      "passed": 11,
+      "passed": 12,
       "failed": 0
     },
     {
-      "command": "npm.cmd run test:ui (production build, clean Python)",
-      "passed": 4,
-      "failed": 0,
-      "minutes": 1.2
+      "command": "npm.cmd run test:ui (production Next, clean Python)",
+      "passed": 5,
+      "failed": 0
     },
     {
-      "command": "targeted Ruff; clean pip check; web check:format",
+      "command": "Ruff and clean pip check",
       "result": "passed"
     },
     {
-      "command": "fixture/recovery checker; history hashes/links; read-only diff check; final launcher smoke",
-      "result": "8/8 fixture/context checks; all hashes/links/diff passed; root/session HTTP 200; unrelated preload excluded; owned launcher stopped"
+      "command": "final production browser/format/fixture/context/history hashes/links/read-only diff checks",
+      "result": "5 browser tests passed (1.8 minutes); 8/8 fixture-context checks; format/hashes/links/JSON/diff passed"
     }
   ],
   "historical_progress": {
@@ -103,13 +115,13 @@
     },
     "zip": "input-basename.zip; one document and exactly referenced local assets at root"
   },
-  "suggested_commit_message": "refactor: consolidate conversion runtime inside Next.js",
+  "suggested_commit_message": "refactor: unify DOCX and PDF input preparation",
   "git_operations_performed": false,
   "notes": [
-    "Stage 2 explicitly authorized by go on / continue. No Git write or Stage 3 implementation.",
-    "Retired services/workers and their tests remain for recovery; current setup does not install/start their infrastructure.",
-    "Real native missing-reference block and PDF preview tested; no fabricated successful conversion or relaxed eligibility.",
-    "Await explicit Stage 3 authorization; generated/uploaded PDF authority contract must be deliberately revised in that stage."
+    "Stage 3 explicitly authorized by continue after Stage 2 report. No Git write or Stage 4 implementation.",
+    "Generated/uploaded PDF is authoritative through a distinct model mode; legacy strict gate and reconstruction eligibility remain intact.",
+    "All successful input tests stop at MODE_RENDERER_PENDING; no renderer/ZIP success fabricated.",
+    "Await explicit Stage 4 authorization."
   ],
   "runtime_document": "docs/simplified-runtime.md"
 }

@@ -15,7 +15,7 @@ test("automatic internal service, real uploads, tab recovery and deletion", asyn
   page,
 }) => {
   await ready(page);
-  await page.getByLabel("Choose DOCX files").setInputFiles([
+  await page.getByLabel("Choose DOCX or PDF files").setInputFiles([
     {
       name: "first.docx",
       mimeType: "application/octet-stream",
@@ -40,15 +40,15 @@ test("automatic internal service, real uploads, tab recovery and deletion", asyn
   await expect(page.getByRole("table").getByRole("row")).toHaveCount(2);
 });
 
-test("real isolated native converter preserves the current reference failure and PDF review", async ({
+test("real native DOCX reaches authoritative analysis and PDF review", async ({
   page,
 }) => {
   test.setTimeout(120000);
   await ready(page);
-  await page.getByLabel("Choose DOCX files").setInputFiles(fixture);
+  await page.getByLabel("Choose DOCX or PDF files").setInputFiles(fixture);
   await page.getByRole("button", { name: "Start conversion" }).click();
   await expect(
-    page.getByText("PDF_REFERENCE_REQUIRED", { exact: true }).first(),
+    page.getByText("MODE_RENDERER_PENDING", { exact: true }).first(),
   ).toBeVisible({ timeout: 90000 });
   await expect(
     page.getByRole("button", { name: "Download ZIP" }),
@@ -84,7 +84,7 @@ test("invalid document is rejected by the real Python process", async ({
   page,
 }) => {
   await ready(page);
-  await page.getByLabel("Choose DOCX files").setInputFiles({
+  await page.getByLabel("Choose DOCX or PDF files").setInputFiles({
     name: "invalid.docx",
     mimeType: "application/octet-stream",
     buffer: Buffer.from("not a zip"),
@@ -96,6 +96,32 @@ test("invalid document is rejected by the real Python process", async ({
   await expect(
     page.getByRole("button", { name: "Download ZIP" }),
   ).toBeDisabled();
+});
+
+test("direct PDF selection reaches shared analysis without Word export", async ({
+  page,
+}) => {
+  test.setTimeout(90000);
+  await ready(page);
+  await page
+    .getByLabel("Choose DOCX or PDF files")
+    .setInputFiles(
+      path.resolve(
+        "../../tests/fixtures/06749LWD4_prelim_prospectus_automated.pdf",
+      ),
+    );
+  await page.getByRole("button", { name: "Start conversion" }).click();
+  await expect(
+    page.getByText("MODE_RENDERER_PENDING", { exact: true }).first(),
+  ).toBeVisible({ timeout: 60000 });
+  await expect(
+    page.getByRole("button", { name: "Download ZIP" }),
+  ).toBeDisabled();
+  await expect(
+    page.getByText("Accepted revisions", { exact: true }),
+  ).toHaveCount(0);
+  await page.getByRole("tab", { name: "Preview & compare" }).click();
+  await expect(page.locator("canvas")).toBeVisible();
 });
 
 test("responsive light/dark workspace and keyboard help remain accessible", async ({

@@ -49,12 +49,8 @@ export function safeName(value) {
     /[ .]$/.test(value)
   )
     fail(422, "INVALID_FILENAME", "Use a safe plain document filename");
-  if (!/^.+\.docx$/i.test(value))
-    fail(
-      415,
-      "UNSUPPORTED_FILE_TYPE",
-      "This implementation stage accepts DOCX only",
-    );
+  if (!/^.+\.(docx|pdf)$/i.test(value))
+    fail(415, "UNSUPPORTED_FILE_TYPE", "Choose a DOCX or PDF document");
   return value;
 }
 
@@ -343,10 +339,11 @@ export function createRuntime(options = {}) {
         ...current,
         state,
         stage:
-          result?.diagnostics?.[0]?.stage ||
-          (state === "completed" ? "completed" : "processing"),
+          result?.diagnostics?.find((item) => item.severity !== "warning")
+            ?.stage || (state === "completed" ? "completed" : "processing"),
         diagnostic_code:
-          result?.diagnostics?.[0]?.code ||
+          result?.diagnostics?.find((item) => item.severity !== "warning")
+            ?.code ||
           (state === "completed" ? null : "CONVERSION_PROCESS_FAILED"),
         download_available: state === "completed",
         version: Date.now(),
@@ -417,7 +414,10 @@ export function createRuntime(options = {}) {
         expires_at: new Date(Date.now() + 120000).toISOString(),
       });
       handle = await fs.open(
-        path.join(/* turbopackIgnore: true */ dir, "source.docx"),
+        path.join(
+          /* turbopackIgnore: true */ dir,
+          name.toLowerCase().endsWith(".pdf") ? "source.pdf" : "source.docx",
+        ),
         "wx",
         0o600,
       );
@@ -582,13 +582,18 @@ export function createRuntime(options = {}) {
       );
     try {
       const result = await report(id),
-        proof = result?.pdf_validation;
+        proof = result?.pdf_input || result?.pdf_validation;
       if (
         !result?.source_unchanged ||
         !proof?.candidate_sha256 ||
         digest(
           await read(
-            path.join(/* turbopackIgnore: true */ dir, "source.docx"),
+            path.join(
+              /* turbopackIgnore: true */ dir,
+              record.original_filename.toLowerCase().endsWith(".pdf")
+                ? "source.pdf"
+                : "source.docx",
+            ),
             maxBytes,
           ),
         ) !== record.source_sha256

@@ -360,6 +360,27 @@ def inspect_pdf(
     )
 
 
+def analyze_authoritative_pdf(
+    path: Path,
+    provenance: dict,
+    policy: AnalysisPolicy | None = None,
+    context: ProcessingContext | None = None,
+) -> DocumentLayout:
+    """Revised input contract; never asserts a legacy Word-reference gate passed.
+
+    The generated/uploaded PDF is the visual authority. Legacy reconstruction
+    eligibility remains false; later mode renderers must validate their own output.
+    """
+    return _extract(
+        path.resolve(),
+        "authoritative_pdf",
+        None,
+        policy or AnalysisPolicy(),
+        context or ProcessingContext(),
+        provenance=provenance,
+    )
+
+
 def write_layout(path: Path, layout: DocumentLayout, max_bytes: int | None = None) -> dict:
     limit = max_bytes if max_bytes is not None else int(layout.policy["max_layout_bytes"])
     if path.exists() or path.is_symlink():

@@ -147,7 +147,7 @@ export default function useConversions() {
       anchor.href = url;
       anchor.download = downloadName(
         response.headers.get("Content-Disposition"),
-        job.original_filename.replace(/\.docx$/i, ".zip"),
+        job.original_filename.replace(/\.(docx|pdf)$/i, ".zip"),
       );
       anchor.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);

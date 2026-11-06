@@ -1,8 +1,10 @@
-# Simplification Stage 2 — active runtime
+# Simplification Stage 3 — active runtime
 
 The active application is one self-hosted Next.js Node server. Internal handlers directly start the existing Python converter in a bounded child process. FastAPI, Redis, Celery, SQLAlchemy/PostgreSQL, an account system and separate workers are not runtime dependencies. Their original source and user data are retained for recovery; they are not started or installed by current setup.
 
-This stage changes architecture, not the document/rendering contract. The real existing DOCX revision/export/strict reference/SEC pipeline is retained. DOCX without required reference still blocks honestly. PDF input, the shared authoritative-input contract, Standard .html, revised EDGAR .htm and the minimal final page belong to the subsequent approved stages. A successful application startup is not a successful filing conversion.
+Stage 3 adds both input types to the internal runtime. DOCX validation accepts tracked changes in a separate copy, then free LibreOffice exports PDF; renderer identity/font-environment hashes and its Microsoft Word compatibility warning remain explicit. Uploaded PDFs go directly to bounded structural admission and shared extraction, with no DOCX conversion and no renderer call. Each source remains unchanged and is verified by SHA-256.
+
+The generated or uploaded PDF is the visual authority; there is no operator-provided reference requirement. This is a new explicit provenance contract, not a passing legacy Word-reference gate or promotion of inspection evidence. Original strict comparison/regression helpers remain unchanged. Revised Standard/EDGAR renderers and ZIP packaging are not implemented by Stage 3: prepared jobs stop at MODE_RENDERER_PENDING, with a real PDF preview and no download.
 
 ## Setup and startup
 
@@ -27,7 +29,7 @@ Optional settings go in apps/web/.env.local or the process environment: CONVX_PY
 
 ## Request and process flow
 
-The existing UI is a transitional adapter until Stage 8. It connects automatically to same-origin internal handlers and preserves useful progress, diagnostics, review and batch selection. Uploads now stream one document per raw-byte request with an encoded filename header; batch selection submits those requests sequentially. No new multipart dependency was added. There is no external API URL or service credential.
+The existing UI is a transitional adapter until Stage 8. It connects automatically to same-origin internal handlers and preserves useful progress, diagnostics, review and batch selection. Uploads now stream one DOCX or PDF per raw-byte request with an encoded filename header; batch selection submits those requests sequentially. No new multipart dependency was added. There is no external API URL or service credential.
 
 The POST handler verifies origin/loopback host, filename and transmitted byte count, and creates a new opaque UUID directory under var/conversions. A small atomic meta.json/request.json records upload/processing state. Existing var/artifacts and old databases remain untouched and are not exposed by the new routes. Only known opaque job references are served; there is no public job-list or arbitrary filesystem-path endpoint.
 
@@ -43,12 +45,14 @@ Temporary data expires after 24 hours. Periodic and admission-time cleanup remov
 
 Requests use private/no-store/nosniff headers. Cross-origin writes and writes using non-loopback hosts are rejected. There is no account system; unguessable conversion IDs are local capability references and must not be shared unintentionally. Use loopback binding. Diagnostic previews validate current source/PDF hashes and safe relative paths; HTM is a declared generated PNG capture, never active untrusted markup. Downloads capture ZIP bytes and invoke framework-free Python revalidation of complete evidence, actual files, archive manifest/CRC/SEC checks before serving.
 
-The current legacy engine has no demonstrated successful qualified whole-chain ZIP. Positive archive mechanics and negative gate checks are real; the high-level success/download branch remains unqualified. Neither a PDF preview nor a process exit without matching proof permits a filing-ready claim.
+The legacy engine has no demonstrated successful qualified whole-chain ZIP. Stage 3 does not reuse that engine's production eligibility for the new inputs. Its separate authoritative model records no external validation hash and remains ineligible for legacy reconstruction; later renderers must implement their own validations. Neither PDF preview nor successful input preparation permits a completed conversion claim.
+
+Admission rejects mismatched PDF signatures, encrypted/empty/embedded-file/active-content PDFs, repaired structures and unsafe page geometry. Existing bounded DOCX ZIP/XML/macro checks remain. Pages without extracted text but with images are reported as image-only; OCR is not installed/integrated, no OCR text is fabricated, and actual image assets remain in the private layout. Mixed/rotated text PDFs are tested; arbitrary scanned layouts and OCR accuracy are not qualified.
 
 ## Testing and preserved history
 
 The active pytest suite now targets converter unit/runtime/native/visual/regression checks. Service-specific unit tests were moved to tests/legacy, and original mixed integration files were copied there before retaining their converter cases. The old service-only integration modules remain historical opt-in tests and need their old dependencies/PYTHONPATH; they are not evidence for the new runtime. Package-security cases were adapted to the pure converter and retained in tests/runtime/test_admission.py. Root fixtures import old service packages lazily only if an old fixture is explicitly requested.
 
-Node tests run real Python admission and cover byte budgets/rollback, origin/filename/path guards, cancellation, interruption and expiry. Browser tests start only a production Next server and use the clean Python environment for real native DOCX processing, honest reference failure, PDF canvas review, invalid-input rejection and accessible light/dark views. No mocked conversion engine, external processing API or fabricated success is used. See [test history](test-history.md) and [current status](../PROJECT_STATUS.md).
+Node tests run real Python admission and cover byte budgets/rollback, origin/filename/path guards, cancellation, interruption and expiry. Browser tests start only a production Next server and use the clean Python environment for real native DOCX processing, honest renderer-pending boundaries, direct PDF input and PDF canvas review, invalid-input rejection and accessible light/dark views. No mocked conversion engine, external processing API or fabricated success is used. See [test history](test-history.md) and [current status](../PROJECT_STATUS.md).
 
-Stage 3 must deliberately replace the routine external Word-reference gate with the revised generated/uploaded-PDF authority contract. Keep Word-reference comparisons as regression evidence. Do not promote inspection/self-comparison into legacy passing proof. Mode-specific rendering/validation/ZIP changes remain their own stages.
+Stage 4 is the next approval-gated step: qualify and extend the shared layout model for both new input paths. Word-reference mismatch remains regression evidence; do not treat the authoritative PDF model as passing that historical comparison. Mode renderers, validation, ZIP and the final minimal UI remain later stages.

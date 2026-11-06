@@ -1,0 +1,52 @@
+{
+  "stage": 3,
+  "date": "2026-11-06",
+  "status": "completed",
+  "pdf_authority": "generated accepted-DOCX export or exact uploaded PDF",
+  "legacy_word_gate_promoted": false,
+  "supplied_inputs": {
+    "docx_variants_passed": 2,
+    "direct_pdf_passed": 1,
+    "pages_per_input": 23,
+    "source_hashes_unchanged": true,
+    "accepted_baseline_matches": true
+  },
+  "focused_python": {
+    "passed": 83,
+    "failed": 0,
+    "deselected_native_reference_cases": 3
+  },
+  "legacy_compatibility": {
+    "passed": 89,
+    "failed": 0
+  },
+  "node": {
+    "passed": 12,
+    "failed": 0
+  },
+  "production_browser": {
+    "passed": 5,
+    "failed": 0,
+    "minutes": 1.8
+  },
+  "scanned_pdf": {
+    "detected": true,
+    "ocr_integrated": false,
+    "fabricated_text": false
+  },
+  "current_terminal_outcome": "MODE_RENDERER_PENDING",
+  "final_zip_qualified": false,
+  "stage4_started": false,
+  "git_writes": false,
+  "final_checks": {
+    "fixture_context_passed": 8,
+    "fixture_hashes": "unchanged",
+    "historical_progress_hashes": "unchanged",
+    "active_documentation_links": "passed",
+    "checkpoint_json": "passed",
+    "ruff": "passed",
+    "pip_check": "passed",
+    "prettier": "passed",
+    "read_only_git_diff_check": "passed; LF/CRLF notices only"
+  }
+}

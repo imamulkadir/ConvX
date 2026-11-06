@@ -4,46 +4,48 @@
 
 Workflow: simplification-refactor (revised AGENTS.md; existing repository)
 
-Current Stage: 2 - Simplify Architecture
+Current Stage: 3 - DOCX and PDF Input Support
 
 Stage Status: completed
 
-Last Completed Stage: 2
+Last Completed Stage: 3
 
-Next Stage: 3 - DOCX and PDF Input Support (explicit authorization required)
+Next Stage: 4 - PDF Layout Analysis (explicit authorization required)
 
 Last Updated: 2026-11-06 (Asia/Dhaka)
 
 ## Completed Stages
 
-Stage 1 audited the existing project and produced the [staged migration plan](docs/refactor-audit.md). Stage 2 replaced the active service architecture with one self-hosted Next application invoking bounded local Python processes. Stage 3 is not started. Earlier implementation stages are preserved in [historical status](docs/history/pre-refactor-status.txt) and [historical checkpoint](docs/history/pre-refactor-checkpoint.json); they do not qualify the revised feature requirements.
+Stage 1: [existing-project audit and migration plan](docs/refactor-audit.md). Stage 2: one self-hosted Next.js application invokes bounded Python internally, without API tokens, FastAPI/Redis/Celery/database setup. Stage 3: both DOCX and PDF uploads now enter a unified authoritative PDF preparation/analysis path. Earlier implementation stages remain [historical status](docs/history/pre-refactor-status.txt) and [checkpoint](docs/history/pre-refactor-checkpoint.json), not evidence of revised-stage completion.
 
-## Stage 2 Implemented Features
+## Stage 3 Implemented Features
 
-- Single startup with `.\.venv\Scripts\python dev.py`; internal Next routes handle upload/status/diagnostics/preview/retry/delete/download. No API token, connection form, separate public Python server, Redis/Celery/database or account setup. See [setup and runtime](docs/simplified-runtime.md).
-- Real converter subprocess execution with actual progress/diagnostics, upload bounds, private UUID paths, one active conversion, cancellation/process-tree supervision, interrupted-state handling and retention cleanup. Existing conversion/security/content gates remain intact.
-- Pure converter admission/configuration/artifact audit modules remove API/ORM import dependencies. Existing API admission becomes a retired adapter. Download requests still independently validate evidence and captured ZIP bytes.
-- Minimal runtime/dev requirements and clean-environment lock. User .env, prior database/artifacts and all source fixtures preserved. Old services/workers/tests are explicitly historical, retained for recovery and later cleanup.
-- Transitional UI auto-connects to same-origin handlers and keeps real upload progress, diagnostics and PDF review. Final minimal page and optional mode checkbox remain Stage 8 work.
+- DOCX: existing bounded ZIP/XML/macro admission, tracked-change acceptance into a separate copy, free local LibreOffice PDF export and shared analysis. Original input stays unchanged; export/provider/font-environment hashes and a Word-compatibility warning are recorded.
+- PDF: extension/signature/size checks, bounded structural/object/page/geometry validation, rejection of encryption, embedded files, active content and repair requirements. Direct exact-byte private PDF copy goes to the same analyzer, without renderer calls or any DOCX conversion.
+- Explicit authoritative_pdf layout mode and generated/uploaded-PDF provenance replace the routine extra Word-reference prerequisite. No self-comparison, fabricated passing gate or inspection promotion. Legacy strict analysis/rendering/package checks remain unchanged and do not authorize these new models.
+- Image-only pages receive an OCR limitation with no invented text. Actual text, mixed dimensions/rotation, font/image/vector/table records use the existing extractor; Stage 4 must extend and qualify this shared model.
+- The existing upload page accepts both extensions, skips DOCX-only stages/checks for PDFs, labels structural PDF validation correctly and serves hash-verified previews for either type. The final minimal redesign and mode checkbox remain Stage 8.
+
+## Current Behavior and Limitations
+
+Prepared documents stop at MODE_RENDERER_PENDING after real analysis. Revised HTML renderers and ZIP packaging are pending approved later stages; no final conversion or downloadable ZIP is claimed. This is input-stage completion only. Standard .html/EDGAR .htm mode selection is not implemented yet. OCR is not installed/integrated. Complex layout/font/annotation issues remain explicit in private layout diagnostics; input preparation is not rendering qualification.
+
+Both supplied DOCX variants and the 23-page PDF reach shared analysis, with unchanged source hashes. Accepted DOCX content matches the supplied accepted baseline. Historical LibreOffice-vs-Word comparison still failed all 23 pages; those tests/evidence remain unchanged and do not block the revised input contract. LibreOffice layout equivalence to Word is not verified. SEC styling/character ambiguities and the positive whole-chain download remain unqualified.
 
 ## Files Changed
 
-Core: dev.py, requirements*.txt, pyproject.toml, packages/converter/{admission,runtime_config,runtime,artifacts,cli}.py and package metadata. Web: internal app/api routes, lib/server/runtime.mjs, token-free API/hook/components, Next config, browser setup/tests and Node runtime tests. Verification: active converter integration tests and pure admission/runtime cases; original service-specific cases preserved in tests/legacy. Documentation: README, AGENTS, environment examples, simplified-runtime, historical setup banners, decisions, test history, redacted Stage 2 evidence and progress records. Retired service/worker README files identify inactive code.
+New converter input_pipeline.py and pdf_admission.py; runtime.py selects source extension and invokes unified preparation; pdf_analysis/extract.py exposes the shared authoritative entry and layout/models.py records its distinct provenance mode. Web runtime/upload helpers/components support PDF and verified previews. Added tests/runtime/test_inputs.py and expanded real Node/browser tests. Updated README, AGENTS, runtime/pipeline documentation, decisions, test history, Stage 3 evidence and these progress records. No new dependencies or paid licenses. User .env, prior data, fixtures and Git history remain untouched.
 
 ## Testing
 
-Clean Python active suite: 270 passed, 0 failed, 83% parent-process coverage, 322.86 seconds. Subsequently added 18 pure admission cases; focused runtime suite: 25 passed, 0 failed. These are separate runs, not a claimed 288-test full-suite result. Node: 11 passed. Production-build browser tests: 4 passed, including real native conversion reaching the existing missing-reference block and actual PDF preview. No mocked conversion service. Format, targeted Ruff, pip, fixture/context/archive hashes and read-only diff checks passed; details in [test history](docs/test-history.md) and [Stage 2 evidence](docs/stage2-runtime-regression.json).
+Final fast focused Python input/admission/runtime/PDF-analysis/revisions: 83 passed, 3 native/reference cases deselected. Real supplied DOCX variants both passed the separate native regression rerun; final direct supplied PDF rerun passed (28.24 seconds). Legacy renderer/packaging compatibility checks: 89 passed. Initial broader focused run: 85 passed before the additional security regression; subsequent inline-action/outline guard defects were fixed and retested. Node: 12 passed. Production-build browser checks: 5 passed, covering actual DOCX/PDF uploads, native export/shared analysis, unchanged sources and verified PDF review. No mocked engine or successful ZIP simulation. See [test history](docs/test-history.md) and [Stage 3 evidence](docs/stage3-input-regression.json).
 
-## Known Limitations and Pending Tasks
+## Startup and Progress Tracking
 
-This architecture stage intentionally retains DOCX-only admission and the legacy strict reference/SEC pipeline. A DOCX without operator-provided reference blocks with PDF_REFERENCE_REQUIRED. The historical 23-page Word regression failed all pages; that evidence is unchanged. Styled SEC permissions/character ambiguities remain unresolved. No successful qualified whole-chain ZIP or high-level download path is demonstrated. No Standard renderer, direct PDF upload, new dual-mode packaging or scanned-PDF OCR exists yet. Do not describe application startup as successful document conversion.
+Run `.\.venv\Scripts\python dev.py` and open its printed URL. No token or independently started backend. See [setup and limits](docs/simplified-runtime.md).
 
-Stage 3 must adopt the revised generated/uploaded-PDF visual authority contract and both input types while keeping Word-reference comparison as honest regression evidence. Stages 4-8 implement shared layout, distinct Standard/EDGAR renderers, mode-specific ZIP and the minimal page; Stage 9 tests all four input/mode paths; Stage 10 final cleanup. Single Node instance only; public access/rate controls, OS isolation, broader platforms/fonts/layouts remain unqualified. Bounded temporary state uses product budgets documented in the runtime guide.
-
-## Progress Tracking and Resume
-
-Status, checkpoint, decisions and test history synchronized. Stage 2 completed; awaiting user review/manual commit/push and explicit Stage 3 authorization. Read AGENTS, these records, audit/runtime docs and relevant source; inspect read-only Git state and preserve all existing uncommitted work. No automatic advance or Git writes.
+Status/checkpoint/decisions/test history synchronized. Await review/manual commit/push and explicit Stage 4 authorization. Stage 4 will qualify/extend shared PDF layout; Stages 5-7 implement the two renderers and packaging, Stage 8 final UI, Stage 9 four-path integration and Stage 10 cleanup. Single Node instance only; public access/rate controls, stronger OS sandboxing and broader OS/browser/font qualification remain pending. No automatic stage advancement or Git writes.
 
 ## Suggested Commit Message
 
-refactor: consolidate conversion runtime inside Next.js
+refactor: unify DOCX and PDF input preparation

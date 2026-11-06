@@ -34,7 +34,7 @@ export function stageIndex(job) {
   const aliases = {
     queued: "uploaded",
     validating_docx: "validating",
-    validating_pdf: "generating_pdf",
+    validating_pdf: "analyzing_pdf",
     normalizing_assets: "preparing_assets",
   };
   return stages.findIndex(([key]) => key === (aliases[job.stage] || job.stage));
@@ -48,8 +48,8 @@ export function validateSelection(files, limits) {
   const valid = [],
     errors = [];
   for (const file of files) {
-    if (!file.name.toLowerCase().endsWith(".docx"))
-      errors.push(`${file.name}: choose a DOCX document.`);
+    if (!/\.(docx|pdf)$/i.test(file.name))
+      errors.push(`${file.name}: choose a DOCX or PDF document.`);
     else if (!file.size) errors.push(`${file.name}: this file is empty.`);
     else if (file.size > limits.max_upload_bytes)
       errors.push(`${file.name}: exceeds ${bytes(limits.max_upload_bytes)}.`);

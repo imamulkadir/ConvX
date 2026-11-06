@@ -52,7 +52,7 @@ async function isolated(t, options = {}) {
   return service;
 }
 async function terminal(service, id) {
-  for (let n = 0; n < 300; n++) {
+  for (let n = 0; n < 1200; n++) {
     const record = await service.status(id);
     if (["failed", "blocked", "completed"].includes(record.state))
       return record;
@@ -60,6 +60,30 @@ async function terminal(service, id) {
   }
   throw new Error("Real Python process did not finish");
 }
+
+test("real PDF upload reaches shared analysis and exposes only its verified PDF preview", async (t) => {
+  const service = await isolated(t);
+  const input = await fs.readFile(
+    path.join(
+      project,
+      "tests/fixtures/06749LWD4_prelim_prospectus_automated.pdf",
+    ),
+  );
+  const { jobs } = await service.create(upload(input, "independent-name.PDF"));
+  const job = await terminal(service, jobs[0].id);
+  assert.equal(job.state, "blocked");
+  assert.equal(job.diagnostic_code, "MODE_RENDERER_PENDING");
+  const result = (await service.validation(job.id)).document_processing;
+  assert.equal(result.input_preparation_complete, true);
+  assert.equal(result.visual_reference.method, "direct_uploaded_pdf");
+  assert.equal(result.revision_acceptance, null);
+  const preview = await service.preview(job.id, "pdf");
+  assert.deepEqual(Buffer.from(await preview.arrayBuffer()), input);
+  assert.equal((await service.preview(job.id)).pages, 23);
+  await assert.rejects(service.download(job.id));
+  await fs.appendFile(path.join(service.root, job.id, "source.pdf"), "changed");
+  await assert.rejects(service.preview(job.id, "pdf"));
+});
 test("real Python admission fails unsafe content without a broker or database", async (t) => {
   const service = await isolated(t);
   const { jobs } = await service.create(upload());
@@ -96,7 +120,7 @@ test("stream and declared byte limits reject uploads and roll back private files
   );
 });
 test("filenames and mutating origins cannot escape the internal application", () => {
-  for (const name of ["../x.docx", "a.pdf", ".docx", "x.docx\n", "C:\\x.docx"])
+  for (const name of ["../x.docx", "a.exe", ".docx", "x.docx\n", "C:\\x.docx"])
     assert.throws(() => safeName(name));
   assert.equal(safeName("Résumé.docx"), "Résumé.docx");
   assert.throws(

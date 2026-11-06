@@ -95,9 +95,10 @@ function JobDetail({ job, action, download }) {
       processing?.revision_acceptance,
     ],
     [
-      "PDF reference fidelity",
-      processing?.pdf_validation?.passed,
-      processing?.pdf_validation,
+      "PDF input validation",
+      processing?.pdf_input?.structurally_valid ||
+        processing?.pdf_validation?.passed,
+      processing?.pdf_input || processing?.pdf_validation,
     ],
     [
       "Local SEC validation",
@@ -110,7 +111,10 @@ function JobDetail({ job, action, download }) {
       processing?.visual_validation,
     ],
     ["Final package", report?.complete, processing?.packaging],
-  ];
+  ].filter(
+    ([label]) =>
+      !/\.pdf$/i.test(job.original_filename) || label !== "Accepted revisions",
+  );
   const diagnostics = [
     ...(report?.diagnostics || []),
     ...(processing?.sec_validation?.diagnostics || []),
@@ -181,6 +185,11 @@ function JobDetail({ job, action, download }) {
       >
         <div className="stage-track" aria-label="Processing stages">
           {stages.map(([key, label], n) => {
+            if (
+              /\.pdf$/i.test(job.original_filename) &&
+              ["accepting_revisions", "generating_pdf"].includes(key)
+            )
+              return null;
             const complete =
               (index >= 0 && n < index) || job.state === "completed";
             const current = n === index && !terminal.has(job.state);
@@ -466,7 +475,7 @@ export default function Workspace() {
               </div>
               <h1>Every detail matters.</h1>
               <p>
-                Convert your Word documents. Review every check. File with
+                Upload Word or PDF documents. Review every check. File with
                 clarity.
               </p>
             </div>
@@ -505,7 +514,7 @@ export default function Workspace() {
                   One document or a whole batch. Every file gets its own checks.
                 </p>
               </div>
-              <span className="subtle-badge">.DOCX ONLY</span>
+              <span className="subtle-badge">.DOCX / .PDF</span>
             </div>
             <div
               className={`drop-zone ${drag ? "dragging" : ""}`}
@@ -529,9 +538,9 @@ export default function Workspace() {
                 ref={input}
                 type="file"
                 multiple
-                accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 className="sr-only"
-                aria-label="Choose DOCX files"
+                aria-label="Choose DOCX or PDF files"
                 disabled={!ws.session || ws.busy}
                 onChange={(e) => {
                   choose(e.target.files);
@@ -741,7 +750,7 @@ export default function Workspace() {
                   <div className="empty-steps">
                     <span>
                       <FileText size={14} />
-                      Upload DOCX
+                      Upload DOCX or PDF
                     </span>
                     <ChevronRight size={12} />
                     <span>
@@ -820,9 +829,10 @@ export default function Workspace() {
             </button>
             <h2 id="help-title">A check at every step.</h2>
             <p>
-              ConvX accepts supported tracked revisions, exports an accepted
-              DOCX to PDF, reconstructs searchable HTM, and checks its content,
-              SEC markup and visual appearance.
+              ConvX accepts DOCX tracked revisions, exports the accepted
+              document to PDF, or analyzes an uploaded PDF directly. Later
+              stages add HTM output and checks for its content, SEC markup and
+              visual appearance.
             </p>
             <p>
               A ZIP becomes downloadable only after every required check passes.
@@ -835,8 +845,8 @@ export default function Workspace() {
               expire automatically.
             </p>
             <p>
-              The current Word-reference conversion still fails strict fidelity.
-              No premium renderer or paid service is used.
+              Input analysis is available; revised HTML rendering and ZIP output
+              are pending. No premium renderer or paid service is used.
             </p>
             <button className="btn btn-primary" onClick={() => setHelp(false)}>
               Back to workspace

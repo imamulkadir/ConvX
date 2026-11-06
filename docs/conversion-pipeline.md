@@ -1,3 +1,5 @@
+> Historical strict pipeline reference: active DOCX/PDF preparation now uses the generated/uploaded PDF as visual authority. See [current runtime](simplified-runtime.md). The Word-reference/SEC production gates below remain regression history, not the active input prerequisite.
+
 # Conversion and verification plan
 
 1. Stream DOCX into private staging; verify ZIP/OOXML type, quotas and relationship safety.

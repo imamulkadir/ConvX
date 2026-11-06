@@ -1,4 +1,4 @@
-"""Trusted Next -> Python process boundary; Stage 2 retains the real legacy converter."""
+"""Trusted Next -> bounded Python authoritative DOCX/PDF input boundary."""
 
 from __future__ import annotations
 
@@ -10,19 +10,18 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from converter.admission import validate_docx
 from converter.context import ProcessingContext
-from converter.packaging.engine import completion_ready
+from converter.input_pipeline import process_input
 from converter.pdf_export.libreoffice import LibreOfficeProvider
 from converter.pdf_export.process import run_process
-from converter.pipeline import process_docx, write_report
+from converter.pipeline import write_report
 from converter.runtime_config import AdmissionError, Limits
 from converter.sec_validation.validator import read_bounded
 
 
 class Request(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    original_filename: str = Field(min_length=6, max_length=240)
+    original_filename: str = Field(min_length=5, max_length=240)
     limits: Limits = Field(default_factory=Limits)
     attempt: int = Field(default=1, ge=1, le=3)
 
@@ -44,14 +43,14 @@ def execute(path):
     request = Request.model_validate_json(read_bounded(path, 32768))
     if root.is_symlink() or path.name != "request.json":
         raise ValueError("Invalid owned workspace")
-    source = root / "source.docx"
+    extension = Path(request.original_filename).suffix.lower()
+    source = root / ("source.pdf" if extension == ".pdf" else "source.docx")
     if source.is_symlink() or source.stat().st_size > request.limits.max_upload_bytes:
         raise ValueError("Unsafe or oversized source")
-    if not request.original_filename.lower().endswith(".docx"):
-        raise AdmissionError(415, "UNSUPPORTED_FILE_TYPE", "This stage accepts DOCX only")
+    if extension not in {".docx", ".pdf"}:
+        raise AdmissionError(415, "UNSUPPORTED_FILE_TYPE", "Choose a DOCX or PDF document")
     if any(ord(c) < 32 or c in '/\\:<>"|?*' for c in request.original_filename):
         raise ValueError("Unsafe original filename")
-    validate_docx(source, request.limits)
     marker = root / "cancelled"
     context = ProcessingContext(
         timeout_seconds=300,
@@ -61,23 +60,17 @@ def execute(path):
     configured = os.environ.get("CONVX_LIBREOFFICE_EXECUTABLE")
     local = Path(__file__).resolve().parents[2] / ".tools/libreoffice/program/soffice.com"
     executable = Path(configured) if configured else local if local.is_file() else None
-    # Existing strict reference/SEC/fidelity behavior is deliberately retained for Stage 2.
     workspace = root / f"attempt{request.attempt:03d}"
-    reference = root / "reference.pdf"
-    if reference.is_symlink():
-        raise ValueError("Linked reference")
-    report = process_docx(
+    report = process_input(
         source,
         workspace,
+        request.original_filename,
         LibreOfficeProvider(executable),
-        reference if reference.is_file() else None,
-        original_filename=request.original_filename,
+        limits=request.limits,
         context=context,
     )
     report["workspace"] = workspace.name
     write_report(root / "result.json", report)
-    if completion_ready(report):
-        return 0
     return 2
 
 

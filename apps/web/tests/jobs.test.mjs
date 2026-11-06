@@ -6,7 +6,7 @@ test("batch selection retains valid files and explains each rejection", () => {
   const result = validateSelection(
     [
       { name: "one.docx", size: 100 },
-      { name: "bad.pdf", size: 10 },
+      { name: "bad.txt", size: 10 },
       { name: "zero.docx", size: 0 },
       { name: "large.docx", size: 1025 },
       { name: "two.DOCX", size: 200 },
@@ -22,7 +22,7 @@ test("batch selection retains valid files and explains each rejection", () => {
 });
 test("unknown or failed stage never implies completed progress", () => {
   assert.equal(stageIndex({ state: "failed", stage: "processing_failed" }), -1);
-  assert.equal(stageIndex({ state: "running", stage: "validating_pdf" }), 3);
+  assert.equal(stageIndex({ state: "running", stage: "validating_pdf" }), 4);
   assert.equal(stageIndex({ state: "completed", stage: "completed" }), 10);
 });
 test("download response names support Unicode and reject path separators", () => {
