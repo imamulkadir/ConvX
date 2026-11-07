@@ -1,3 +1,5 @@
+> Historical Stage10 closeout snapshot. The subsequently authorized EDGAR repair is tracked in [current recovery](edgar-fix-resume.md) and [repair details](edgar-rectangular-layout.md); the tests and limitations below describe the pre-repair implementation.
+
 # Stage10 final review
 
 The final scheduled stage covers active-code/dependency cleanup, practical resource/security checks, current documentation and final tests. It does not qualify every possible document or a public multi-user deployment. Current progress is in [status](../PROJECT_STATUS.md), [recovery](stage10-resume.md) and [safe evidence](stage10-final-regression.json).

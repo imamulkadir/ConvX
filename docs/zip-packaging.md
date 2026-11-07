@@ -30,7 +30,7 @@ Downloads use `application/zip`, no-store/nosniff headers and RFC5987 UTF-8 Cont
 
 ## Limits retained
 
-All three supplied complex fixtures continue to fail EDGAR clipping checks on page 1 and receive no successful EDGAR ZIP. Their Standard path is packageable. Independent real PDF and native DOCX cases exercise the supported EDGAR path. The local CSS/character interpretation, font/rasterization differences, OCR/platform limits and unsupported geometry remain as documented in the renderers. Packaging does not waive renderer failures.
+Following the authorized repair, supplied complex DOCX/PDF fixtures can produce source/word/print-verified EDGAR ZIPs under the separate rectangular CSS2 profile with explicit layout notes. Independent curved clipping still fails and receives no ZIP. Standard packaging and the original flow-v1/legacy gates remain unchanged. See [repair details](edgar-rectangular-layout.md). The local CSS/character interpretation, font/rasterization differences, OCR/platform limits and unsupported geometry remain as documented in the renderers. Packaging does not waive renderer failures.
 
 The Stage 8 single-file interface and EDGAR checkbox now use this real download flow. Broader four-path integration qualification is Stage 9; final optimization/cleanup is Stage 10. Do not advance without explicit authorization. See [test history](test-history.md) and [decisions](decisions.md) for measured results and recovery details.
 

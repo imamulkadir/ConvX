@@ -1,3 +1,5 @@
+> Historical Stage10 closeout snapshot. The subsequently authorized EDGAR repair is tracked in [current recovery](edgar-fix-resume.md) and [repair details](edgar-rectangular-layout.md); the tests and limitations below describe the pre-repair implementation.
+
 # Final recovery - Stage10 completed
 
 Date:2026-11-06. User explicitly authorized Stage10 after completed Stage9. Initial Git status was clean; instructions/status/checkpoint/decisions/history read before changes. Stages1-10 complete within documented supported local cases. Current/last10, workflow_complete=true, next_stage=null, no pending stage approval. Do not restart completed stages or invent Stage11. Future implementation requires a new user request. No Git writes.

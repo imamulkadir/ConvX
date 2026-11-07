@@ -13,6 +13,11 @@ from PIL import Image, UnidentifiedImageError
 
 from converter.context import ProcessingContext
 from converter.sec_validation.flow_profile import flow_profile_digest, flow_style_allowed, flow_style_problems
+from converter.sec_validation.layer_profile import (
+    VERIFIED_REFERENCES,
+    layer_profile_digest,
+    layer_style_problems,
+)
 from converter.sec_validation.models import (
     ComplianceDiagnostic,
     ComplianceResult,
@@ -197,13 +202,18 @@ class Checks:
                     basis="unresolved",
                 )
                 continue
-            verified_html4 = self.policy.html_profile == "edgar_flow_v1" and code in name2codepoint.values()
+            verified_html4 = (
+                self.policy.html_profile in {"edgar_flow_v1", "edgar_layers_v1"}
+                and code in name2codepoint.values()
+            )
             if not (
                 code in (9, 10, 13)
                 or 32 <= code <= 126
                 or 160 <= code <= 255
                 or code in explicit
                 or verified_html4
+                or self.policy.html_profile == "edgar_layers_v1"
+                and code in VERIFIED_REFERENCES
             ):
                 self.diagnostic(
                     "ENTITY_MAPPING_UNVERIFIED",
@@ -284,7 +294,7 @@ class Checks:
                         basis="unresolved" if name in {"face", "width", "height"} else "confirmed_manual",
                     )
                 elif "MANY" in parents and not (
-                    self.policy.html_profile == "edgar_flow_v1"
+                    self.policy.html_profile in {"edgar_flow_v1", "edgar_layers_v1"}
                     and name == "style"
                     and flow_style_allowed(node.tag)
                 ):
@@ -297,9 +307,15 @@ class Checks:
                         basis="unresolved",
                     )
                 if name == "style":
-                    flow = self.policy.html_profile == "edgar_flow_v1"
+                    flow = self.policy.html_profile in {"edgar_flow_v1", "edgar_layers_v1"}
                     for code in (
-                        flow_style_problems(value or "") if flow else style_problems(value or "", profile)
+                        (
+                            layer_style_problems(value or "")
+                            if self.policy.html_profile == "edgar_layers_v1"
+                            else flow_style_problems(value or "")
+                        )
+                        if flow
+                        else style_problems(value or "", profile)
                     ):
                         self.diagnostic(
                             code,
@@ -527,7 +543,7 @@ def validate_files(
     context = context or ProcessingContext()
     context.check()
     checks = Checks(htm, policy, context)
-    if policy.html_profile == "edgar_flow_v1":
+    if policy.html_profile in {"edgar_flow_v1", "edgar_layers_v1"}:
         checks.diagnostic(
             "LOCAL_FORMATTING_PROFILE",
             "Formatting and HTML4 character mappings use the documented local EFM78 interpretation; this is not an SEC validation result",
@@ -716,7 +732,11 @@ def validate_files(
     passed = checks.complete and not any(d.severity == "error" for d in checks.diagnostics)
     return ComplianceResult(
         html_profile=policy.html_profile,
-        formatting_profile_sha256=flow_profile_digest() if policy.html_profile == "edgar_flow_v1" else None,
+        formatting_profile_sha256=layer_profile_digest()
+        if policy.html_profile == "edgar_layers_v1"
+        else flow_profile_digest()
+        if policy.html_profile == "edgar_flow_v1"
+        else None,
         registry_sha256=checks.registry_hash,
         manual_sha256=checks.profile["manual"]["sha256"],
         passed=passed,

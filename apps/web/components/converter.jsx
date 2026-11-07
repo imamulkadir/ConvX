@@ -351,6 +351,15 @@ export default function Converter() {
                   confirmed.
                 </p>
               )}
+              {edgar &&
+                warnings.some(
+                  (d) => d.code === "EDGAR_VERTICAL_TEXT_REFLOWED",
+                ) && (
+                  <p className="result-note">
+                    Vertical sidebar text is shown as horizontal notes. Review
+                    the preview before filing.
+                  </p>
+                )}
               {warnings.length > 0 && (
                 <details className="conversion-notes">
                   <summary>Conversion notes ({warnings.length})</summary>

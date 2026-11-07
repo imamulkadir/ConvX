@@ -245,7 +245,15 @@ test("unsupported EDGAR layout fails clearly without a download", async ({
 }) => {
   test.setTimeout(240000);
   await ready(page);
-  const id = await start(page, reference, "edgar");
+  const id = await start(
+    page,
+    {
+      name: "curved-clip.pdf",
+      mimeType: "application/pdf",
+      buffer: independentPdf({ curvedClip: true }),
+    },
+    "edgar",
+  );
   await expect(
     page.getByRole("heading", {
       name: "This document could not be converted",
@@ -264,6 +272,34 @@ test("unsupported EDGAR layout fails clearly without a download", async ({
     ).json()
   ).document_processing;
   expect(report.diagnostics.at(-1).code).toBe("EDGAR_CLIPPING_UNSUPPORTED");
+});
+
+test("supplied complex DOCX now downloads verified EDGAR with explicit sidebar notes", async ({
+  page,
+}) => {
+  test.setTimeout(300000);
+  await ready(page);
+  const source = path.resolve(
+    "../../tests/fixtures/06749LWD4_prelim_prospectus_automated.docx",
+  );
+  const id = await start(page, source, "edgar");
+  await download(page, "06749LWD4_prelim_prospectus_automated.zip");
+  await expect(
+    page.locator(".result-note").filter({ hasText: "Vertical sidebar text" }),
+  ).toBeVisible();
+  const report = (
+    await (
+      await page.request.get(`/api/v1/conversions/${id}/validation`)
+    ).json()
+  ).document_processing;
+  expect(report.html_generation.method).toBe("efm78-layered-css2-v1");
+  expect(report.pdf_input.page_count).toBe(23);
+  expect(report.sec_validation.strict_passed).toBe(false);
+  expect(
+    report.edgar_visual_validation.pages.every(
+      (p) => p.word_geometry.missing_words === 0,
+    ),
+  ).toBe(true);
 });
 
 test("invalid content is rejected and a running conversion can be cancelled", async ({

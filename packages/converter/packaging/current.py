@@ -156,7 +156,12 @@ def validate_payloads(payloads, mode, filename, context):
             result = validate_files(
                 root / filename,
                 tuple(root / n for n in sorted(assets)),
-                policy=ValidationPolicy(html_profile="edgar_flow_v1"),
+                policy=ValidationPolicy(
+                    html_profile="edgar_layers_v1"
+                    if parsed.xpath('/html/head/meta[@name="convx-edgar-profile"]/@content')
+                    == ["edgar_layers_v1"]
+                    else "edgar_flow_v1"
+                ),
                 context=context,
             )
             if not result.passed:
@@ -251,9 +256,13 @@ def audit_bytes(data, mode, filename, expected, context=None, policy=None):
 
 
 def verified_payloads(pdf, directory, mode, generation, visual, context):
-    expected_method = "efm78-flow-css2-v1" if mode == "edgar" else "verified-layout-native-svg-html5-v1"
+    expected_methods = (
+        {"efm78-flow-css2-v1", "efm78-layered-css2-v1"}
+        if mode == "edgar"
+        else {"verified-layout-native-svg-html5-v1"}
+    )
     if (
-        generation.get("method") != expected_method
+        generation.get("method") not in expected_methods
         or generation.get("generated") is not True
         or generation.get("source_pdf_sha256") != sha256(pdf)
         or visual.get("method")
@@ -283,6 +292,37 @@ def verified_payloads(pdf, directory, mode, generation, visual, context):
             or measured.get("word_geometry", {}).get("max_origin_error_pt", math.inf) > 6
         ):
             reject("EDGAR printed content or position validation failed")
+    if generation.get("method") == "efm78-layered-css2-v1":
+        import pymupdf
+
+        from converter.edgar_reflow import vertical_plan
+        from converter.sec_validation.layer_profile import layer_profile_digest
+
+        if (
+            generation.get("sec_validation", {}).get("html_profile") != "edgar_layers_v1"
+            or generation["sec_validation"].get("formatting_profile_sha256") != layer_profile_digest()
+        ):
+            reject("Changed EDGAR layered formatting profile")
+        with pymupdf.open(pdf) as source:
+            plans = {str(i + 1): vertical_plan(page)["words"] for i, page in enumerate(source)}
+        if plans != generation.get("reflow_targets"):
+            reject("EDGAR reflow differs from independent source plan")
+        from converter.edgar_words import word_geometry
+
+        printed = directory.parent / "edgar-visual/rendered.pdf"
+        if sha256(printed) != visual.get("artifact_sha256", {}).get("rendered.pdf"):
+            reject("Changed actual EDGAR browser print")
+        with pymupdf.open(pdf) as original, pymupdf.open(printed) as output_pdf:
+            if len(original) != len(output_pdf):
+                reject("Changed browser print page coverage")
+            for i, (source_page, printed_page) in enumerate(zip(original, output_pdf, strict=True)):
+                measured = word_geometry(source_page, printed_page, True, plans[str(i + 1)])
+                if (
+                    measured != visual["pages"][i]["word_geometry"]
+                    or measured["missing_words"]
+                    or measured["max_origin_error_pt"] > 6
+                ):
+                    reject("Actual browser print loses or displaces source disclosure")
     name = generation["filename"]
     if (
         name != "document.html"

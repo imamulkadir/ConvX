@@ -1,6 +1,11 @@
-export function independentPdf() {
-  const content =
+export function independentPdf({ curvedClip = false } = {}) {
+  let content =
     "BT /F1 12 Tf 40 500 Td (Independent EDGAR disclosure 123.45) Tj ET";
+  if (curvedClip)
+    content =
+      "q 30 450 m 30 550 350 550 350 450 c 350 400 30 400 30 450 c W n " +
+      content +
+      " Q";
   const objects = [
     "<< /Type /Catalog /Pages 2 0 R >>",
     "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",

@@ -24,7 +24,7 @@ def verify_standard(source, directory, generation, workspace, context):
     inputs = workspace / "input"
     inputs.mkdir(mode=0o700)
     names = [generation["filename"], *generation["assets"]]
-    edgar = generation.get("method") == "efm78-flow-css2-v1"
+    edgar = generation.get("method") in {"efm78-flow-css2-v1", "efm78-layered-css2-v1"}
     valid_names = (
         valid_filename(names[0], (".htm",))
         and all(re.fullmatch(r"image[0-9]{3,}\.(jpg|gif)", n) for n in names[1:])
@@ -118,7 +118,7 @@ def worker(request):
 
     root = Path(request["workspace"])
     generation = request["generation"]
-    edgar = generation.get("method") == "efm78-flow-css2-v1"
+    edgar = generation.get("method") in {"efm78-flow-css2-v1", "efm78-layered-css2-v1"}
     selector = "body > div" if edgar else "section.page"
     resources = {name: (root / "input" / name).read_bytes() for name in request["names"]}
     os.environ["PLAYWRIGHT_BROWSERS_PATH"] = request["browser_cache"]
@@ -239,25 +239,17 @@ def worker(request):
                     if edgar:
                         # Independent actual print check: no blur, shift or tolerance
                         # correction is applied to the raw pixel comparisons below.
-                        buckets = {}
-                        for word in printed[index].get_text("words"):
-                            buckets.setdefault(word[4], []).append(word)
-                        missing, offsets = 0, []
-                        for word in source[index].get_text("words"):
-                            candidates = buckets.get(word[4], [])
-                            if not candidates:
-                                missing += 1
-                                continue
-                            nearest = min(candidates, key=lambda c: abs(c[0] - word[0]) + abs(c[1] - word[1]))
-                            offsets.append(max(abs(nearest[0] - word[0]), abs(nearest[1] - word[1])))
-                            candidates.remove(nearest)
-                        word_geometry = {
-                            "missing_words": missing,
-                            "max_origin_error_pt": max(offsets, default=0),
-                            "matched_words": len(offsets),
-                        }
-                        if missing or word_geometry["max_origin_error_pt"] > 6:
-                            return {"error": "EDGAR_LAYOUT_INCOMPATIBLE"}
+                        from converter.edgar_words import word_geometry as measure_words
+
+                        layered = generation.get("method") == "efm78-layered-css2-v1"
+                        word_geometry = measure_words(
+                            source[index],
+                            printed[index],
+                            layered,
+                            generation.get("reflow_targets", {}).get(str(index + 1)) if layered else None,
+                        )
+                        if word_geometry["missing_words"] or word_geometry["max_origin_error_pt"] > 6:
+                            return {"error": "EDGAR_LAYOUT_INCOMPATIBLE", "page": index + 1, **word_geometry}
                     if any(
                         abs(a - b) > 0.1
                         for a, b in zip(
@@ -307,6 +299,8 @@ def worker(request):
             if denied or served != set(resources):
                 return {"error": "STANDARD_BROWSER_RESOURCE_MISMATCH"}
             identical = all(p["screen"]["pixel_identical"] and p["print"]["pixel_identical"] for p in results)
+            if generation.get("method") == "efm78-layered-css2-v1":
+                artifacts.append("rendered.pdf")
             report = {
                 "method": "chromium-edgar-flow-screen-print-v1"
                 if edgar

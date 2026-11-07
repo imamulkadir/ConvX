@@ -101,6 +101,35 @@ def supervise(path):
             512 * 1024 * 1024,
         )
     except Exception as exc:
+        # Keep a safe failure reason even if the child published its report just
+        # before a supervisor/resource failure. Never promote such a package.
+        failure = {
+            "code": "CONVERSION_" + exc.diagnostic.code
+            if isinstance(exc, ConversionFailure)
+            else "CONVERSION_PROCESS_FAILED",
+            "stage": "processing",
+            "description": exc.diagnostic.description
+            if isinstance(exc, ConversionFailure)
+            else "Conversion process supervision failed",
+            "remediation": "Review the local process diagnostics and resource budget",
+        }
+        write_report(
+            root / "supervision.json",
+            {
+                "error_type": type(exc).__name__,
+                "code": failure["code"],
+                "description": failure["description"],
+                "errno": getattr(exc, "errno", None),
+                "winerror": getattr(exc, "winerror", None),
+            },
+        )
+        if (root / "result.json").is_file():
+            report = json.loads(read_bounded(root / "result.json", 8 * 1024 * 1024))
+            if report.get("status") == "packaged":
+                report["status"] = "failed"
+                report["final_conversion_complete"] = False
+                report.setdefault("diagnostics", []).append(failure)
+                write_report(root / "result.json", report)
         if not (root / "result.json").is_file():
             write_report(
                 root / "result.json",

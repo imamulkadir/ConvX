@@ -61,6 +61,9 @@ def verify_archive(archive_path, pdf_path, report):
     else:
         pages = tree.xpath("/html/body/div")
         output = ["".join(p.itertext()) for p in pages]
+    from converter.edgar_symbols import canonical_symbol
+
+    layered = report.get("html_generation", {}).get("method") == "efm78-layered-css2-v1"
     flags = pymupdf.TEXTFLAGS_RAWDICT & ~pymupdf.TEXT_PRESERVE_IMAGES & ~pymupdf.TEXT_MEDIABOX_CLIP
     source_pages, source_lines = [], []
     with pymupdf.open(pdf_path) as pdf:
@@ -69,7 +72,11 @@ def verify_archive(archive_path, pdf_path, report):
             page.set_rotation(0)
             raw = page.get_text("rawdict", flags=flags, clip=pymupdf.INFINITE_RECT(), sort=False)
             lines = [
-                "".join(c["c"] for s in line["spans"] for c in s["chars"])
+                "".join(
+                    canonical_symbol(s["font"], c["c"]) if layered else c["c"]
+                    for s in line["spans"]
+                    for c in s["chars"]
+                )
                 for block in raw["blocks"]
                 if block["type"] == 0
                 for line in block["lines"]
@@ -82,10 +89,27 @@ def verify_archive(archive_path, pdf_path, report):
         assert [Counter(t) for t in source_pages] == [Counter(t) for t in output], (
             "EDGAR disclosure characters changed"
         )
-        actual_lines = ["".join(p.itertext()) for p in tree.xpath("/html/body//p")]
-        assert Counter(re.findall(r"\S+", "\n".join(source_lines))) == Counter(
-            re.findall(r"\S+", "\n".join(actual_lines))
-        ), "EDGAR words or financial figures changed"
+        if layered:
+            from converter.edgar_words import word_geometry
+            from converter.ooxml import sha256
+
+            workspace = pdf_path.parents[len(Path(report["generated_pdf_artifact"]).parts) - 1]
+            printed = workspace / "edgar-visual/rendered.pdf"
+            visual = report["edgar_visual_validation"]
+            assert sha256(printed) == visual["artifact_sha256"]["rendered.pdf"]
+            with pymupdf.open(pdf_path) as source, pymupdf.open(printed) as output_pdf:
+                assert len(source) == len(output_pdf)
+                for i, (original, actual_page) in enumerate(zip(source, output_pdf, strict=True)):
+                    measured = word_geometry(
+                        original, actual_page, True, report["html_generation"]["reflow_targets"][str(i + 1)]
+                    )
+                    assert measured == visual["pages"][i]["word_geometry"]
+                    assert measured["missing_words"] == 0 and measured["max_origin_error_pt"] <= 6
+        else:
+            actual_lines = ["".join(p.itertext()) for p in tree.xpath("/html/body//p")]
+            assert Counter(re.findall(r"\S+", "\n".join(source_lines))) == Counter(
+                re.findall(r"\S+", "\n".join(actual_lines))
+            ), "EDGAR words or financial figures changed"
     visual = report[mode + "_visual_validation"]
     return {
         "mode": mode,
@@ -100,6 +124,8 @@ def verify_archive(archive_path, pdf_path, report):
         "source_text_verified": True,
         "text_check": "exact_ordered_character_ledger"
         if mode == "standard"
+        else "per_page_characters_and_source_verified_printed_words"
+        if layered
         else "per_page_characters_and_word_multiset",
         "screen_max_mean_channel_error": max(
             p["screen"]["mean_absolute_channel_error"] for p in visual["pages"]

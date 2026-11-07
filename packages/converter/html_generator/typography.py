@@ -24,7 +24,7 @@ def font_family(name):
     return name if re.fullmatch(r"[A-Za-z][A-Za-z0-9 -]{0,95}", name) else None
 
 
-def render_line(line, parent, emitted, hrefs, anchors, selected=None, offset=(0, 0)):
+def render_line(line, parent, emitted, hrefs, anchors, selected=None, offset=(0, 0), run_records=None):
     spans = [s for s in line.spans if selected is None or any(c.id in selected for c in s.characters)]
     if not spans:
         return
@@ -71,6 +71,8 @@ def render_line(line, parent, emitted, hrefs, anchors, selected=None, offset=(0,
         advance = following - char.origin[0]
         style += f";display:inline-block;width:{pt(max(0, advance))};margin-left:{pt(char.origin[0] - previous_end)}"
         target = etree.SubElement(target, "font", style=style)
+        if run_records is not None:
+            run_records.append((target, span, tuple(c for _, c in run)))
         if span.bold_hint:
             target = etree.SubElement(target, "b")
         if span.italic_hint:

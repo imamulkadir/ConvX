@@ -10,6 +10,41 @@ from converter.artifacts import private_path
 from converter.runtime_config import AdmissionError, Limits
 
 
+def test_supervisor_revokes_published_completion_after_monitor_failure(tmp_path, monkeypatch):
+    """A deliberately untrusted completion sentinel must never grant success."""
+    import signal
+
+    from converter import runtime
+    from converter.errors import fail
+    from converter.visual_validation.browser import browser_cache
+
+    monkeypatch.setenv("PLAYWRIGHT_BROWSERS_PATH", str(browser_cache().resolve()))
+
+    def monitor_failure(*args, **kwargs):
+        runtime.write_report(
+            tmp_path / "result.json",
+            {"status": "packaged", "final_conversion_complete": True, "diagnostics": []},
+        )
+        raise fail(
+            "RENDERER_MEMORY_LIMIT",
+            "processing",
+            "Memory monitor rejected the child",
+            "Review the resource budget",
+        )
+
+    monkeypatch.setattr(runtime, "run_process", monitor_failure)
+    handlers = {sig: signal.getsignal(sig) for sig in (signal.SIGINT, signal.SIGTERM)}
+    try:
+        assert runtime.supervise(tmp_path / "request.json") == 2
+    finally:
+        for sig, handler in handlers.items():
+            signal.signal(sig, handler)
+    report = json.loads((tmp_path / "result.json").read_text())
+    assert report["status"] == "failed" and not report["final_conversion_complete"]
+    assert report["diagnostics"][-1]["code"] == "CONVERSION_RENDERER_MEMORY_LIMIT"
+    assert json.loads((tmp_path / "supervision.json").read_text())["error_type"] == "ConversionFailure"
+
+
 def test_pure_admission_accepts_real_docx_and_rejects_active_package(tmp_path):
     source = tmp_path / "input.docx"
     source.write_bytes(docx_bytes())

@@ -10,7 +10,7 @@ Stage9 tests use actual local LibreOffice, PyMuPDF, the bounded Python runtime, 
 
 The browser suite saves real HTTP ZIP responses and invokes that verifier. It covers both input types/modes, source-basename filenames, current-job recovery/reset, cancellation, network recovery, optional comparison, accessibility and the supplied reference PDF. Safe summaries live under ignored `var/refactor-stage9/downloads`; no private reports, source PDFs or screenshots enter user ZIPs.
 
-The supplied three complex inputs run in Standard Mode with source/ZIP character checks. Their EDGAR cases must fail `EDGAR_CLIPPING_UNSUPPORTED` on page1 and create no archive anywhere in the attempt directory. This limitation is a recorded failure, not successful EDGAR support.
+The supplied three complex inputs run in Standard with source/ZIP character checks and now run through the repaired rectangular EDGAR strategy with actual word/print/ZIP validation and explicit layout notes. Independent curved clipping must still fail EDGAR_CLIPPING_UNSUPPORTED with no archive. The former all-fixture failure is preserved in Stage6-10 historical evidence, not treated as the current expected result.
 
 ## Discovered typography defect
 

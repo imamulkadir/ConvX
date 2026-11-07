@@ -116,7 +116,7 @@ def run_process(
                 raise fail(
                     "RENDERER_FAILED",
                     "generating_pdf",
-                    "The renderer returned an error",
+                    f"The renderer returned exit status {process.returncode}",
                     "Inspect the renderer environment; output is not validated",
                 )
             output.seek(0)

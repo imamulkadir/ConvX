@@ -10,7 +10,7 @@
   "next_stage_name": null,
   "authorization_required": false,
   "awaiting_user_approval": false,
-  "last_updated": "2026-11-06",
+  "last_updated": "2026-11-07",
   "completed_stages": [
     1,
     2,
@@ -64,11 +64,9 @@
     "Current single-server deployment/interface/SEC/limitations docs with byte-exact archived originals",
     "Verified final native/browser suites and explicit terminal ten-stage recovery checkpoint"
   ],
-  "pending_tasks": [
-    "User review/manual commit and push; no further implementation stage scheduled"
-  ],
+  "pending_tasks": [],
   "known_issues": [
-    "Supplied complex EDGAR inputs fail EDGAR_CLIPPING_UNSUPPORTED page1 with no ZIP",
+    "Vertical marginal text is explicitly reflowed; forbidden external link destinations are inactive; curved/unsupported EDGAR geometry still fails without a ZIP",
     "Local EDGAR interpretation is not legacy strict proof or SEC acceptance",
     "Measured pixel/font differences and LibreOffice Word-equivalence limitations remain",
     "OCR not integrated; unsupported geometry/mixed EDGAR print/platform limitations remain",
@@ -76,43 +74,30 @@
   ],
   "last_test_results": [
     {
-      "command": "final full active Python suite",
-      "passed": 442,
+      "command": "full active Python suite",
+      "passed": 460,
       "failed": 0,
-      "seconds": 664.9
+      "seconds": 763.76
     },
     {
-      "command": "final Node with actual download overlap/finally/repeated audit tests",
+      "command": "Node server suite",
       "passed": 15,
       "failed": 0,
-      "seconds": 90.85,
-      "note": "obsolete unused-helper test removed; previous16 now15"
+      "seconds": 100.9021768
     },
     {
-      "command": "final production build/Next/Chromium UI and saved-ZIP QA",
-      "passed": 11,
+      "command": "production build and actual Chromium UI suite",
+      "passed": 12,
       "failed": 0,
-      "minutes": 3.7
+      "minutes": 5.0
     },
     {
-      "command": "npm audit --omit=dev --json",
-      "result": "0 reported production vulnerabilities; scoped advisory check"
+      "command": "live HTTP DOCX EDGAR conversion, saved ZIP and independent source/print/assets/CRC verification",
+      "result": "passed;23pages/84555characters/1574472bytes/oneHTM+fourJPG; original unchanged"
     },
     {
-      "command": "clean Python import/package inventory and pip check",
-      "result": "passed; FastAPI/Celery/Redis/SQLAlchemy/psycopg/Aspose absent; all active runtime dependencies used"
-    },
-    {
-      "command": "final Ruff/check+format and web Prettier",
-      "result": "passed; old verifier import order corrected"
-    },
-    {
-      "command": "preview membership synthetic microbenchmark only",
-      "result": "6000 names/2000 stress pages:296.1231ms includes vs3.2154ms Set; all6000 matches; not conversion timing or admitted capacity"
-    },
-    {
-      "command": "final fixture/context/history/hash/link/evidence/format/read-only diff",
-      "result": "8/8 passed in0.112s; terminal checkpoint and8guide/2root-history hashes passed; fixture hashes unchanged; final Prettier passed after newline normalization"
+      "command": "final fixture/context/history/hash/link/format verification",
+      "result": "passed:8/8 fixture/context tests in0.218s; historical root hashes and original strict/flow policy bytes unchanged; current links resolve; Ruff check/format19files and web Prettier passed"
     }
   ],
   "historical_progress": {
@@ -143,24 +128,36 @@
     },
     "zip": "input-basename.zip; one document and exactly referenced local assets at root"
   },
-  "suggested_commit_message": "refactor: finalize local converter cleanup and resource bounds",
+  "suggested_commit_message": "fix: preserve clipped EDGAR layouts with verified text and ZIP output",
   "git_operations_performed": false,
   "notes": [
     "Stage10 explicitly authorized and completed. Stages1-10 complete within documented supported local cases; no Stage11 scheduled.",
-    "Final full442/Node15/production UI11 passed; all test sessions finished and QA-owned servers stopped.",
     "Fresh audit/source/asset/capture/ZIP and legacy strict boundaries remain unchanged; no proof cache or renderer relaxation.",
-    "All supplied complex EDGAR inputs still fail clipping page1 without ZIP. No SEC acceptance/exact pixels/Word equivalence claim.",
     "No Git writes, dependency changes, source fixture/user.env/data or Git metadata changes. Prior core docs archived byte-exactly.",
     "Current runtime report.stage remains7 intentionally; development completion does not alter packaging capability/proof schema.",
-    "Final recovery/fixture/history/hash/link checks recorded in test history. Future work requires a new user request."
+    "Final recovery/fixture/history/hash/link checks recorded in test history. Future work requires a new user request.",
+    "Post-refactor EDGAR repair completed with full460/Node15/productionUI12 and actual saved live HTTP ZIP verification; explicit reflow/link/pixel/SEC limitations remain. No Stage11."
   ],
   "runtime_document": "docs/simplified-runtime.md",
   "layout_document": "docs/shared-layout.md",
-  "recovery_document": "docs/stage10-resume.md",
+  "recovery_document": "docs/edgar-fix-resume.md",
   "edgar_document": "docs/edgar-renderer.md",
   "packaging_document": "docs/zip-packaging.md",
   "interface_document": "docs/simple-interface.md",
   "integration_document": "docs/integration-testing.md",
   "workflow_complete": true,
-  "final_review_document": "docs/stage10-review.md"
+  "final_review_document": "docs/stage10-review.md",
+  "latest_investigation": {
+    "date": "2026-11-07",
+    "request": "User explicitly requested fix for complex EDGAR clipping conversion failure",
+    "status": "completed",
+    "document": "docs/edgar-rectangular-layout.md",
+    "live_retry": "Completed same-source23-page DOCX via running localhost3000; actual downloadedZIP independently verified",
+    "cause": "Former partial-page clip rejection and flow partition limits, repaired with source-associated rectangular CSS2 reconstruction",
+    "renderer_changed": true,
+    "pending_tasks": [],
+    "progress": "Full460/Node15/productionUI12 passed. Actual1574472byte HTTPZIP verified:23pages/84555characters/oneHTM+fourJPG. All3supplied complex EDGAR inputs package successfully under separate local profile; explicit sidebar reflow, inactive prohibited links and measured pixel differences remain.",
+    "evidence": "docs/edgar-clip-regression.json",
+    "original_live_failure": "EDGAR_CLIPPING_UNSUPPORTED page1; no ZIP before repair"
+  }
 }

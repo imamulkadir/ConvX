@@ -7,6 +7,7 @@ from pathlib import Path
 from lxml import etree, html
 
 from converter.assets.normalize import normalize_assets, publish
+from converter.edgar_layers import LayerBuilder
 from converter.errors import fail
 from converter.html_generator.generator import Builder
 from converter.html_generator.models import GenerationPolicy, GenerationResult
@@ -15,6 +16,7 @@ from converter.ooxml import sha256
 from converter.pdf_analysis.policy import AnalysisPolicy
 from converter.pdf_analysis.verification import verify_layout
 from converter.sec_validation.flow_profile import PROFILE
+from converter.sec_validation.layer_profile import PROFILE as LAYER_PROFILE
 from converter.sec_validation.models import ValidationPolicy
 from converter.sec_validation.validator import validate_files
 
@@ -54,37 +56,29 @@ def render_edgar(source, layout, directory, original_filename, context):
             "Annotation appearances cannot be reproduced by the permitted flow renderer",
             "Flatten authorized annotations into a static source PDF",
         )
-    for page in layout.pages:
-        bounds = page.geometry.unrotated_bounds
-        if any(
-            v.kind == "clip"
-            and not (
-                len(v.items) == 1
-                and v.items[0].command == "re"
-                and v.items[0].rect is not None
-                and all(abs(a - b) <= 0.05 for a, b in zip(v.items[0].rect, bounds, strict=True))
-                and all(
-                    v.items[0].rect[0] <= c.bbox[0]
-                    and v.items[0].rect[1] <= c.bbox[1]
-                    and v.items[0].rect[2] >= c.bbox[2]
-                    and v.items[0].rect[3] >= c.bbox[3]
-                    for block in page.text_blocks
-                    for line in block.lines
-                    for span in line.spans
-                    for c in span.characters
-                )
+    needs_layers = any(
+        v.kind == "clip"
+        and not (
+            len(v.items) == 1
+            and v.items[0].command == "re"
+            and v.items[0].rect is not None
+            and all(
+                abs(a - b) <= 0.05
+                for a, b in zip(v.items[0].rect, page.geometry.unrotated_bounds, strict=True)
             )
-            for v in page.vectors
-        ):
-            raise fail(
-                "EDGAR_CLIPPING_UNSUPPORTED",
-                "generating_htm",
-                "Clipping scopes cannot be reproduced with permitted normal-flow markup",
-                "Use Standard mode for this source",
-                page=page.page_number,
-            )
-    if any(d.severity == "error" for d in layout.diagnostics) or any(
-        d.severity == "error" for p in layout.pages for d in p.diagnostics
+        )
+        for page in layout.pages
+        for v in page.vectors
+    )
+    if needs_layers:
+        builder = LayerBuilder(source, layout, context)
+    if any(
+        d.severity == "error" and not (needs_layers and d.code == "CLIP_ASSOCIATION_UNRESOLVED")
+        for d in layout.diagnostics
+    ) or any(
+        d.severity == "error" and not (needs_layers and d.code == "CLIP_ASSOCIATION_UNRESOLVED")
+        for p in layout.pages
+        for d in p.diagnostics
     ):
         raise fail(
             "EDGAR_LAYOUT_UNRESOLVED",
@@ -150,7 +144,7 @@ def render_edgar(source, layout, directory, original_filename, context):
     validation = validate_files(
         directory / filename,
         tuple(directory / n for n in assets),
-        policy=ValidationPolicy(html_profile="edgar_flow_v1"),
+        policy=ValidationPolicy(html_profile="edgar_layers_v1" if needs_layers else "edgar_flow_v1"),
         context=context,
     )
     if not validation.passed:
@@ -197,7 +191,12 @@ def render_edgar(source, layout, directory, original_filename, context):
         }
     )
     return {
-        "method": PROFILE,
+        "method": LAYER_PROFILE if needs_layers else PROFILE,
+        **(
+            {"reflow_targets": builder.reflow_targets, "clip_association": builder.clip_proof}
+            if needs_layers
+            else {}
+        ),
         "generated": True,
         "filename": filename,
         "sha256": sha256(directory / filename),

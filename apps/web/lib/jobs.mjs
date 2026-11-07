@@ -35,6 +35,14 @@ export function failureMessage(diagnostic) {
 }
 export function warningMessage(diagnostic) {
   const messages = {
+    EDGAR_VERTICAL_TEXT_REFLOWED:
+      "Vertical sidebar text is shown as horizontal notes. Review the preview before filing.",
+    EDGAR_CLIPPED_TEXT_REFLOWED:
+      "Clipped sidebar text was retained in full, so some content is now visible.",
+    EDGAR_EXTERNAL_LINK_INERT:
+      "Links to destinations outside the permitted SEC archive are inactive; their text is preserved.",
+    EDGAR_SYMBOL_ENCODING_RECOVERED:
+      "Legacy symbol codes were decoded into their verified Unicode equivalents.",
     HTM_ZERO_WIDTH_LIGATURE:
       "Some ligatures use local font shaping. Review the preview for small spacing differences.",
     DOCX_RENDERER_COMPATIBILITY:

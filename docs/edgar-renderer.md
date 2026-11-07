@@ -36,7 +36,7 @@ Verified independent cases include simple text, normal-flow typography, a real m
 
 Clipping, rotated/vertical text, unsupported annotations, overlapping/interlocking paint, uncertain table grids, arbitrary vector curves/compositing and unsupported hyperlinks produce meaningful failures. The only clipping exception is a single rectangular page-edge clip within 0.05 points of the page bounds with all extracted text inside it; this handles actual LibreOffice rounding without discarding clipped disclosure. There is no screenshot fallback for ordinary text. Source-page image content can remain an image; OCR is not fabricated.
 
-**All three supplied conversion fixtures currently fail EDGAR mode at page 1 with `EDGAR_CLIPPING_UNSUPPORTED`.** Their preparation and source integrity are tested; successful EDGAR output for these documents is not claimed. Their Standard mode rendering is unaffected. Supporting their visual complexity within permitted markup remains a known limitation.
+**Post-refactor repair:** supplied complex DOCX/PDF fixtures now use a separately hashed rectangular CSS2 reconstruction strategy with native source clipping/table associations, selectable text and actual browser/ZIP proof. Vertical sidebar text is explicitly reflowed into vacant page bands; clipped content visibility and inert unsupported links are reported. Unsupported curves/angles/compositing still fail. See [repair implementation and limits](edgar-rectangular-layout.md). The original full-page-only branch above remains for simple flow-v1 conversions; its legacy/strict defaults are unchanged.
 
 ## Internal runtime contract
 
