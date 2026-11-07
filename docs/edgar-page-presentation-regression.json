@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-07",
+  "status": "completed",
+  "scope": "User-authorized page dividers and indented EDGAR HTM; no new development stage",
+  "actual_http_download": {
+    "mode": "edgar",
+    "input_type": "docx",
+    "pages": 23,
+    "characters": 84555,
+    "source_unchanged": true,
+    "archive_sha256": "47bec3826c0e9f60b86348e27dda579d3894e8e0949ea62958de6702bf69422b",
+    "archive_bytes": 1333755,
+    "members": [
+      "06749LWD4_prelim_pr-ed600aa0.htm",
+      "image001.jpg",
+      "image002.jpg",
+      "image003.jpg",
+      "image004.jpg"
+    ],
+    "crc_verified": true,
+    "source_text_verified": true,
+    "text_check": "per_page_characters_and_source_verified_printed_words",
+    "screen_max_mean_channel_error": 33.022933842097444,
+    "print_max_mean_channel_error": 28.93004183996831,
+    "pixel_equivalence_verified": false,
+    "sec_acceptance_confirmed": false,
+    "download_filename": "06749LWD4_prelim_prospectus_automated.zip"
+  },
+  "review": {
+    "pages": 23,
+    "dividers": 22,
+    "disclosure_characters": 84555,
+    "htm_bytes": 896629,
+    "htm_lines": 2877,
+    "htm_sha256": "cf432edb120e8e1c02187a17cd13a2fcc18070634413a9a8c92f98a7252b9eb8",
+    "source_unchanged": true,
+    "print_pages_verified": 23,
+    "no_space_warnings": 0,
+    "pixel_equivalence_verified": false,
+    "sec_acceptance_confirmed": false,
+    "div_elements": 910,
+    "total_elements": 6071
+  },
+  "tests": {
+    "targeted_python": "39passed3deselected155.17s",
+    "production_build_and_selected_ui": "3passed2.6min",
+    "default_discovery": "473collected1.75s; full473run not claimed",
+    "initial_focused_final": "10passed20.11s",
+    "final_context": "passed:8/8fixture/context0.159s;fixture/history hashes unchanged;all3policy implementations unchanged after checkout-line-ending normalization and actual layer runtime digest unchanged from prior successful job;current links/evidence/savedZIP hash passed;old unformatted actual savedZIP re-audited successfully;Ruff check/format8files and read-only diff whitespace passed;app remains127.0.0.1:3000"
+  },
+  "limitations": [
+    "Divider thickness adapts to vacant bottom margin; full-bleed/no-space pages receive a note rather than covered content",
+    "Structural indentation increases file bytes; inline text runs are deliberately left intact",
+    "Standard HTML/SVG generation unchanged",
+    "Raw pixels differ intentionally; local validation is not SEC acceptance"
+  ],
+  "git_writes_performed": false,
+  "dependencies_changed": false
+}

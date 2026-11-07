@@ -1,3 +1,17 @@
+# Latest recovery - page-divider and indentation follow-up complete
+
+The latest user request is complete:both current EDGAR strategies draw visible margin-aware page separators and generate readable two-space structural indentation. See [presentation implementation](edgar-page-presentation.md), [safe current evidence](edgar-page-presentation-regression.json), PROJECT_STATUS.md and .agent-checkpoint.json.latest_presentation. Stages1-10 remain complete;no Stage11 or pending implementation. No Git writes.
+
+Current final tests:39targeted Python passed155.17s;selected production build/browser/download3passed2.6min. Default discovery473confirmed;full473notclaimed. Actual configured liveHTTP DOCX produced23pages/22dividers/2877HTMlines/84555disclosurecharacters/1333755ZIPbytes,with fresh source/actualprint/assets/CRC QA passed and original unchanged. Actual viewedHTM bytes matched savedZIP;boundary screenshot visually checked. Current artifacts are in ignored var/page-presentation;app remains running127.0.0.1:3000.
+
+Source page/print dimensions are unchanged. Divider thickness uses vacant bottom margin;full-bleed/no-space pages get an explicit note instead of covered content. Formatting marker structural-indent-v1 distinguishes generated indentation. Use html_presentation.disclosure_text for marked EDGAR ledgers;never strip inline FONT/P whitespace. Browser canonicalization includes auto-created TBODY. Unmarked old output retains raw text semantics. Original strict/flow/layer style-profile files and defaults remain unchanged. Standard HTML/SVG generation is unchanged.
+
+Read permanent AGENTS instructions before any further changes. No new dependency,paid service,source/config mutation or Git writes. Final context/hash/format results are recorded in test history. Suggested commit:`fix: add page dividers and readable EDGAR output`.
+
+---
+
+Earlier filed-reference follow-up snapshot (historical):
+
 # Current recovery - filed-reference improvements complete
 
 The authorized comparison follow-up is complete. Stages1-10 remain terminal; no Stage11, pending implementation or new approval gate. Read AGENTS.md, PROJECT_STATUS.md and .agent-checkpoint.json before future changes. No Git writes were performed or are permitted.

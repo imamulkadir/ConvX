@@ -37,3 +37,5 @@ npm.cmd run test:ui
 
 Tests use real local processes and regression fixtures, never simulated conversion success. No SEC acceptance or universal pixel-perfect fidelity is claimed. Git initialization/staging/committing/pushing and all other Git writes are prohibited for agents; review and Git changes belong to the user.
 See [interface guide](docs/simple-interface.md), [ZIP contract](docs/zip-packaging.md) and [EDGAR manual interpretation/limits](docs/edgar-renderer.md). Restart the local development server after updating application code.
+
+EDGAR HTM now includes [visible page dividers and readable structural indentation](docs/edgar-page-presentation.md),with source text and print pagination verified.

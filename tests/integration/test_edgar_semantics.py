@@ -1,5 +1,6 @@
 import pymupdf
 import pytest
+from converter.html_presentation import disclosure_text
 from converter.input_pipeline import process_input
 from converter.sec_validation.flow_profile import flow_style_problems
 from converter.sec_validation.layer_profile import layer_style_problems
@@ -43,7 +44,7 @@ def test_actual_source_paragraphs_reading_order_fields_and_sec_links(tmp_path, u
     assert report["status"] == "packaged", report["diagnostics"]
     path = tmp_path / "attempt/edgar" / report["html_generation"]["filename"]
     tree = html.fromstring(path.read_bytes())
-    text = "".join(tree.xpath("//body//text()"))
+    text = disclosure_text(tree.find("body"))
     assert text.startswith("Independent marginal notice retained first.")
     assert (
         text.index("Independent report heading")

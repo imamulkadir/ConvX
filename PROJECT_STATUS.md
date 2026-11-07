@@ -12,7 +12,7 @@ Last Updated: 2026-11-07 (Asia/Dhaka)
 
 ## Current authorized result
 
-The user requested adapting differences between the supplied filed HTM and ConvX output. Implementation is complete and the actual configured running-app DOCX conversion/download is verified. Final broad Python and production-browser results passed; no new development stage or approval gate is inferred.
+The latest user request adds visible page dividers and readable indentation, now completed and verified. The previous request adapted differences between the supplied filed HTM and ConvX output. Implementation is complete and the actual configured running-app DOCX conversion/download is verified. Final broad Python and production-browser results passed; no new development stage or approval gate is inferred.
 
 Opening marginal disclosure now appears in a source-derived header when the whole page can fit, with independently verified body translation. Paragraph groups replace separate P elements for every PDF line. Tables and text follow source-derived spatial/column reading order; complete unambiguous borderless field rows become tables. Ordinary SEC HTTP links use HTTPS with unchanged labels. White paper is centered on gray gutters. Numeric markup and new JPEG entropy coding are smaller; source disclosure, actual image geometry and original JPEG passthrough remain intact.
 
@@ -24,14 +24,18 @@ For the actual supplied document, compared with the user's saved ConvX output:
 | --- | ---: | ---: |
 | Paragraphs | 1,203 | 657 |
 | Tables | 8 | 9 |
-| DIV elements | 3,151 | 822 |
-| Total elements | 6,398 | 5,960 |
-| HTM bytes | 995,271 | 841,379 |
+| DIV elements | 3,151 | 910 |
+| Total elements | 6,398 | 6,071 |
+| HTM bytes | 995,271 | 896,629 |
 | Clickable SEC reference URLs | 0 | 3 |
 
-All23 page non-whitespace character inventories match the supplied filed reference after the documented bullet/asterisk normalization. This is not proof of identical authorial paragraph semantics, wording sequence or exact pixels. Actual served ZIP:1,278,505bytes,oneHTM/fourJPG at root,23pages/84,555characters,original unchanged. Saved HTTP download independently passed source,printed-word,asset,ZIP/CRC and fresh audit checks. See [safe evidence](docs/edgar-filed-reference-regression.json) and [implementation](docs/edgar-filed-reference.md).
+All23 page non-whitespace character inventories match the supplied filed reference after the documented bullet/asterisk normalization. This is not proof of identical authorial paragraph semantics, wording sequence or exact pixels. Actual served ZIP:1,333,755bytes,oneHTM/fourJPG at root,23pages/84,555characters,original unchanged. Saved HTTP download independently passed source,printed-word,asset,ZIP/CRC and fresh audit checks. See [safe evidence](docs/edgar-filed-reference-regression.json) and [implementation](docs/edgar-filed-reference.md).
 
-## Verification
+## Current presentation verification
+
+39targeted Python checks passed155.17seconds;3selected production-browser/build cases passed2.6minutes;actual23-page liveDOCX/download verified22dividers,2877HTMlines and unchanged84555disclosurecharacters/printpagination. Default collection now473; a full473run is not claimed. See [presentation details](docs/edgar-page-presentation.md) and [safe evidence](docs/edgar-page-presentation-regression.json). Divider thickness fits actual vacant footer space; no-space pages get notes. Indentation preserves inline text, spaces and nonbreaking spaces. Final context/hash/format checks are recorded in test history.
+
+## Previous filed-reference verification
 
 - Focused final renderer/semantics/word checks:18passed,3deselected,64.07seconds.
 - Final new semantic integrations:5passed,21.60seconds.
@@ -54,4 +58,4 @@ Physical PDF print size, actual logo geometry and verified Unicode mappings are 
 
 No pending implementation or next stage. Final fixture/hash/format/link/diff results are recorded in test history. See [current recovery](docs/edgar-fix-resume.md) and [decisions](docs/decisions.md). No Stage11 is scheduled.
 
-Suggested commit message: `feat: improve EDGAR reading order and filed-reference layout`
+Suggested commit message: `fix: add page dividers and readable EDGAR output`

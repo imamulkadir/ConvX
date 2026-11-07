@@ -1,5 +1,5 @@
 [tool.pytest.ini_options]
-testpaths = ["tests/unit", "tests/runtime", "tests/regression", "tests/integration/test_visual_validation.py", "tests/integration/test_document_processing.py", "tests/integration/test_packaging_gates.py", "tests/integration/test_standard_renderer.py", "tests/integration/test_edgar_renderer.py", "tests/integration/test_edgar_semantics.py", "tests/integration/test_conversion_matrix.py"]
+testpaths = ["tests/unit", "tests/runtime", "tests/regression", "tests/integration/test_visual_validation.py", "tests/integration/test_document_processing.py", "tests/integration/test_packaging_gates.py", "tests/integration/test_standard_renderer.py", "tests/integration/test_edgar_renderer.py", "tests/integration/test_edgar_semantics.py", "tests/integration/test_edgar_presentation.py", "tests/integration/test_conversion_matrix.py"]
 pythonpath = ["packages", "."]
 addopts = "-ra"
 markers = ["redis: requires a real Redis server via CONVX_TEST_REDIS_URL", "postgres: requires a disposable PostgreSQL database via CONVX_TEST_DATABASE_URL"]

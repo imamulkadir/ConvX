@@ -77,37 +77,33 @@
   ],
   "last_test_results": [
     {
-      "command": "Full Python suite collected before new integration registration",
-      "passed": 463,
+      "command": "Presentation/assets/EDGAR/Standard/four-path runtime targeted Python suite",
+      "passed": 39,
       "failed": 0,
-      "seconds": 938.61
+      "deselected": 3,
+      "seconds": 155.17
     },
     {
-      "command": "New semantic integrations registered in default discovery",
-      "passed": 5,
+      "command": "Production build and selected actual browser/download cases",
+      "passed": 3,
       "failed": 0,
-      "seconds": 21.6,
-      "note": "unique Python coverage468; collect-only468 in0.90s"
+      "minutes": 2.6
     },
     {
-      "command": "Node server suite",
-      "passed": 15,
-      "failed": 0,
-      "seconds": 135.3883552
+      "command": "Actual configured liveHTTP DOCX and saved ZIP QA",
+      "result": "passed;23pages/22dividers/2877HTMlines/84555disclosurecharacters/1333755ZIPbytes,source unchanged"
     },
     {
-      "command": "Production build and genuine Chromium UI/savedZIP QA",
-      "passed": 12,
-      "failed": 0,
-      "minutes": 6.9
+      "command": "Default test collection",
+      "result": "473collected1.75s;full473notclaimed"
     },
     {
-      "command": "Actual configured localhost3000 DOCX HTTP conversion/savedZIP QA",
-      "result": "passed;23pages/84555characters/1278505bytes/oneHTM+fourJPG/source unchanged/source+printed-word+assets+CRC verified"
+      "command": "Final context/hash/lint/diff checks",
+      "result": "pending final completion-record checks"
     },
     {
-      "command": "Final fixture/context/history/strict-profile-byte/link/lint/read-only diff checks",
-      "result": "passed:8/8 fixture/context checks0.117s; unchanged fixture/history hashes and strict+flow profile bytes; current links and safe evidence verified; supplied comparison inputs unchanged; actual savedZIP hash verified; Ruff check/format10files and read-only diff whitespace passed; app still listening127.0.0.1:3000"
+      "command": "Final fixture/context/history/policy/backward-compatible ZIP/link/lint/diff checks",
+      "result": "passed:8/8fixture/context0.159s;fixture/history hashes unchanged;all3policy implementations unchanged after checkout-line-ending normalization and actual layer runtime digest unchanged from prior successful job;current links/evidence/savedZIP hash passed;old unformatted actual savedZIP re-audited successfully;Ruff check/format8files and read-only diff whitespace passed;app remains127.0.0.1:3000"
     }
   ],
   "historical_progress": {
@@ -138,7 +134,7 @@
     },
     "zip": "input-basename.zip; one document and exactly referenced local assets at root"
   },
-  "suggested_commit_message": "feat: improve EDGAR reading order and filed-reference layout",
+  "suggested_commit_message": "fix: add page dividers and readable EDGAR output",
   "git_operations_performed": false,
   "notes": [
     "Stage10 explicitly authorized and completed. Stages1-10 complete within documented supported local cases; no Stage11 scheduled.",
@@ -147,7 +143,8 @@
     "Current runtime report.stage remains7 intentionally; development completion does not alter packaging capability/proof schema.",
     "Final recovery/fixture/history/hash/link checks recorded in test history. Future work requires a new user request.",
     "Post-refactor EDGAR repair completed with full460/Node15/productionUI12 and actual saved live HTTP ZIP verification; explicit reflow/link/pixel/SEC limitations remain. No Stage11.",
-    "Authorized filed-reference follow-up completed with full463+new integration5(unique468)/Node15/UI12 and actual saved HTTP ZIP; no new stage or Git writes."
+    "Authorized filed-reference follow-up completed with full463+new integration5(unique468)/Node15/UI12 and actual saved HTTP ZIP; no new stage or Git writes.",
+    "Page-divider/indentation follow-up completed with39targeted/3productionUI and actual23-page saved HTTP ZIP;no profile/default/dependency/Git changes."
   ],
   "runtime_document": "docs/simplified-runtime.md",
   "layout_document": "docs/shared-layout.md",
@@ -186,5 +183,16 @@
     "document": "docs/edgar-filed-reference.md",
     "progress": "Full Python463passed938.61s plus new integration5passed21.60s(unique468/default discovery468);Node15passed135.388s;productionUI12passed6.9min. Actual liveHTTP ZIP1278505bytes passed fresh source/printed-word/assets/CRC QA;all3supplied EDGAR inputs package. HTM995271->841379bytes,P1203->657,TABLE8->9,threeSECURLs clickable;all23page normalized reference character inventories match. Source geometry/Unicode and remaining exact-fidelity/SEC limits explicit.",
     "evidence": "docs/edgar-filed-reference-regression.json"
+  },
+  "latest_presentation": {
+    "request": "Visible dividers between pages and readable HTML indentation",
+    "status": "completed",
+    "implementation": "Margin-aware CSS2 border bands inside source page frames; structural-only indentation with explicit canonical disclosure extraction and browser/ZIP checks",
+    "pending_tasks": [],
+    "git_writes_performed": false,
+    "document": "docs/edgar-page-presentation.md",
+    "evidence": "docs/edgar-page-presentation-regression.json",
+    "tests": "39targetedPython passed155.17s;3productionUI/build passed2.6min;473default collection confirmed,full473notclaimed",
+    "live": "ActualHTTPZIP1333755bytes/23pages/22dividers/2877lines/84555disclosurecharacters;source+printed-word+assets+CRC verified;source unchanged"
   }
 }

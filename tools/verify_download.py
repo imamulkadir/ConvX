@@ -60,7 +60,9 @@ def verify_archive(archive_path, pdf_path, report):
         output = ["".join("".join(t.itertext()) for t in p.xpath(".//*[local-name()='text']")) for p in pages]
     else:
         pages = tree.xpath("/html/body/div")
-        output = ["".join(p.itertext()) for p in pages]
+        from converter.html_presentation import disclosure_text
+
+        output = [disclosure_text(p) for p in pages]
     from converter.edgar_symbols import canonical_symbol
 
     layered = report.get("html_generation", {}).get("method") == "efm78-layered-css2-v1"
@@ -106,7 +108,7 @@ def verify_archive(archive_path, pdf_path, report):
                     assert measured == visual["pages"][i]["word_geometry"]
                     assert measured["missing_words"] == 0 and measured["max_origin_error_pt"] <= 6
         else:
-            actual_lines = ["".join(p.itertext()) for p in tree.xpath("/html/body//p")]
+            actual_lines = [disclosure_text(p) for p in tree.xpath("/html/body//p")]
             assert Counter(re.findall(r"\S+", "\n".join(source_lines))) == Counter(
                 re.findall(r"\S+", "\n".join(actual_lines))
             ), "EDGAR words or financial figures changed"

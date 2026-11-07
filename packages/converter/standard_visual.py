@@ -194,9 +194,21 @@ def worker(request):
             page.goto("https://convx.invalid/" + generation["filename"], wait_until="load")
             page.evaluate("async () => { await document.fonts.ready; }")
             metrics = page.evaluate(
-                """({selector,edgar}) => ({nodes:document.getElementsByTagName('*').length,
+                """({selector,edgar}) => {
+                const formatted=document.querySelector('meta[name="convx-html-format"][content="structural-indent-v1"]');
+                const containers=new Set(['html','head','body','div','table','tbody','thead','tfoot','tr','td']);
+                function disclosure(node) {
+                    let value='';
+                    for(const child of node.childNodes) {
+                        if(child.nodeType===3) {
+                            if(!(formatted && containers.has(node.localName) && node.children.length && /^\\n(?:  )*$/.test(child.nodeValue))) value+=child.nodeValue;
+                        } else if(child.nodeType===1) value+=disclosure(child);
+                    }
+                    return value;
+                }
+                return {nodes:document.getElementsByTagName('*').length,
                 pages:Array.from(document.querySelectorAll(selector)).map(p=>({width:p.getBoundingClientRect().width,height:p.getBoundingClientRect().height,
-                text:edgar?p.textContent:Array.from(p.querySelectorAll('svg text')).map(t=>t.textContent).join('')}))})""",
+                text:edgar?disclosure(p):Array.from(p.querySelectorAll('svg text')).map(t=>t.textContent).join('')}))};}""",
                 {"selector": selector, "edgar": edgar},
             )
             if metrics["nodes"] > 200000 or len(metrics["pages"]) != len(dimensions):

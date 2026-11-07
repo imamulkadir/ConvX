@@ -7,10 +7,12 @@ from pathlib import Path
 from lxml import etree, html
 
 from converter.assets.normalize import normalize_assets, publish
+from converter.edgar_dividers import add_dividers
 from converter.edgar_layers import LayerBuilder
 from converter.errors import fail
 from converter.html_generator.generator import Builder
 from converter.html_generator.models import GenerationPolicy, GenerationResult
+from converter.html_presentation import disclosure_text, readable_html
 from converter.layout.models import DocumentLayout
 from converter.ooxml import sha256
 from converter.pdf_analysis.policy import AnalysisPolicy
@@ -119,6 +121,8 @@ def render_edgar(source, layout, directory, original_filename, context):
             "Formatting serialization changed disclosure",
             "Rebuild from verified source",
         )
+    builder.diagnostics.extend(add_dividers(parsed, source, needs_layers, context))
+    payload = readable_html(parsed)
     filename = document_name(original_filename)
     scratch = directory.parent / (directory.name + "-candidate")
     scratch.mkdir(mode=0o700, exist_ok=False)
@@ -165,7 +169,7 @@ def render_edgar(source, layout, directory, original_filename, context):
         raise ValueError("EDGAR page count mismatch")
     pages = []
     for p, element in zip(layout.pages, elements, strict=True):
-        text = "".join(element.itertext())
+        text = disclosure_text(element)
         bounds = p.geometry.display_bounds
         pages.append(
             {
