@@ -42,6 +42,7 @@ def normalize_assets(
     max_total_bytes=100 * 1024 * 1024,
     max_total_pixels=64_000_000,
     max_assets=1000,
+    optimize_encoded=False,
 ):
     context = context or ProcessingContext()
     context.check()
@@ -192,7 +193,12 @@ def normalize_assets(
                 format = "GIF"
             else:
                 source.save(
-                    converted, format="JPEG", quality=100, subsampling=0, optimize=False, progressive=False
+                    converted,
+                    format="JPEG",
+                    quality=100,
+                    subsampling=0,
+                    optimize=optimize_encoded,
+                    progressive=False,
                 )
                 payload = converted.getvalue()
                 format = "JPEG"

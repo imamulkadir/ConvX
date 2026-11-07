@@ -62,7 +62,10 @@
     "Bounded fresh native download audits with finally release and real overlap/repeat regressions",
     "Linear capture membership, early reserved filename rejection and obsolete dashboard/session metadata removal",
     "Current single-server deployment/interface/SEC/limitations docs with byte-exact archived originals",
-    "Verified final native/browser suites and explicit terminal ten-stage recovery checkpoint"
+    "Verified final native/browser suites and explicit terminal ten-stage recovery checkpoint",
+    "Source-derived marginal header/body translation and independently verified print word targets",
+    "Native paragraph groups,spatial column/table order and conservative borderless fields",
+    "Permitted SEC HTTPS links,centered pages and compact CSS/JPEG entropy coding"
   ],
   "pending_tasks": [],
   "known_issues": [
@@ -74,30 +77,37 @@
   ],
   "last_test_results": [
     {
-      "command": "full active Python suite",
-      "passed": 460,
+      "command": "Full Python suite collected before new integration registration",
+      "passed": 463,
       "failed": 0,
-      "seconds": 763.76
+      "seconds": 938.61
+    },
+    {
+      "command": "New semantic integrations registered in default discovery",
+      "passed": 5,
+      "failed": 0,
+      "seconds": 21.6,
+      "note": "unique Python coverage468; collect-only468 in0.90s"
     },
     {
       "command": "Node server suite",
       "passed": 15,
       "failed": 0,
-      "seconds": 100.9021768
+      "seconds": 135.3883552
     },
     {
-      "command": "production build and actual Chromium UI suite",
+      "command": "Production build and genuine Chromium UI/savedZIP QA",
       "passed": 12,
       "failed": 0,
-      "minutes": 5.0
+      "minutes": 6.9
     },
     {
-      "command": "live HTTP DOCX EDGAR conversion, saved ZIP and independent source/print/assets/CRC verification",
-      "result": "passed;23pages/84555characters/1574472bytes/oneHTM+fourJPG; original unchanged"
+      "command": "Actual configured localhost3000 DOCX HTTP conversion/savedZIP QA",
+      "result": "passed;23pages/84555characters/1278505bytes/oneHTM+fourJPG/source unchanged/source+printed-word+assets+CRC verified"
     },
     {
-      "command": "final fixture/context/history/hash/link/format verification",
-      "result": "passed:8/8 fixture/context tests in0.218s; historical root hashes and original strict/flow policy bytes unchanged; current links resolve; Ruff check/format19files and web Prettier passed"
+      "command": "Final fixture/context/history/strict-profile-byte/link/lint/read-only diff checks",
+      "result": "passed:8/8 fixture/context checks0.117s; unchanged fixture/history hashes and strict+flow profile bytes; current links and safe evidence verified; supplied comparison inputs unchanged; actual savedZIP hash verified; Ruff check/format10files and read-only diff whitespace passed; app still listening127.0.0.1:3000"
     }
   ],
   "historical_progress": {
@@ -128,7 +138,7 @@
     },
     "zip": "input-basename.zip; one document and exactly referenced local assets at root"
   },
-  "suggested_commit_message": "fix: preserve clipped EDGAR layouts with verified text and ZIP output",
+  "suggested_commit_message": "feat: improve EDGAR reading order and filed-reference layout",
   "git_operations_performed": false,
   "notes": [
     "Stage10 explicitly authorized and completed. Stages1-10 complete within documented supported local cases; no Stage11 scheduled.",
@@ -136,7 +146,8 @@
     "No Git writes, dependency changes, source fixture/user.env/data or Git metadata changes. Prior core docs archived byte-exactly.",
     "Current runtime report.stage remains7 intentionally; development completion does not alter packaging capability/proof schema.",
     "Final recovery/fixture/history/hash/link checks recorded in test history. Future work requires a new user request.",
-    "Post-refactor EDGAR repair completed with full460/Node15/productionUI12 and actual saved live HTTP ZIP verification; explicit reflow/link/pixel/SEC limitations remain. No Stage11."
+    "Post-refactor EDGAR repair completed with full460/Node15/productionUI12 and actual saved live HTTP ZIP verification; explicit reflow/link/pixel/SEC limitations remain. No Stage11.",
+    "Authorized filed-reference follow-up completed with full463+new integration5(unique468)/Node15/UI12 and actual saved HTTP ZIP; no new stage or Git writes."
   ],
   "runtime_document": "docs/simplified-runtime.md",
   "layout_document": "docs/shared-layout.md",
@@ -159,5 +170,21 @@
     "progress": "Full460/Node15/productionUI12 passed. Actual1574472byte HTTPZIP verified:23pages/84555characters/oneHTM+fourJPG. All3supplied complex EDGAR inputs package successfully under separate local profile; explicit sidebar reflow, inactive prohibited links and measured pixel differences remain.",
     "evidence": "docs/edgar-clip-regression.json",
     "original_live_failure": "EDGAR_CLIPPING_UNSUPPORTED page1; no ZIP before repair"
+  },
+  "latest_improvement": {
+    "request": "Adapt supplied filed-reference comparison gaps; user authorized implementation",
+    "status": "completed",
+    "scope": [
+      "source-derived header reflow and verified body translation",
+      "paragraph grouping and spatial DOM reading order",
+      "SEC HTTP to HTTPS hyperlink retention",
+      "centered white pages/gray gutters and compact markup",
+      "independent/source/browser/live savedZIP regressions"
+    ],
+    "pending_tasks": [],
+    "recovery_document": "docs/edgar-fix-resume.md",
+    "document": "docs/edgar-filed-reference.md",
+    "progress": "Full Python463passed938.61s plus new integration5passed21.60s(unique468/default discovery468);Node15passed135.388s;productionUI12passed6.9min. Actual liveHTTP ZIP1278505bytes passed fresh source/printed-word/assets/CRC QA;all3supplied EDGAR inputs package. HTM995271->841379bytes,P1203->657,TABLE8->9,threeSECURLs clickable;all23page normalized reference character inventories match. Source geometry/Unicode and remaining exact-fidelity/SEC limits explicit.",
+    "evidence": "docs/edgar-filed-reference-regression.json"
   }
 }

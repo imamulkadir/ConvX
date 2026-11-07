@@ -1,0 +1,154 @@
+{
+  "date": "2026-11-07",
+  "status": "completed",
+  "scope": "User-authorized filed-reference improvements; stages1-10 remain complete",
+  "actual_http_download": {
+    "mode": "edgar",
+    "input_type": "docx",
+    "pages": 23,
+    "characters": 84555,
+    "source_unchanged": true,
+    "archive_sha256": "e99ab76826e635c6e0370de5d2064bf610b673f895054bdb0e17d8f4b270f2bc",
+    "archive_bytes": 1278505,
+    "members": [
+      "06749LWD4_prelim_pr-ed600aa0.htm",
+      "image001.jpg",
+      "image002.jpg",
+      "image003.jpg",
+      "image004.jpg"
+    ],
+    "crc_verified": true,
+    "source_text_verified": true,
+    "text_check": "per_page_characters_and_source_verified_printed_words",
+    "screen_max_mean_channel_error": 31.891850490196077,
+    "print_max_mean_channel_error": 27.798958488066944,
+    "pixel_equivalence_verified": false,
+    "sec_acceptance_confirmed": false,
+    "download_filename": "06749LWD4_prelim_prospectus_automated.zip"
+  },
+  "comparison": {
+    "filed": {
+      "paragraphs": 629,
+      "tables": 12,
+      "divs": 191,
+      "nodes": 1999,
+      "htm_bytes": 257686,
+      "htm_sha256": "144c901dfa094168c560ef6ab58ae381a525939ac9be5840047afd0ed15929c9",
+      "links": 3
+    },
+    "before": {
+      "paragraphs": 1203,
+      "tables": 8,
+      "divs": 3151,
+      "nodes": 6398,
+      "htm_bytes": 995271,
+      "htm_sha256": "9c46e04f4ab876eab2721da566a33fbb848adbe535914c2c3d0654c5e4910287",
+      "links": 4
+    },
+    "after": {
+      "paragraphs": 657,
+      "tables": 9,
+      "divs": 822,
+      "nodes": 5960,
+      "htm_bytes": 841379,
+      "htm_sha256": "6b32703df2eb337bec485e9a4a574c21db0df4caa5ad64d452884f81d7f0099d",
+      "links": 7
+    }
+  },
+  "all_23_page_non_whitespace_character_inventories_match_supplied_reference_after_documented_symbol_normalization": true,
+  "target_sec_hosted_original_independently_retrieved": false,
+  "checks": [
+    "Source/DOM character identity",
+    "Actual Chromium screen/printed geometry",
+    "Independent source-derived marginal-note/header/body word targets",
+    "Saved HTTP ZIP fresh audit,source,printed words,required root assets andCRC",
+    "Actual generic columns/paragraphs/fields/unsafe-host tests",
+    "Missing financial figures/forged targets rejected",
+    "Missing/displaced raised marks rejected"
+  ],
+  "jpeg_entropy_optimization": [
+    {
+      "file": "image001.jpg",
+      "before_bytes": 41426,
+      "after_bytes": 37222,
+      "decoded_pixels_identical": true
+    },
+    {
+      "file": "image002.jpg",
+      "before_bytes": 217390,
+      "after_bytes": 154794,
+      "decoded_pixels_identical": true
+    },
+    {
+      "file": "image003.jpg",
+      "before_bytes": 142160,
+      "after_bytes": 112191,
+      "decoded_pixels_identical": true
+    },
+    {
+      "file": "image004.jpg",
+      "before_bytes": 177663,
+      "after_bytes": 132357,
+      "decoded_pixels_identical": true
+    }
+  ],
+  "tests": {
+    "focused": "18passed3deselected64.07s",
+    "node": "15passed135.388s",
+    "full_python": "463passed0failed938.61s",
+    "production_browser": "12passed6.9min,production build and genuine Chromium/savedZIP QA",
+    "fixture_context": "passed:8/8 fixture/context checks0.117s; unchanged fixture/history hashes and strict+flow profile bytes; current links and safe evidence verified; supplied comparison inputs unchanged; actual savedZIP hash verified; Ruff check/format10files and read-only diff whitespace passed; app still listening127.0.0.1:3000",
+    "new_semantic_integration": "5passed21.60s",
+    "test_discovery": "New file registered in explicit testpaths;468tests collected0.90s. In-flight broad run collected463 before registration; separate5integration already passed.",
+    "unique_python_coverage": 468,
+    "full_run_note": "Full463 plus separately passed5new integration cases; not a single-session468 claim. Default test discovery now includes468."
+  },
+  "limitations": [
+    "Local EFM78/CSS2 interpretation is not SEC acceptance or legacy strict proof",
+    "Header/body repositioning intentionally changes source PDF pixels; raw measured source errors are retained and increased on affected pages",
+    "No exact visual match to supplied target; physical source print scale/logo geometry and verified Unicode mappings retained",
+    "PDF line geometry still retained inside paragraph groups; full responsive/authorial DOCX semantics not claimed",
+    "Conservative derived fields do not force a reference-specific table count",
+    "Unsupported clipping/angles/compositing still fail withoutZIP; no new OCR/public-hosting qualification"
+  ],
+  "dependencies_changed": false,
+  "git_writes_performed": false,
+  "supplied_edgar_regressions": [
+    {
+      "input": "06749LWD4_prelim_prospectus_automated.pdf",
+      "status": "packaged",
+      "source_unchanged": true,
+      "pages": 23,
+      "archive_bytes": 1701365,
+      "archive_sha256": "22e580c749328f128a66912b6ef426d8f6883dd441bb84f3b1eaf08ab4c372d9",
+      "missing_words": 0,
+      "max_checked_word_origin_error_pt": 4.35205078125,
+      "screen_max_mean_channel_error": 23.926229203802734,
+      "print_max_mean_channel_error": 20.957869132501486
+    },
+    {
+      "input": "06749LWD4_prelim_prospectus_automated.docx",
+      "status": "packaged",
+      "source_unchanged": true,
+      "pages": 23,
+      "archive_bytes": 1278505,
+      "archive_sha256": "e99ab76826e635c6e0370de5d2064bf610b673f895054bdb0e17d8f4b270f2bc",
+      "missing_words": 0,
+      "max_checked_word_origin_error_pt": 4.46514892578125,
+      "screen_max_mean_channel_error": 31.891850490196077,
+      "print_max_mean_channel_error": 27.798958488066944
+    },
+    {
+      "input": "06749LWD4_prelim_prospectus_automated (1).docx",
+      "status": "packaged",
+      "source_unchanged": true,
+      "pages": 23,
+      "archive_bytes": 1278507,
+      "archive_sha256": "0d5b8503f6aa97eb6fe6214cb6ea9c6a8a1e828f769abf0f96e56de7fb311845",
+      "missing_words": 0,
+      "max_checked_word_origin_error_pt": 4.46514892578125,
+      "screen_max_mean_channel_error": 31.895286350019806,
+      "print_max_mean_channel_error": 27.803993906590414
+    }
+  ]
+}

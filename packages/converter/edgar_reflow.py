@@ -101,8 +101,19 @@ def vertical_plan(page):
             if start is None or start - word[1] > right - left:
                 required += size + 1
                 start = word[3]
+    # Promote marginal notes to a header when the complete page can be shifted
+    # without cropping any source paint. This is geometry-derived, not wording-
+    # or issuer-specific. The verifier derives the same horizontal word targets.
+    first_top = min(start for start, _ in occupied)
+    spare = page.rect.height - 2 - max(end for _, end in occupied)
+    header_top = min(first_top, first_top + spare - required - 4)
+    header_top = max(2, header_top)
+    shift = max(0, header_top + required + 4 - first_top)
+    header = max(end for _, end in occupied) + shift <= page.rect.height - 2
     footer = (max(end for _, end in occupied) + 4, page.rect.height - 2)
-    if footer[1] - footer[0] >= required:
+    if header:
+        bands = [(header_top, header_top + required)]
+    elif footer[1] - footer[0] >= required:
         bands = [footer]
     else:
         bands = []
@@ -165,4 +176,21 @@ def vertical_plan(page):
                 )
             cursor += size + 1
             position += 1
-    return {"chunks": chunks, "words": targets}
+    if header and shift:
+        vertical_blocks = {block for block, _, _ in vertical}
+        for ordinal, word in enumerate(words):
+            if word[5] not in vertical_blocks:
+                targets.append(
+                    {
+                        "index": ordinal,
+                        "text_sha256": hashlib.sha256(word[4].encode()).hexdigest(),
+                        "source_bbox": list(word[:4]),
+                        "target_origin": [word[0], word[1] + shift],
+                    }
+                )
+    return {
+        "chunks": chunks,
+        "words": targets,
+        "content_offset_y": shift if header else 0,
+        "placement": "header" if header else "vacant_band",
+    }

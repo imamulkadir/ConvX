@@ -20,7 +20,9 @@ def word_geometry(source, printed, layered=False, expected_reflow=None):
         candidates = buckets.get(word[4], [])
         pieces = None
         origin = targets.get(ordinal, word[:2])
-        if not candidates and layered:
+        if layered and (
+            not candidates or min(max(abs(c[0] - origin[0]), abs(c[1] - origin[1])) for c in candidates) > 6
+        ):
             for start, first in enumerate(printed_words):
                 if (
                     not word[4].startswith(first[4])
@@ -30,8 +32,18 @@ def word_geometry(source, printed, layered=False, expected_reflow=None):
                     continue
                 parts, text = [], ""
                 for part in printed_words[start : start + 12]:
+                    # A native word can contain a raised trademark. Chromium
+                    # may expose it as a separate word after DOM reordering.
+                    # Only admit such pieces inside the translated source word
+                    # box; do not loosen the final six-point origin detector.
+                    source_height = word[3] - word[1]
+                    inside_word_band = origin[1] - 2 <= part[1] and part[3] <= origin[1] + source_height + 2
                     if part not in buckets.get(part[4], []) or (
-                        parts and (abs(part[1] - first[1]) > 1.5 or part[0] - parts[-1][2] > 2)
+                        parts
+                        and (
+                            (abs(part[1] - first[1]) > 1.5 and not inside_word_band)
+                            or not -1 <= part[0] - parts[-1][2] <= 2
+                        )
                     ):
                         break
                     parts.append(part)

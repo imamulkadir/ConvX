@@ -138,7 +138,9 @@ def render_edgar(source, layout, directory, original_filename, context):
         diagnostics=tuple(builder.diagnostics),
     )
     context.stage("preparing_assets")
-    normalized = normalize_assets(source, candidate, generation, directory, context)
+    normalized = normalize_assets(
+        source, candidate, generation, directory, context, optimize_encoded=needs_layers
+    )
     assets = {item["filename"]: item for item in normalized["images"]}
     context.stage("validating_output")
     validation = validate_files(

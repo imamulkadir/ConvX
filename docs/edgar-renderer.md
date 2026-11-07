@@ -45,3 +45,5 @@ Python `process_input(..., mode="edgar")` and the private runtime request accept
 EDGAR browser captures use the existing safe PNG preview route. It rechecks source, HTM, asset and capture hashes before serving; active uploaded/generated HTML is not served by that route. Missing-browser jobs can be retried after the free local browser becomes available. Packaging-pending jobs remain ineligible for retries or downloads.
 
 See [test history](test-history.md), [decisions](decisions.md) and [current project status](../PROJECT_STATUS.md) for actual completion and final verification results.
+
+The subsequent [filed-reference improvements](edgar-filed-reference.md) group native lines into paragraphs, order tables/text spatially, derive conservative aligned fields, normalize ordinary SEC HTTP links to HTTPS and center white paper with literal CSS2 auto margins. Vertical marginal notes prefer a source-derived header with verified body translation when it fits. Original physical print dimensions, source assets/text and the six-point position detector remain; raw source differences stay reported.

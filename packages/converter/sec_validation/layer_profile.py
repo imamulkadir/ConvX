@@ -24,6 +24,13 @@ def layer_style_problems(value):
     retained, seen, errors = [], set(), []
     for item in value.split(";"):
         name = item.split(":", 1)[0].strip().lower()
+        if name == "margin" and re.fullmatch(r"margin\s*:\s*0 auto", item.strip()):
+            if name in seen:
+                errors.append("CSS_DUPLICATE_PROPERTY")
+            seen.add(name)
+            # Substitute equivalent safe numeric syntax for inherited checking.
+            retained.append("margin:0")
+            continue
         if name not in {"overflow", "word-spacing", "letter-spacing"}:
             retained.append(item)
             continue

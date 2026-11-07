@@ -15,6 +15,7 @@ from lxml import etree
 
 from converter.edgar_clips import inside, inspect_clips
 from converter.edgar_reflow import axis, vertical_plan
+from converter.edgar_semantics import Paragraphs, aligned_fields
 from converter.edgar_spacing import calibrate
 from converter.edgar_symbols import canonical_symbol
 from converter.errors import fail
@@ -24,15 +25,17 @@ from converter.html_generator.models import AssetRequest, GenerationDiagnostic
 from converter.html_generator.typography import font_family, link_characters, render_line
 
 
-def slots(parent, width, rect):
+def slots(parent, width, rect, tag="div"):
     """Zero-height block reserves no extra page flow; its child retains clipping."""
     x0, y0, x1, y1 = rect
     outer = etree.SubElement(
-        parent, "div", style=f"width:{pt(width)};height:0;margin:0;padding:0;line-height:0;font-size:0"
+        parent,
+        tag,
+        style=f"width:{pt(width)};height:0;margin:0;padding:0;line-height:0;font-size:0;display:block",
     )
     return etree.SubElement(
         outer,
-        "div",
+        tag,
         style=f"display:inline-block;vertical-align:top;margin:{pt(y0)} 0 0 {pt(x0)};padding:0;width:{pt(max(0, x1 - x0))};height:{pt(max(0, y1 - y0))};overflow:hidden;line-height:0;font-size:0",
     )
 
@@ -72,8 +75,17 @@ class LayerBuilder:
             for link in page.links:
                 self.context.check()
                 href = None
-                if link.kind == 2 and safe_uri(link.uri):
-                    href = link.uri
+                if link.kind == 2:
+                    uri = link.uri or ""
+                    normalized = "https://" + uri[7:] if uri.startswith("http://") else uri
+                    if safe_uri(normalized):
+                        href = normalized
+                        if uri != normalized:
+                            self.warning(
+                                "EDGAR_SEC_LINK_HTTPS",
+                                "An ordinary SEC Archives reference uses HTTPS; its visible source text is unchanged",
+                                page.page_number,
+                            )
                 elif (
                     link.kind == 1
                     and link.destination_page is not None
@@ -121,7 +133,9 @@ class LayerBuilder:
         head = etree.SubElement(root, "head")
         etree.SubElement(head, "title").text = "Converted document"
         etree.SubElement(head, "meta", name="convx-edgar-profile", content="edgar_layers_v1")
-        body = etree.SubElement(root, "body", style="margin:0;padding:0;font-size:0;line-height:0")
+        body = etree.SubElement(
+            root, "body", style="margin:0;padding:0;font-size:0;line-height:0;background-color:#d3d3d3"
+        )
         assets = {a.id: a for a in self.layout.assets}
         requests = {}
         hrefs, anchors = self.links()
@@ -155,12 +169,20 @@ class LayerBuilder:
                 )
                 bounds = page.geometry.unrotated_bounds
                 width, height = bounds[2] - bounds[0], bounds[3] - bounds[1]
-                target = etree.SubElement(
+                page_target = etree.SubElement(
                     body,
                     "div",
-                    style=f"margin:0;padding:0;width:{pt(width)};height:{pt(height)};page-break-after:{'auto' if page.page_number == len(self.layout.pages) else 'always'};font-size:0;line-height:0",
+                    style=f"margin:0 auto;padding:0;width:{pt(width)};height:{pt(height)};page-break-after:{'auto' if page.page_number == len(self.layout.pages) else 'always'};font-size:0;line-height:0;background-color:#ffffff",
                 )
-                etree.SubElement(target, "a", name=f"page{page.page_number}")
+                etree.SubElement(page_target, "a", name=f"page{page.page_number}")
+                reflow = vertical_plan(source)
+                self.reflow_targets[str(page.page_number)] = reflow["words"]
+                header = etree.SubElement(
+                    page_target, "div", style="height:0;margin:0;padding:0;font-size:0;line-height:0"
+                )
+                offset_y = reflow.get("content_offset_y", 0)
+                target = slots(page_target, width, (0, offset_y, width, height))
+                paragraphs = Paragraphs()
                 # Actual simple native graphics; never rasterize disclosure text.
                 for v in page.vectors:
                     if v.kind in {"clip", "group"}:
@@ -237,8 +259,10 @@ class LayerBuilder:
                         style=f"display:block;margin:{pt(image.bbox[1] - clip[1])} 0 0 {pt(image.bbox[0] - clip[0])};width:{pt(image.bbox[2] - image.bbox[0])};height:{pt(image.bbox[3] - image.bbox[1])};border:0",
                     )
                 cell_owners = {}
-                for table in page.tables:
-                    if not table.grid_resolved or table.method != "native_lines_strict":
+                for table in [*page.tables, *aligned_fields(page, self.context)]:
+                    if hasattr(table, "grid_resolved") and (
+                        not table.grid_resolved or table.method != "native_lines_strict"
+                    ):
                         raise fail(
                             "EDGAR_TABLE_GRID_UNRESOLVED",
                             "generating_htm",
@@ -247,6 +271,7 @@ class LayerBuilder:
                             page=page.page_number,
                         )
                     parent = slots(target, width, bounds)
+                    paragraphs.order[parent.getparent()] = table.bbox
                     x0, y0, x1, y1 = table.bbox
                     element = etree.SubElement(
                         parent,
@@ -280,8 +305,6 @@ class LayerBuilder:
                                 if identifier in cell_owners:
                                     raise ValueError("Duplicate table character ownership")
                                 cell_owners[identifier] = (td, cell.bbox[0], cell.bbox[1])
-                reflow = vertical_plan(source)
-                self.reflow_targets[str(page.page_number)] = reflow["words"]
                 for block in page.text_blocks:
                     for line in block.lines:
                         if axis(line.direction) != "horizontal":
@@ -353,7 +376,7 @@ class LayerBuilder:
                                         "bbox": tuple(box),
                                     }
                                 )
-                                container = slots(target, width, bounds)
+                                container = slots(header, width, bounds)
                                 render_line(
                                     clone,
                                     container,
@@ -364,7 +387,7 @@ class LayerBuilder:
                                 )
                             self.warning(
                                 "EDGAR_VERTICAL_TEXT_REFLOWED",
-                                "Vertical marginal disclosure is preserved as selectable horizontal text in a vacant footer band; its orientation and position differ from the source",
+                                "Vertical marginal disclosure is preserved as selectable horizontal text in a source-derived header or vacant band; its orientation and position differ from the source",
                                 page.page_number,
                             )
                             continue
@@ -408,12 +431,9 @@ class LayerBuilder:
                                 owner = cell_owners.get(char.id)
                                 groups.setdefault((clips[char.id], owner), set()).add(char.id)
                         for (clip, owner), selected in groups.items():
-                            if owner:
-                                parent, dx, dy = owner
-                                shifted = (clip[0] - dx, clip[1] - dy, clip[2] - dx, clip[3] - dy)
-                                container = slots(parent, width, shifted)
-                            else:
-                                container = slots(target, width, clip)
+                            container, origin, top, unclipped = paragraphs.container(
+                                target, block, line, clip, owner, selected, width, slots
+                            )
                             render_line(
                                 line,
                                 container,
@@ -421,21 +441,23 @@ class LayerBuilder:
                                 hrefs,
                                 anchors,
                                 selected=selected,
-                                offset=(clip[0], clip[1]),
+                                offset=origin,
                                 run_records=self.runs,
+                                tag="font",
                             )
                             paragraph = container[-1]
                             declarations = paragraph.get("style").split(";")
-                            top = (
-                                min(c.bbox[1] for s in line.spans for c in s.characters if c.id in selected)
-                                - clip[1]
-                            )
                             for n, item in enumerate(declarations):
                                 if item.startswith("padding:"):
                                     declarations[n] = "padding:0"
                                 elif item.startswith("margin:"):
                                     declarations[n] = item.replace("margin:0 ", f"margin:{pt(top)} ", 1)
-                            paragraph.set("style", ";".join(declarations))
+                            paragraph.set(
+                                "style", "display:inline-block;vertical-align:top;" + ";".join(declarations)
+                            )
+                paragraphs.sort(target)
+                for table in target.iter("td"):
+                    paragraphs.sort(table)
                 self.context.check()
         expected = [
             (c.id, canonical_symbol(s.font_name, c.text))
@@ -470,6 +492,17 @@ class LayerBuilder:
                 if name.strip() != "font-family":
                     value = re.sub(
                         r"(-?\d+(?:\.\d+)?[eE][+-]?\d+)(?=pt|px)", lambda m: format(Decimal(m[1]), "f"), value
+                    )
+                    # Sub-micro-point precision has no browser layout meaning.
+                    # Keep source text untouched and bound numeric rounding far
+                    # below the existing geometry checks; never minify by words.
+                    value = re.sub(
+                        r"-?\d+\.\d+(?=pt|px)",
+                        lambda m: (
+                            format(Decimal(m[0]).quantize(Decimal("0.000001")), "f").rstrip("0").rstrip(".")
+                            or "0"
+                        ),
+                        value,
                     )
                 declarations.append(name + separator + value)
             element.set("style", ";".join(declarations))
